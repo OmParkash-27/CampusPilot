@@ -1,0 +1,29 @@
+.contact-container {
+    max-width: 90%;
+    margin: auto;
+
+  h1 {
+    color: var(--primary-color);
+  }
+
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .p-error {
+    font-size: 0.8rem;
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  .contact-info {
+    font-size: 0.95rem;
+
+    i {
+      margin-right: 0.5rem;
+      color: var(--primary-color);
+    }
+  }
+}

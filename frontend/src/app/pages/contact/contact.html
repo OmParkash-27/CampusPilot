@@ -1,0 +1,45 @@
+<div class="contact-container p-0 lg:w-8 xl:w-7">
+  <p-card>
+    <h1 class="text-center mb-4">Contact Us</h1>
+    <p class="text-center mb-4">
+      Have questions about <strong>CampusPiolet</strong>? We’d love to hear from you.
+      Use the form below or reach us via email.
+    </p>
+
+    <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="name">Name</label>
+        <input pInputText id="name" formControlName="name" placeholder="Your name" class="w-full" />
+        <small *ngIf="contactForm.get('name')?.touched && contactForm.get('name')?.invalid" class="p-error">
+          Name is required
+        </small>
+      </div>
+
+      <div class="mb-3">
+        <label for="email">Email</label>
+        <input pInputText id="email" formControlName="email" placeholder="Your email" class="w-full" />
+        <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['required']" class="p-error">
+          Email is required
+        </small>
+        <small *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.errors?.['email']" class="p-error">
+          Invalid email format
+        </small>
+      </div>
+
+      <div class="mb-3">
+        <label for="message">Message</label>
+        <textarea pInputTextarea id="message" formControlName="message" rows="5" placeholder="Your message" class="w-full"></textarea>
+        <small *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.invalid" class="p-error">
+          Message is required
+        </small>
+      </div>
+
+      <button pButton label="Send Message" type="submit" class="w-full mt-3"></button>
+    </form>
+
+    <div class="contact-info mt-4 text-center">
+      <p><i class="pi pi-envelope"></i> support@campuspiolet.com</p>
+      <p><i class="pi pi-map-marker"></i> 123 Education Lane, Knowledge City</p>
+    </div>
+  </p-card>
+</div>

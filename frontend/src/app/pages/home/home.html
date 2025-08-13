@@ -1,0 +1,69 @@
+<div class="home-wrapper">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Welcome to Student Portal</h1>
+        <p>Your journey to knowledge starts here!</p>
+        <button pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Features Section -->
+    <div class="features-grid">
+        <p-card header="Easy Registration" [style]="{width: '100%'}">
+            <i class="pi pi-user-plus feature-icon"></i>
+            <p>Register quickly and manage your profile anytime.</p>
+        </p-card>
+
+        <p-card header="Assignments" [style]="{width: '100%'}">
+            <i class="pi pi-file feature-icon"></i>
+            <p>Upload, submit, and view assignments easily.</p>
+        </p-card>
+
+        <p-card header="Notifications" [style]="{width: '100%'}">
+            <i class="pi pi-bell feature-icon"></i>
+            <p>Stay updated with important alerts and announcements.</p>
+        </p-card>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- Testimonials Section -->
+    <h2 class="section-title">What Students Say</h2>
+    <p-carousel [value]="testimonials" [numVisible]="1" [numScroll]="1">
+        <ng-template pTemplate="item" let-testimonial>
+            <div class="testimonial">
+                <p-avatar [image]="testimonial.avatar" shape="circle" size="xlarge"
+                    style="margin-bottom: 1rem;"></p-avatar>
+                <p>"{{ testimonial.message }}"</p>
+                <h4>{{ testimonial.name }}</h4>
+            </div>
+        </ng-template>
+    </p-carousel>
+
+    <p-divider></p-divider>
+
+    <!-- Gallery -->
+    <h2 class="section-title">Campus Life</h2>
+    
+    <div class="galleria-wrapper">
+        <p-galleria [value]="galleryImages" [autoPlay]="true" [circular]="true" [showThumbnails]="true" [showThumbnailNavigators]="true" [thumbnailsPosition]="'bottom'" [responsiveOptions]="responsiveOptions" [numVisible]="5" >
+            <ng-template #item let-item>
+                <img [src]="item.itemImageSrc"/>
+            </ng-template>
+            <ng-template #thumbnail let-item>
+                <img [src]="item.thumbnailImageSrc" />
+            </ng-template>
+        </p-galleria>
+    </div>
+
+    <p-divider></p-divider>
+
+    <!-- CTA -->
+    <div class="cta-section">
+        <h2>Join Us Today</h2>
+        <p>Register now to explore a new way of learning!</p>
+        <button pButton label="Register Now" class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"></button>
+    </div>
+
+</div>

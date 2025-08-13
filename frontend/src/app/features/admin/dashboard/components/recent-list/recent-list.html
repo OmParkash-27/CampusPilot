@@ -1,0 +1,13 @@
+<h3>{{ title }}</h3>
+<p-table [value]="data" [rows]="5" responsiveLayout="scroll">
+  <ng-template pTemplate="header">
+    <tr>
+      <th *ngFor="let col of columns">{{ col.header }}</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row>
+    <tr>
+      <td *ngFor="let col of columns">{{ row[col.field] }}</td>
+    </tr>
+  </ng-template>
+</p-table>

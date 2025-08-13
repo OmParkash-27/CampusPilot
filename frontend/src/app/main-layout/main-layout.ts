@@ -1,0 +1,61 @@
+import { Component, Signal, computed, effect, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { DrawerModule } from 'primeng/drawer';
+import { MenubarModule } from 'primeng/menubar';
+import { ButtonModule } from 'primeng/button';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { RoleMenuItem } from './main.const';
+import { AuthService } from '../core/services/auth/auth.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MainLayoutService } from './main-layout.service';
+
+@Component({
+  selector: 'app-main-layout',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, MenubarModule, DrawerModule, ButtonModule, RouterModule, ConfirmDialogModule],
+  templateUrl: './main-layout.html',
+  styleUrls: ['./main-layout.scss'],
+})
+export class MainLayout implements AfterViewInit, OnDestroy {
+  // Signals
+  drawerVisible = signal(false);
+  windowWidth = signal(window.innerWidth);
+  isMobile = computed(() => this.windowWidth() < 768);
+  private resizeHandler = () => this.windowWidth.set(window.innerWidth);
+
+  itemsSignal!: Signal<RoleMenuItem[]>;
+  
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private mainLayoutService: MainLayoutService
+  ) { 
+    this.itemsSignal = this.mainLayoutService.getMenu();
+   }
+
+  ngAfterViewInit() {
+    // Set initial width safely after view is ready
+    setTimeout(() => {
+      this.windowWidth.set(window.innerWidth);
+    });
+
+    window.addEventListener('resize', this.resizeHandler);
+  }
+
+  ngOnDestroy() {
+    // Cleanup the resize event listener
+    window.removeEventListener('resize', this.resizeHandler);
+  }
+
+  toggleDrawer() {
+    this.drawerVisible.update((v) => !v);
+  }
+
+  closeDrawer() {
+    if (this.isMobile()) {
+      this.drawerVisible.set(false);
+    }
+  }
+
+ 
+}

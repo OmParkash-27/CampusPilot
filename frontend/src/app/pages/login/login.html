@@ -1,0 +1,82 @@
+<div class="login-container flex justify-content-center align-items-center">
+  <p-card class="login-card w-full sm:w-4 md:w-10 lg:w-5 xl:w-4 p-0">
+    <div class="text-center mb-3">
+      <img src="images/logo.png" alt="Logo" width="50" />
+      <h2 class="mt-2" *ngIf="mode() === 'login'">Welcome</h2>
+      <h2 class="mt-2" *ngIf="mode() === 'register'">Create Account</h2>
+      <p *ngIf="mode() === 'login'">Please login to your account</p>
+      <p *ngIf="mode() === 'register'">Fill in your details to register</p>
+    </div>
+
+    <!-- Login Form -->
+    <form *ngIf="mode() === 'login'" [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+      <p-inputGroup class="mb-3">
+        <p-inputGroupAddon><i class="pi pi-envelope"></i></p-inputGroupAddon>
+        <input type="email" pInputText placeholder="Email"
+               formControlName="email"
+               [ngClass]="{ 'p-invalid': (submitted() || fLogin['email'].touched) && fLogin['email'].invalid }" />
+      </p-inputGroup>
+      <small *ngIf="(submitted() || fLogin['email'].touched) && fLogin['email'].errors?.['required']" class="p-error">Email is required</small>
+      <small *ngIf="(submitted() || fLogin['email'].touched) && fLogin['email'].errors?.['email']" class="p-error">Invalid email format</small>
+
+      <p-inputGroup class="mb-3 mt-3">
+        <p-inputGroupAddon><i class="pi pi-lock"></i></p-inputGroupAddon>
+        <input type="password" pInputText placeholder="Password"
+               formControlName="password"
+               [ngClass]="{ 'p-invalid': (submitted() || fLogin['password'].touched) && fLogin['password'].invalid }" />
+      </p-inputGroup>
+      <small *ngIf="(submitted() || fLogin['password'].touched) && fLogin['password'].errors?.['required']" class="p-error">Password is required</small>
+      <small *ngIf="(submitted() || fLogin['password'].touched) && fLogin['password'].errors?.['minlength']" class="p-error">Password must be at least 6 characters</small>
+
+      <button pButton label="Login" type="submit" class="w-full mt-4"></button>
+      <div class="text-center mt-4">
+        <p>Don't have an account?</p>
+        <a [routerLink]="[]" [queryParams]="{ mode: 'register' }" class="register-link">Register</a>
+      </div>
+    </form>
+
+    <!-- Register Form -->
+    <form *ngIf="mode() === 'register'" [formGroup]="registerForm" (ngSubmit)="onSubmitRegister()">
+      <p-inputGroup class="mb-3">
+        <p-inputGroupAddon><i class="pi pi-user"></i></p-inputGroupAddon>
+        <input type="text" pInputText placeholder="Name"
+               formControlName="name"
+               [ngClass]="{ 'p-invalid': (submitted() || fRegister['name'].touched) && fRegister['name'].invalid }" />
+      </p-inputGroup>
+      <small *ngIf="(submitted() || fRegister['name'].touched) && fRegister['name'].errors?.['required']" class="p-error">Name is required</small>
+      <small *ngIf="(submitted() || fRegister['name'].touched) && fRegister['name'].errors?.['minlength']" class="p-error">Name must be at least 3 characters</small>
+
+      <p-inputGroup class="mb-3">
+        <p-inputGroupAddon><i class="pi pi-envelope"></i></p-inputGroupAddon>
+        <input type="email" pInputText placeholder="Email"
+               formControlName="email"
+               [ngClass]="{ 'p-invalid': (submitted() || fRegister['email'].touched) && fRegister['email'].invalid }" />
+      </p-inputGroup>
+      <small *ngIf="(submitted() || fRegister['email'].touched) && fRegister['email'].errors?.['required']" class="p-error">Email is required</small>
+      <small *ngIf="(submitted() || fRegister['email'].touched) && fRegister['email'].errors?.['email']" class="p-error">Invalid email format</small>
+
+      <p-inputGroup class="mb-3 mt-3">
+        <p-inputGroupAddon><i class="pi pi-lock"></i></p-inputGroupAddon>
+        <input type="password" pInputText placeholder="Password"
+               formControlName="password"
+               [ngClass]="{ 'p-invalid': (submitted() || fRegister['password'].touched) && fRegister['password'].invalid }" />
+      </p-inputGroup>
+      <small *ngIf="(submitted() || fRegister['password'].touched) && fRegister['password'].errors?.['required']" class="p-error">Password is required</small>
+      <small *ngIf="(submitted() || fRegister['password'].touched) && fRegister['password'].errors?.['minlength']" class="p-error">Password must be at least 6 characters</small>
+
+      <p-fileUpload name="profilePic" mode="basic" chooseLabel="Upload Photo" customUpload="true"
+                    (onSelect)="fRegister['profilePic'].setValue($event.files[0])"
+                    class="w-full mb-3">
+      </p-fileUpload>
+
+      <button pButton label="Register" type="submit" class="w-full mt-4"></button>
+      <div *ngIf="registrationError" class="p-error mt-1">
+        {{ registrationError }}
+      </div>
+      <div class="text-center mt-4">
+        <p>Already have an account?</p>
+        <a [routerLink]="[]" [queryParams]="{ mode: 'login' }" class="register-link">Login</a>
+      </div>
+    </form>
+  </p-card>
+</div>

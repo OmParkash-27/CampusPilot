@@ -1,0 +1,68 @@
+::ng-deep p-card form p-fileupload {
+    p-button, button {
+        width: 100%;
+    }
+}
+
+
+.login-container {
+  background: linear-gradient(135deg, #eef2f3, #dfe9f3); // soft gradient
+  height: 100%;
+  padding: 1rem;
+}
+
+.login-card {
+  border-radius: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+
+  .p-card-body {
+    padding: 0; // remove extra default padding
+  }
+
+  h2 {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-color-secondary);
+  }
+
+  // Adjust card in smaller screens
+  @media (max-width: 768px) {
+    width: 90% !important;
+  }
+}
+
+.p-inputgroup,
+p-inputGroup {
+  .p-inputtext {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+
+  .p-inputgroup-addon,
+  p-inputGroupAddon {
+    background-color: var(--surface-200);
+    color: var(--text-color-secondary);
+    border: none;
+    font-size: 1.1rem;
+  }
+
+}
+
+button {
+  font-weight: 600;
+}
+
+.register-link {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

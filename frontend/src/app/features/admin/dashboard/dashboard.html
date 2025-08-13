@@ -1,0 +1,64 @@
+<div *ngIf="loading" class="p-text-center">Loading...</div>
+
+<div *ngIf="!loading" class="dashboard-container">
+
+  <!-- 📊 Stats Cards -->
+  <div class="stats-grid">
+    <app-stats-card
+      [title]="'Total Students'"
+      [value]="data.totalStudents"
+      icon="pi pi-users"
+      color="#42A5F5">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="'Total Users'"
+      [value]="data.totalUsers"
+      icon="pi pi-user"
+      color="#66BB6A">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="'Admins'"
+      [value]="data.totalAdmins"
+      icon="pi pi-shield"
+      color="#FF7043">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="'Teachers'"
+      [value]="data.totalTeachers"
+      icon="pi pi-briefcase"
+      color="#AB47BC">
+    </app-stats-card>
+  </div>
+
+  <!-- 📈 Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Counts (Bar)</h3>
+      <p-chart type="bar" [data]="barData" [options]="chartOptions" style="height:360px"></p-chart>
+    </div>
+
+    <div class="chart-card">
+      <h3>Distribution (Pie)</h3>
+      <p-chart type="pie" [data]="pieData" [options]="chartOptions" style="height:360px"></p-chart>
+    </div>
+  </div>
+
+  <!-- 🆕 Recent Lists -->
+  <div class="recent-section">
+    <app-recent-list
+      title="Recent Students"
+      [data]="data.latestStudents"
+      [columns]="studentCols">
+    </app-recent-list>
+
+    <app-recent-list
+      title="Recent Users"
+      [data]="data.latestUsers"
+      [columns]="userCols">
+    </app-recent-list>
+  </div>
+
+</div>
