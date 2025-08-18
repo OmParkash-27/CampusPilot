@@ -33,15 +33,15 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// update user role
+// update user status
 exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
 
-    if (typeof status !== 'boolean') {
-      return res.status(400).json({ message: 'Status must be a boolean' });
-    }
+    // if (typeof status !== 'boolean') {
+    //   return res.status(400).json({ message: 'Status must be a boolean' });
+    // }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,

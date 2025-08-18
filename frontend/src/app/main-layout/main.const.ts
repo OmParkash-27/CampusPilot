@@ -59,8 +59,8 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     public: false,
     showWhenLoggedIn: true,
     items: [
-      { label: 'Register User', icon: 'pi pi-user-plus', routerLink: '/users/register',visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] },
-      { label: 'List Users', icon: 'pi pi-list', routerLink: '/users/list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] }
+      { label: 'Register User', icon: 'pi pi-user-plus', routerLink: '/admin/user-add-edit',visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] },
+      { label: 'List Users', icon: 'pi pi-list', routerLink: '/admin/user-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] }
     ]
   },
   {

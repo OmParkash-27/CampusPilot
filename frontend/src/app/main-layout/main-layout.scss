@@ -116,7 +116,7 @@
       // column-gap: 2px;
 
       .layout-sidebar {
-        width: 250px;
+        max-width: 250px;
         margin-right: 8px;
         max-height: calc(100vh - 116px);
         // overflow-y: auto;

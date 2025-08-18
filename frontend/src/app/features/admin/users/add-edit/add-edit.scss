@@ -1,0 +1,51 @@
+.user-form-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    input, select, .p-fileupload {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 0.3rem;
+      border: 1px solid #ccc;
+    }
+
+    .error {
+      color: red;
+      font-size: 0.8rem;
+    }
+  }
+
+  .submit-btn {
+    background: linear-gradient(to right, #42A5F5, #66BB6A);
+    color: #fff;
+    margin-right: 1rem;
+  }
+
+  .cancel-btn {
+    background: #ccc;
+    color: #333;
+  }
+
+  button {
+    margin-top: 1rem;
+  }
+}

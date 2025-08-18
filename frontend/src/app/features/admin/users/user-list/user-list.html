@@ -1,0 +1,55 @@
+<div class="user-list-card">
+  <h2>All Users</h2>
+
+  <p-table *ngIf="users()?.length" [value]="users()" [paginator]="true" [rows]="10" [loading]="loading()">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-user>
+      <tr *ngIf="user">
+        <td>{{ user?.name }}</td>
+        <td>{{ user?.email }}</td>
+
+        <!-- Role with p-select -->
+        <td>
+          <p-select 
+            [options]="roles"
+            [(ngModel)]="user.role" 
+            (onClick)="currentRole(user.role)"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select Role"
+            styleClass="role-select"
+            (onChange)="onRoleChange(user , $event)">
+          </p-select>
+        </td>
+
+        <!-- Status with p-checkbox -->
+        <td>
+          <p-checkbox 
+            [(ngModel)]="user.status" 
+            binary="true"
+            (onChange)="onStatusChange(user, $event)">
+          </p-checkbox>
+        </td>
+
+        <!-- Actions -->
+        <td>
+            <div class="action-icons">
+                <i class="pi pi-pencil edit-icon" (click)="router.navigate(['/user-add-edit', user?.id])"></i>
+                <i class="pi pi-trash delete-icon" (click)="deleteUser(user?.id)"></i>
+            </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p *ngIf="!users()?.length && !loading()">No users found.</p>
+</div>

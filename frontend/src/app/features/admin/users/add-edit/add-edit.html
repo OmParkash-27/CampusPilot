@@ -1,0 +1,41 @@
+<div class="user-form-card">
+  <h2>{{ userId ? 'Edit User' : 'Add New User' }}</h2>
+
+  <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input id="name" type="text" pInputText formControlName="name" />
+      <small *ngIf="submitted && f['name'].invalid" class="error">Name is required</small>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input id="email" type="email" pInputText formControlName="email" />
+      <small *ngIf="submitted && f['email'].invalid" class="error">Valid email is required</small>
+    </div>
+
+    <div class="form-group">
+      <label for="role">Role</label>
+      <select id="role" formControlName="role">
+        <option *ngFor="let r of roles" [value]="r">{{ r | titlecase }}</option>
+      </select>
+      <small *ngIf="submitted && f['role'].invalid" class="error">Role is required</small>
+    </div>
+
+    <div class="form-group">
+      <label>Status</label>
+      <select formControlName="status">
+        <option *ngFor="let s of statusOptions" [ngValue]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Profile Picture</label>
+      <p-fileUpload name="profilePic" customUpload (uploadHandler)="onFileSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+    </div>
+
+    <button pButton type="submit" label="{{ userId ? 'Update User' : 'Add User' }}" class="submit-btn"></button>
+    <button pButton type="button" label="Cancel" class="cancel-btn" (click)="router.navigate(['/admin/users'])"></button>
+  </form>
+</div>
