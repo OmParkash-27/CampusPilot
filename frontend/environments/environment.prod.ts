@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://myapp.com/api'
+  apiUrl: 'https://campuspilot-iesb.onrender.com/api'
 };
