@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://campuspilot-iesb.onrender.com/api'
+  apiUrl: 'https://campuspilot-1.onrender.com/api'
 };
