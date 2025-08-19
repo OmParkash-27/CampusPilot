@@ -22,7 +22,7 @@
           <p-select 
             [options]="roles"
             [(ngModel)]="user.role" 
-            (onFocus)="onRoleFocus(user)"
+            (onFocus)="onRoleFocus(user.role)"
             optionLabel="label"
             optionValue="value"
             placeholder="Select Role"
