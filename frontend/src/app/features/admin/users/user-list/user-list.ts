@@ -53,10 +53,15 @@ export class UserList implements OnInit {
 
   onStatusChange(user: User | undefined, event: any) {
     if (!user) return;
-    const userStatus = event?.returnValue;
-    user.status = userStatus;
-    
-    this.userService.updateStatus(user._id, userStatus).subscribe();
+    const userStatus = event?.checked;
+    this.userService.updateStatus(user._id, userStatus).subscribe({
+      next: () => {
+        user.status = userStatus; 
+      },
+      error: () => {
+        user.status = !user.status;
+      }
+    });
   }
 
   onRoleFocus(userRole: User['role']) {

@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { environment } from "../../../../../environments/environment";
+import { environment } from "../../../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class HttpService {
@@ -10,9 +10,7 @@ export class HttpService {
   constructor(private http: HttpClient) {}
 
   
-  put(formData: FormData, model: string, id: string, route?: string): Observable<any> {
-    console.log("id", id);
-    
+  put(formData: FormData, model: string, id: string, route?: string): Observable<any> {    
       return this.http.put(`${this.API_URL + '/' + model + `${route ? route : ''}` + '/' + id}`, formData, { withCredentials: true });
   }
   post(formData: FormData, model: string ): Observable<any> {
