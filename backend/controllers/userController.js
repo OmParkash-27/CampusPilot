@@ -6,11 +6,9 @@ const { log } = require('console');
 //update role
 exports.updateUserRole = async (req, res) => {
   const { id } = req.params;
-  // const { role } = req.body;
-  console.log("role is", req.body);
-  
+  const { role } = req.body;  
 
-  const allowedRoles = ['admin', 'editor', 'teacher', 'user'];
+  const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
   if (!allowedRoles.includes(role)) {
     return res.status(400).json({ message: 'Invalid role provided.' });
   }

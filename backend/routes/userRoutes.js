@@ -6,9 +6,9 @@ const upload = require('../middleware/uploadMiddleware');
 const { updateUserRole, getAllUsers, updateUser, updateUserStatus } = require('../controllers/userController');
 
 // @route PUT /api/users/:id/role
-router.put('/update-role/:id', verifyToken, isAdmin, updateUserRole);
+router.put('/update-role/:id',upload.none(), verifyToken, isAdmin, updateUserRole);
 router.get('/', verifyToken, isAdmin, getAllUsers);
 router.put('/:id', upload.single('profilePic'), verifyToken, isAdmin, updateUser);
-router.patch('/update-status/:id', verifyToken, updateUserStatus);
+router.put('/update-status/:id',upload.none(), verifyToken, updateUserStatus);
 
 module.exports = router;
