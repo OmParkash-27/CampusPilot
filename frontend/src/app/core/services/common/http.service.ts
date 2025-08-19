@@ -11,7 +11,9 @@ export class HttpService {
 
   
   put(formData: FormData, model: string, id: string, route?: string): Observable<any> {
-        return this.http.put(`${this.API_URL + '/' + model + `${route ? route : ''}` + '/' + id}`, formData, { withCredentials: true });
+    console.log("id", id);
+    
+      return this.http.put(`${this.API_URL + '/' + model + `${route ? route : ''}` + '/' + id}`, formData, { withCredentials: true });
   }
   post(formData: FormData, model: string ): Observable<any> {
     return this.http.post(`${this.API_URL + '/' + model }`, formData, { withCredentials: true });

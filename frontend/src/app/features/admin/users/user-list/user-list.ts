@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -26,9 +26,9 @@ export class UserList implements OnInit {
     { label: 'Teacher', value: 'teacher' }
   ];
   loading = signal<boolean>(true);
-  currentUserRole = "";
+  private prevRole: User['role'] | null = null;
 
-  constructor(public router: Router, private userService: UserService) {}
+  constructor(public router: Router, private userService: UserService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -41,7 +41,8 @@ export class UserList implements OnInit {
         // Ensure each user.role matches the 'value' in roles
         const usersWithRole = (res || []).map(user => ({
           ...user,
-          role: user.role || '' // fallback if role is missing
+          // id: user._id,
+          // role: user.role || '' // fallback if role is missing
         }));
         this.users.set(usersWithRole);
         this.loading.set(false);
@@ -55,27 +56,22 @@ export class UserList implements OnInit {
     const userStatus = event?.returnValue;
     user.status = userStatus;
     
-    this.userService.updateStatus(user.id, userStatus).subscribe();
+    this.userService.updateStatus(user._id, userStatus).subscribe();
   }
 
-  currentRole(userRole: any) {
-    this.currentUserRole = userRole;
+  onRoleFocus(userRole: User['role']) {
+    this.prevRole = userRole;
   }
 
   onRoleChange(user: User | undefined, event: any) {
   if (!user) return;
-  // console.log('user', " even", event);
-  
-  // const currentRole = user.role;
-  const selectedRole = event.value;
-  this.userService.updateRole(user.id, selectedRole).subscribe({
+  const selectedRole = event.value;  
+  this.userService.updateRole(user._id, selectedRole).subscribe({
     next: () => {
-      user.role = selectedRole; // update only on success
+      user.role = selectedRole;
     },
     error: () => {
-      console.log(this.currentUserRole, "u r");
-      user.role = (this.currentUserRole) as User['role']; // revert on error
-      
+       user.role = this.prevRole as User['role'];
     }
   });
 }

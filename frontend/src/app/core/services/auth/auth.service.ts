@@ -29,9 +29,15 @@ export class AuthService {
   loadCurrentUser() {
     return this.getProfile().pipe(
       tap(user => this.current_user.set(user)),
-      catchError(() => {
-        this.current_user.set(null);
-        return of(null);
+      catchError((error) => {
+        if (error.status === 401) {
+          // unauthorized means user not logged in
+          this.current_user.set(null);
+          return of(null); 
+        } else {
+          console.error('Profile load error:', error);
+          return of(null);
+        }
       })
     ).toPromise();
   }
