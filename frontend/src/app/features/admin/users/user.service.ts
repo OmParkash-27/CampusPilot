@@ -1,14 +1,18 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpService } from '../../../core/services/common/http.service';
 import { User } from '../../../core/models/User';
+import { AuthService } from '../../../core/services/auth/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private model = 'users';
-
-  constructor(private http: HttpService) {}
-
+  currentUser: User | null;
+  private authService = inject(AuthService)
+  
+  constructor(private http: HttpService) {
+    this.currentUser = this.authService.current_user()
+  }
   getAll(): Observable<User[]> {
     return this.http.getAll(this.model);
   }

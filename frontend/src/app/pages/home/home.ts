@@ -1,5 +1,5 @@
 
-import { Component } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
@@ -9,6 +9,7 @@ import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { RippleModule } from 'primeng/ripple';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +26,9 @@ import { RouterModule } from '@angular/router';
   standalone: true
 })
 export class Home {
+  authService = inject(AuthService);
+  isLoggedIn = computed(() => !!this.authService.current_user());
+
   testimonials = [
     {
       name: 'Ravi Kumar',
@@ -61,4 +65,5 @@ responsiveOptions = [
   }
 ];
 
+  
 }

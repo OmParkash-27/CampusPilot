@@ -11,6 +11,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('CampusPialet');
+  protected readonly title = signal('CampusPilot');
   constructor(public loadingService: LoadingService) {}
 }

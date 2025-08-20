@@ -9,7 +9,7 @@
 
 
 .user-list-card {
-  min-height: calc(100% - 6px);
+  max-height: calc(100% - 6px);
   overflow: auto;
   margin: 3px;
   padding: 1rem;

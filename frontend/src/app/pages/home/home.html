@@ -3,7 +3,7 @@
     <div class="hero-section">
         <h1>Welcome to Student Portal</h1>
         <p>Your journey to knowledge starts here!</p>
-        <button pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
+        <button *ngIf="!isLoggedIn()" pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
     </div>
 
     <p-divider></p-divider>
@@ -63,7 +63,7 @@
     <div class="cta-section">
         <h2>Join Us Today</h2>
         <p>Register now to explore a new way of learning!</p>
-        <button pButton label="Register Now" class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"></button>
+        <button *ngIf="!isLoggedIn()" pButton label="Register Now" class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"></button>
     </div>
 
 </div>

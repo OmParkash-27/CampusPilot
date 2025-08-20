@@ -4,6 +4,7 @@
   <p-table *ngIf="users()?.length" [value]="users()" [paginator]="true" [rows]="10" [loading]="loading()">
     <ng-template pTemplate="header">
       <tr>
+        <th>Profile</th>
         <th>Name</th>
         <th>Email</th>
         <th>Role</th>
@@ -14,6 +15,13 @@
 
     <ng-template pTemplate="body" let-user>
       <tr *ngIf="user">
+        <td>
+            <img
+                [src]="API_URL + '/img/' + user?.profilePic"
+                alt="profile pic"
+                class="w-7rem border-round"
+            />
+        </td>
         <td>{{ user?.name }}</td>
         <td>{{ user?.email }}</td>
 
@@ -27,6 +35,7 @@
             optionValue="value"
             placeholder="Select Role"
             styleClass="role-select"
+            [disabled]="loggedUser?.email == user.email"
             (onChange)="onRoleChange(user , $event)">
           </p-select>
         </td>
@@ -36,15 +45,17 @@
           <p-checkbox 
             [(ngModel)]="user.status" 
             binary="true"
-            (onChange)="onStatusChange(user, $event)">
+            (onChange)="onStatusChange(user, $event)"
+            [disabled]="loggedUser?.email == user.email">
           </p-checkbox>
+          <p-badge [value]="user.status ? 'Active' : 'Inactive'" class="ml-2" [severity]="user.status ? 'success' : 'danger'" />
         </td>
 
         <!-- Actions -->
         <td>
             <div class="action-icons">
-                <i class="pi pi-pencil edit-icon" (click)="router.navigate(['/user-add-edit', user?.id])"></i>
-                <i class="pi pi-trash delete-icon" (click)="deleteUser(user?.id)"></i>
+                <i class="pi pi-pencil edit-icon" [title]="loggedUser?.email !=user.email ? 'edit' : 'cant edit'" (click)="loggedUser?.email !=user.email ? navigate(user._id) : null"></i>
+                <i class="pi pi-trash delete-icon" [title]="loggedUser?.email !=user.email ? 'delete' : 'cant delete'" (click)="loggedUser?.email != user.email ? deleteUser(user?._id) : null"></i>
             </div>
         </td>
       </tr>

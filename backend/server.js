@@ -1,5 +1,5 @@
-// secure-student-api/backend/server.js
 
+const path = require('path');
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
@@ -33,6 +33,8 @@ app.use(
     credentials: true, // allow cookies
   })
 );
+
+app.use('/api', express.static(path.join(__dirname, './public')));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));

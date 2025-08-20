@@ -11,7 +11,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthService } from './core/services/auth/auth.service';
-import { LoadingInterceptor } from './interceptors/loading-interceptor';
+import { LoadingInterceptor } from './core/interceptors/loading-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [

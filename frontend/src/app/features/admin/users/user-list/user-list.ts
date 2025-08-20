@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -9,15 +9,19 @@ import { UserService } from '../user.service';
 import { User } from '../../../../core/models/User';
 import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
+import { BadgeModule } from 'primeng/badge';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule],
+  imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
 export class UserList implements OnInit {
+  API_URL = environment.apiUrl;
   users = signal<User[]>([]);
   roles = [
     { label: 'Admin', value: 'admin' },
@@ -27,9 +31,12 @@ export class UserList implements OnInit {
   ];
   loading = signal<boolean>(true);
   private prevRole: User['role'] | null = null;
-
-  constructor(public router: Router, private userService: UserService, private cdr: ChangeDetectorRef) {}
-
+  loggedUser: User | null = null;
+  
+  constructor(public router: Router, private userService: UserService) {
+    this.loggedUser = this.userService.currentUser;
+  }
+  
   ngOnInit(): void {
     this.loadUsers();
   }
@@ -39,16 +46,20 @@ export class UserList implements OnInit {
     this.userService.getAll().subscribe({
       next: (res) => {
         // Ensure each user.role matches the 'value' in roles
-        const usersWithRole = (res || []).map(user => ({
+        const users = (res || []).map(user => ({
           ...user,
           // id: user._id,
           // role: user.role || '' // fallback if role is missing
-        }));
-        this.users.set(usersWithRole);
+        })) // .filter(user => this.userService.currentUser?.email != user.email);
+        this.users.set(users);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
     });
+  }
+
+  navigate(id: string) {
+    this.router.navigate(['admin/user-add-edit',id]);
   }
 
   onStatusChange(user: User | undefined, event: any) {

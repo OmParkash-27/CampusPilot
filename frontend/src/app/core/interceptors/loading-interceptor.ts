@@ -7,12 +7,12 @@ import {
 } from '@angular/common/http';
 import { Observable, timer } from 'rxjs';
 import { finalize, switchMap } from 'rxjs/operators';
-import { LoadingService } from '../core/services/loading/loading-service';
+import { LoadingService } from '../services/loading/loading-service';
 
 
 @Injectable()
 export class LoadingInterceptor implements HttpInterceptor {
-  private minShowTime = 3000; // 3 seconds in ms
+  private minShowTime = 2000; // 2 seconds in ms
 
   constructor(private loadingService: LoadingService) {}
 

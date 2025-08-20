@@ -2,7 +2,29 @@ const User = require('../models/User');
 const path = require('path');
 const fs = require('fs');
 const deleteFiles = require('../utils/deleteUploadedFiles');
-const { log } = require('console');
+const bcrypt = require('bcryptjs');
+
+
+//add user by admin
+exports.addUser = async (req, res) => {
+  const { name, email, role, status } = req.body;
+    const profilePic = req.file ? req.file.filename : null;
+    try {
+      const userExists = await User.findOne({ email });
+      if (userExists) {
+            await deleteFiles(profilePic); // cleanup uploaded pic
+            return res.status(400).json({ message: 'Email already exists' });
+          }
+      const hashedPassword = await bcrypt.hash(name, 10);
+      const newUser = await User.create({ name, email, password: hashedPassword, profilePic, status, role });
+
+      res.status(201).json({ message: 'User registered successfully', user: newUser });
+    } catch (err) {
+      await deleteFiles(profilePic);
+      res.status(500).json({ message: 'Add user failed', error: err.message });
+    }
+}
+
 //update role
 exports.updateUserRole = async (req, res) => {
   const { id } = req.params;
@@ -18,6 +40,18 @@ exports.updateUserRole = async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json({ message: 'Role updated successfully', user });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+//get a user
+exports.getUser = async (req, res) => {
+  
+  const id = req.params.id;
+  try {
+    const user = await User.findById(id).select('-password'); // Exclude passwords
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -62,10 +96,10 @@ exports.updateUserStatus = async (req, res) => {
 //update user
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role } = req.body;
+  const { name, email, role, status } = req.body;
   const newProfilePic = req.file?.filename;
 
-  const allowedRoles = ['admin', 'editor', 'teacher', 'user'];
+  const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
   if (role && !allowedRoles.includes(role)) {
     return res.status(400).json({ message: 'Invalid role provided.' });
   }
@@ -83,6 +117,7 @@ exports.updateUser = async (req, res) => {
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
+    user.status = status || user.status;
     if (newProfilePic) user.profilePic = newProfilePic;
 
     await user.save();
@@ -96,3 +131,14 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ message: 'Update failed', error: err.message });
   }
 };
+
+//delete user
+exports.deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await User.findByIdAndDelete(id); // Exclude passwords
+    res.status(200).json({message: 'Deleted Successfully'});
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+}

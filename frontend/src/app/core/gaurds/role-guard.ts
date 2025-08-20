@@ -11,7 +11,7 @@ export const RoleGuard = (allowedRoles: string[]): CanActivateFn => {
     if (user && allowedRoles.includes(user.role)) {
       return true;
     } else {
-      router.navigate(['/unauthorized']); // or dashboard
+      router.navigate(['/login']); // or dashboard
       return false;
     }
   };

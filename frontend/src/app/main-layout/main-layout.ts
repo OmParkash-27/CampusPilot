@@ -26,8 +26,6 @@ export class MainLayout implements AfterViewInit, OnDestroy {
   itemsSignal!: Signal<RoleMenuItem[]>;
   
   constructor(
-    private authService: AuthService,
-    private router: Router,
     private mainLayoutService: MainLayoutService
   ) { 
     this.itemsSignal = this.mainLayoutService.getMenu();
@@ -55,7 +53,5 @@ export class MainLayout implements AfterViewInit, OnDestroy {
     if (this.isMobile()) {
       this.drawerVisible.set(false);
     }
-  }
-
- 
+  } 
 }

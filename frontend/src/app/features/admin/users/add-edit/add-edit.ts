@@ -7,6 +7,7 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { UserService } from '../user.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { User } from '../../../../core/models/User';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-user-add-edit',
@@ -16,6 +17,7 @@ import { User } from '../../../../core/models/User';
   styleUrls: ['./add-edit.scss']
 })
 export class AddEdit implements OnInit {
+  API_URL = environment.apiUrl;
   userForm!: FormGroup;
   userId: string | null = null;
   roles = ['student', 'editor', 'teacher', 'admin'];
@@ -24,6 +26,7 @@ export class AddEdit implements OnInit {
     { label: 'Inactive', value: false }
   ];
   submitted = false;
+  previewUrl:string | undefined = '';
 
   constructor(
     private fb: FormBuilder,
@@ -45,6 +48,11 @@ export class AddEdit implements OnInit {
     if (this.userId) {
       this.userService.getById(this.userId).subscribe((user: User) => {
         this.userForm.patchValue(user);
+        try{
+          this.previewUrl = user.profilePic
+        } catch(err) {
+          
+        }
       });
     }
   }
@@ -54,6 +62,7 @@ export class AddEdit implements OnInit {
   onFileSelect(event: any) {
     if (event.files && event.files.length) {
       this.userForm.patchValue({ profilePic: event.files[0] });
+      this.previewUrl = '';
     }
   }
 
@@ -70,11 +79,11 @@ export class AddEdit implements OnInit {
 
     if (this.userId) {
       this.userService.update(formData, this.userId).subscribe(() => {
-        this.router.navigate(['/admin/users']);
+        this.router.navigate(['/admin/user-list']);
       });
     } else {
       this.userService.create(formData).subscribe(() => {
-        this.router.navigate(['/admin/users']);
+        this.router.navigate(['/admin/user-list']);
       });
     }
   }
