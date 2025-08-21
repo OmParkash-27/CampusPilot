@@ -3,12 +3,14 @@ import { RouterOutlet } from '@angular/router';
 import { LoadingService } from './core/services/loading/loading-service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CommonModule } from '@angular/common';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, ProgressSpinnerModule, CommonModule],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
+  providers: []
 })
 export class App {
   protected readonly title = signal('CampusPilot');

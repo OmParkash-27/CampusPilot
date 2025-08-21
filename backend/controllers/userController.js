@@ -25,26 +25,6 @@ exports.addUser = async (req, res) => {
     }
 }
 
-//update role
-exports.updateUserRole = async (req, res) => {
-  const { id } = req.params;
-  const { role } = req.body;  
-
-  const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
-  if (!allowedRoles.includes(role)) {
-    return res.status(400).json({ message: 'Invalid role provided.' });
-  }
-
-  try {
-    const user = await User.findByIdAndUpdate(id, { role }, { new: true }); // If you don’t use new: true, will give without updated user
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    res.status(200).json({ message: 'Role updated successfully', user });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error' });
-  }
-};
-
 //get a user
 exports.getUser = async (req, res) => {
   
@@ -62,6 +42,26 @@ exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select('-password'); // Exclude passwords
     res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+//update role
+exports.updateUserRole = async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;  
+
+  const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role provided.' });
+  }
+
+  try {
+    const user = await User.findByIdAndUpdate(id, { role }, { new: true }); // If you don’t use new: true, will give without updated user
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.status(200).json({ message: 'Role updated successfully', user });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

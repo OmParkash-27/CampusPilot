@@ -34,6 +34,7 @@ app.use(
   })
 );
 
+//public folder
 app.use('/api', express.static(path.join(__dirname, './public')));
 
 app.use(express.json());

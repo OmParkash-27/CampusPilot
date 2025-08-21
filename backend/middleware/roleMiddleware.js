@@ -21,4 +21,11 @@ const isEditor = (req, res, next) => {
   next();
 };
 
-module.exports = { isAdmin, isTeacher, isEditor };
+const isTeacherORisEditor = (req, res, next) => {
+  if (req.user.role !== 'editor' && req.user.role !== 'admin' && req.user.role !== 'teacher') {
+    return res.status(403).json({ message: 'Access denied. Editors or Teachers only.' });
+  }
+  next();
+};
+
+module.exports = { isAdmin, isTeacher, isEditor, isTeacherORisEditor };

@@ -36,6 +36,7 @@ export const appConfig: ApplicationConfig = {
       useClass: LoadingInterceptor,
       multi: true,
     },
-    ConfirmationService 
+    ConfirmationService,
+    
   ]
 };

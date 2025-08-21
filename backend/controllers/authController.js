@@ -54,6 +54,10 @@
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
+      if (!user.status) {
+        return res.status(403).json({ message: "Account is inactive. Contact admin." });
+      }
+
       const token = generateToken(user);
 
       // Set cookie

@@ -42,13 +42,15 @@
 
         <!-- Status with p-checkbox -->
         <td>
-          <p-checkbox 
-            [(ngModel)]="user.status" 
-            binary="true"
-            (onChange)="onStatusChange(user, $event)"
-            [disabled]="loggedUser?.email == user.email">
-          </p-checkbox>
-          <p-badge [value]="user.status ? 'Active' : 'Inactive'" class="ml-2" [severity]="user.status ? 'success' : 'danger'" />
+          <div class="space flex-1 flex align-items-center justify-content-center sm:justify-content-between">
+            <p-checkbox 
+              [(ngModel)]="user.status" 
+              binary="true"
+              (onChange)="onStatusChange(user, $event)"
+              [disabled]="loggedUser?.email == user.email">
+            </p-checkbox>
+            <p-badge [value]="user.status ? 'Active' : 'Inactive'" class=" sm:ml-4 md:ml-3 lg:ml-2 " [severity]="user.status ? 'success' : 'danger'" />
+          </div>
         </td>
 
         <!-- Actions -->
