@@ -1,98 +1,228 @@
 // backend/controllers/studentController.js
 
 const Student = require('../models/Student');
+const User = require('../models/User');
 const deleteFiles = require('../utils/deleteUploadedFiles');
 
-//Create Student
-exports.createStudent = async (req, res) => {
-    const { name, rollNo, age, class: studentClass } = req.body;
+// Add new student with first course
+exports.addStudent = async (req, res) => {
+  try {
+    const { userId, rollNo, enrollmentNo, course, batchYear, dob, gender, phone, address, guardianName, guardianContact } = req.body;
 
-    // Extract filenames from uploaded files
-    const photos = req.files ? req.files.map(file => file.filename) : [];
-try {
-    const student = new Student({
-      name,
+    // Ensure user exists & has student role
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.role !== "student") return res.status(400).json({ message: "Only student users can be linked" });
+
+    // Ensure no duplicate Student entry
+    let student = await Student.findOne({ user: userId });
+    if (student) return res.status(400).json({ message: "Student already exists" });
+
+    // Create new student with first course
+    student = new Student({
+      user: userId,
       rollNo,
-      email,
-      age,
-      class: studentClass,
-      photos
+      enrollmentNo,
+      courses: [{ course, batchYear, status: "active" }],
+      dob,
+      gender,
+      phone,
+      address,
+      guardianName,
+      guardianContact
     });
-
-    const savedStudent = await student.save();
-    res.status(201).json(savedStudent);
-  } catch (err) {
-    await deleteFiles(photos);
-    res.status(400).json({ error: err.message });
-  }
-};
-
-//get all students
-exports.getStudents = async (req, res) => {
-  try {
-    const students = await Student.find();
-    res.json(students);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-//get a student by Id
-exports.getStudentById = async (req, res) => {
-  try {
-    const student = await Student.findById(req.params.id);
-    if (!student) return res.status(404).json({ message: 'Student not found' });
-    res.json(student);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
-
-// update student
-exports.updateStudent = async (req, res) => {
-  const { id } = req.params;
-  const { name, rollNo, age, class: studentClass, email } = req.body;
-  const newPhotos = req.files?.map(file => file.filename); // new uploaded photos
-
-  try {
-    const student = await Student.findById(id);
-    if (!student) return res.status(404).json({ message: 'Student not found' });
-
-    // Delete previous photos if new ones uploaded
-    if (newPhotos && newPhotos.length > 0 && student.photos.length > 0) {
-      await deleteFiles(student.photos); // delete old photos
-    }
-
-    // Update fields
-    student.name = name || student.name;
-    student.email = email || student.email;
-    student.rollNo = rollNo || student.rollNo;
-    student.age = age || student.age;
-    student.class = studentClass || student.class;
-    student.photos = newPhotos?.length > 0 ? newPhotos : student.photos;
 
     await student.save();
 
-    res.status(200).json({ message: 'Student updated successfully', student });
+    res.status(201).json({ message: "Student added successfully", student });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding student", error: error.message });
+  }
+};
 
-  } catch (err) {
-    // If error and new files uploaded, delete those too
-    if (newPhotos?.length > 0) {
-      await deleteFiles(newPhotos);
+//update status or mark student graduate
+exports.graduateCourse = async (req, res) => {
+  try {
+    const { studentId, courseName } = req.body;
+
+    const student = await Student.findById(studentId);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    // Find course and mark as graduated
+    const course = student.courses.find(c => c.course === courseName && c.status === "active");
+    if (!course) return res.status(400).json({ message: "Active course not found" });
+
+    course.status = "graduated";
+
+    await student.save();
+
+    res.json({ message: "Course marked as graduated", student });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating course", error: error.message });
+  }
+};
+
+//add new course
+exports.addNewCourse = async (req, res) => {
+  try {
+    const { studentId, course, batchYear } = req.body;
+
+    const student = await Student.findById(studentId);
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    // Ensure no duplicate active course of same type
+    const existing = student.courses.find(c => c.course === course && c.status === "active");
+    if (existing) return res.status(400).json({ message: "Student already enrolled in this course" });
+
+    // Push new course
+    student.courses.push({ course, batchYear, status: "active" });
+
+    await student.save();
+
+    res.status(201).json({ message: "New course added successfully", student });
+  } catch (error) {
+    res.status(500).json({ message: "Error adding course", error: error.message });
+  }
+};
+
+//get student
+exports.getStudent = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.id).populate("user", "name email role");
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    res.json(student);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching student", error: error.message });
+  }
+};
+
+// Get all students with populated user data
+exports.getAllStudents = async (req, res) => {
+  try {
+    const students = await Student.find().populate("user", "name email role profilePic")
+
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching students", error: error.message });
+  }
+};
+
+
+
+// update student
+exports.updateStudent = async (req, res) => {
+  //start session for condition of error then rollback
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const { id } = req.params; // student id
+  const { name, email, rollNo, courseIndex, courseUpdate, replacePhotoIndex } = req.body;
+
+
+  try {
+    const student = await Student.findById(id).populate("user"); // get linked user also
+    if (!student) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Student not found" });
+    } 
+
+    // ---------------- CASE 1: Basic fields update ----------------
+    if (rollNo) student.rollNo = rollNo;
+
+    // User fields (name, email, profilePic)
+    if (name) student.user.name = name;
+    if (email) student.user.email = email;
+
+    if (req.file && req.file.filename) {
+      if (student.user.profilePic) {
+        await deleteFiles(student.user.profilePic);
+      }
+      student.user.profilePic = req.file.filename;
     }
 
-    console.error('Error updating student:', err);
-    res.status(500).json({ message: 'Failed to update student', error: err.message });
+    // ---------------- CASE 2: Update specific course ----------------
+    if (
+      typeof courseIndex === "number" &&
+      student.courses &&
+      student.courses[courseIndex]
+    ) {
+      Object.assign(student.courses[courseIndex], courseUpdate);
+    }
+
+    // ---------------- CASE 3: Photos array update ----------------
+    if (req.files && req.files.length > 0) {
+      const newPhotos = req.files.map((f) => f.filename);
+
+      if (typeof replacePhotoIndex === "number") {
+        const oldPhoto = student.photos[replacePhotoIndex];
+        if (oldPhoto) {
+          await deleteFiles(oldPhoto);
+          student.photos[replacePhotoIndex] = newPhotos[0];
+        }
+      } else {
+        student.photos.push(...newPhotos);
+      }
+    }
+
+    // Save dono collections me
+    await student.user.save();
+    const updatedStudent = await student.save();
+
+    //session end when transaction completed
+    await session.commitTransaction();
+    session.endSession();
+
+    res.json({ message: "Student updated successfully", student: updatedStudent });
+  } catch (error) {
+    //abort transaction 
+    await session.abortTransaction();
+    session.endSession();
+    if (req.file) {
+      await deleteFiles(req.file.filename);
+    }
+    if (req.files) {
+      await deleteFiles(req.files.map((f) => f.filename));
+    }
+    res.status(500).json({ message: "Error updating student", error: error.message });
   }
 };
 
 //delete student
 exports.deleteStudent = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    const deleted = await Student.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: 'Student not found' });
-    res.json({ message: 'Student deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const { id } = req.params;
+
+    // 1. Student find with user
+    const student = await Student.findById(id).populate("user").session(session);
+    if (!student) {
+      await session.abortTransaction();
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // 2. Delete profile pic if exists
+    if (student.user.profilePic) {
+      await deleteFiles(student.user.profilePic);
+    }
+
+    // 3. Delete Student
+    await Student.deleteOne({ _id: student._id }, { session });
+
+    // 4. Delete linked User
+    await User.deleteOne({ _id: student.user._id }, { session });
+
+    // 5. Commit transaction
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "Student and linked User deleted successfully" });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    console.error("Delete student error:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
-};
+}

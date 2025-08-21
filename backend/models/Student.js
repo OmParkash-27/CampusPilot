@@ -1,33 +1,53 @@
 const mongoose = require('mongoose');
 
-const studentSchema = new mongoose.Schema({
-  name: {
+const courseSchema = new mongoose.Schema({
+  course: {
     type: String,
+    enum: ['MCA', 'MBA', 'BCA', 'BBA'],
     required: true,
+    uppercase: true
   },
-  email: {
+  batchYear: {
+    type: Number,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'graduated'],
+    default: 'active'
+  }
+}, { _id: false });
+
+const studentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+    unique: true
+  },
+  rollNo: {
     type: String,
     required: true,
     unique: true
   },
-  age: {
-    type: Number,
-    required: true,
-  },
-  class: {
+  enrollmentNo: {
     type: String,
-    enum: ['mca', 'mba', 'bca', 'bba'],
-    default: 'bca',
-    required: true,
-    uppercase: true
+    unique: true,
+    sparse: true
   },
-  rollNo: {
-    type: Number,
-    required: true
+  courses: [courseSchema], // multiple courses for same student
+  dob: { type: Date },
+  gender: { type: String, enum: ['Male', 'Female', 'Other'] },
+  phone: { type: String },
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    zip: String
   },
-  photos: [{
-    type: String,
-  }],
+  guardianName: { type: String },
+  guardianContact: { type: String },
+  photos: [{ type: String }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Student', studentSchema);

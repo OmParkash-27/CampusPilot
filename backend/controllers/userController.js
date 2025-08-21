@@ -1,6 +1,6 @@
 const User = require('../models/User');
-const path = require('path');
-const fs = require('fs');
+const Student = require("../models/Student");
+
 const deleteFiles = require('../utils/deleteUploadedFiles');
 const bcrypt = require('bcryptjs');
 
@@ -135,10 +135,30 @@ exports.updateUser = async (req, res) => {
 //delete user
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
-    await User.findByIdAndDelete(id); // Exclude passwords
-    res.status(200).json({message: 'Deleted Successfully'});
+    const user = await User.findById(id).session(session);
+    if (!user) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    await User.deleteOne({ _id: id }, { session });
+
+    if (user.role === "student") {
+      await Student.deleteOne({ user: id }, { session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(200).json({ message: "Deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).json({ message: "Server error" });
   }
-}
+};

@@ -71,8 +71,8 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: ['admin', 'editor', 'teacher'],
     items: [
-      { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/students/create', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor'] },
-      { label: 'List Students', icon: 'pi pi-list', routerLink: '/students/list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] }
+      { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor'] },
+      { label: 'List Students', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] }
     ]
   },
   {
