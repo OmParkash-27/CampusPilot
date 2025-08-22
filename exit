@@ -1,0 +1,97 @@
+[33mcommit 5fbbe6bb70e008da70df2e468be9c5c568985519[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Fri Aug 22 09:39:52 2025 +0530
+
+    Update Student.js
+    
+    student model updated
+
+[33mcommit 3bd4b52fc7e01232517f1a48e301c82c31a8c8a8[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Thu Aug 21 23:19:59 2025 +0530
+
+    user status
+
+[33mcommit c50714c6106b1b7494bd78d57597a9419f59918d[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Thu Aug 21 12:41:50 2025 +0530
+
+    user status
+
+[33mcommit c5026c425e62196aafa38af4b1e8f0e3d1dea177[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Wed Aug 20 15:45:41 2025 +0530
+
+    users list update with img
+
+[33mcommit 46e195169dda30982ab0fc6d86cab2b8cb0cd8d1[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 16:26:46 2025 +0530
+
+    change in login register cookie
+
+[33mcommit a4422250d2f1c6bd8b767d89d2df64e8d598a580[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 16:09:12 2025 +0530
+
+    users route
+
+[33mcommit 93505ef2ed25a3719362558a59700e3c6233996b[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 15:53:00 2025 +0530
+
+    add environment
+
+[33mcommit b5a226b26ed9f752d07739e0c5fde84d386fcb5e[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 15:39:17 2025 +0530
+
+    environment change
+
+[33mcommit 7b2951492b7ba469fae0bf9561c023cb5d158d91[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 13:50:54 2025 +0530
+
+    user role fix
+
+[33mcommit bd2c8c001ee63594ff5fc7c49763e89ca0b8daf2[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 12:18:03 2025 +0530
+
+    add redirects file
+
+[33mcommit 43be7c759455e1a4063ef4b10dabc363e8071460[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 11:55:09 2025 +0530
+
+    add redirects file
+
+[33mcommit 6cb48d92ad4cfabfb7a3157ed242a9c95dbfc657[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Tue Aug 19 08:09:44 2025 +0530
+
+    redirects file
+
+[33mcommit 859e406ebeeeb2de3081f93c587f0041d0a0488d[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Mon Aug 18 22:36:26 2025 +0530
+
+    for deploy on server
+
+[33mcommit c5928ed45377528db0ec569a187f167a38fb2be0[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Mon Aug 18 21:58:44 2025 +0530
+
+    for deploy on server
+
+[33mcommit 83082589c74e318f064751961778227cae5641ac[m
+Author: OmParkash-27 <103979931+OmParkash-27@users.noreply.github.com>
+Date:   Mon Aug 18 17:57:32 2025 +0530
+
+    2nd commit
+
+[33mcommit 09fb020d6e7a398bc9bce7dd687aa6e5c8705584[m
+Author: ompy <ompysaini1999@gmail.com>
+Date:   Wed Aug 13 11:01:16 2025 +0530
+
+    Initial commit
