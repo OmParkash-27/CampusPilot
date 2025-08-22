@@ -2,43 +2,132 @@
 
 const Student = require('../models/Student');
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 const deleteFiles = require('../utils/deleteUploadedFiles');
 
-// Add new student with first course
-exports.addStudent = async (req, res) => {
+// Add existing student details
+exports.addStudentDetails = async (req, res) => {
   try {
-    const { userId, rollNo, enrollmentNo, course, batchYear, dob, gender, phone, address, guardianName, guardianContact } = req.body;
-
-    // Ensure user exists & has student role
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.role !== "student") return res.status(400).json({ message: "Only student users can be linked" });
-
-    // Ensure no duplicate Student entry
-    let student = await Student.findOne({ user: userId });
-    if (student) return res.status(400).json({ message: "Student already exists" });
-
-    // Create new student with first course
-    student = new Student({
-      user: userId,
+    const {
+      userId,
       rollNo,
       enrollmentNo,
-      courses: [{ course, batchYear, status: "active" }],
+      courses,
       dob,
       gender,
       phone,
       address,
       guardianName,
       guardianContact
+    } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (user.role !== "student") return res.status(400).json({ message: "Only student users can be linked" });
+
+    // agar pehle hi details add hain
+    let student = await Student.findOne({ user: userId });
+    if (student) return res.status(400).json({ message: "Student details already exist" });
+
+    // handle parse
+    const parsedCourses = courses ? JSON.parse(courses) : [];
+    const parsedAddress = address ? JSON.parse(address) : {};
+
+    let photos = [];
+    if (req.files && req.files.photos) {
+      photos = req.files.photos.map(f => f.filename);
+    }
+
+    student = new Student({
+      user: userId,
+      rollNo,
+      enrollmentNo,
+      courses: parsedCourses,
+      dob,
+      gender,
+      phone,
+      address: parsedAddress,
+      guardianName,
+      guardianContact,
+      photos
     });
 
     await student.save();
+    res.status(201).json({ message: "Student details added successfully", student });
 
-    res.status(201).json({ message: "Student added successfully", student });
   } catch (error) {
-    res.status(500).json({ message: "Error adding student", error: error.message });
+    res.status(500).json({ message: "Error adding student details", error: error.message });
   }
 };
+
+//create new student and details
+exports.createStudentByAdmin = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const {
+      name,
+      email,
+      rollNo,
+      enrollmentNo,
+      courses,
+      dob,
+      gender,
+      phone,
+      address,
+      guardianName,
+      guardianContact
+    } = req.body;
+
+    const hashedPassword = await bcrypt.hash(name, 10);
+
+    // 1. User create karo
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      role: "student"
+    });
+
+    await user.save({ session });
+
+    // 2. Student create karo
+    const parsedCourses = courses ? JSON.parse(courses) : [];
+    const parsedAddress = address ? JSON.parse(address) : {};
+
+    let photos = [];
+    if (req.files && req.files.photos) {
+      photos = req.files.photos.map(f => f.filename);
+    }
+
+    const student = new Student({
+      user: user._id,
+      rollNo,
+      enrollmentNo,
+      courses: parsedCourses,
+      dob,
+      gender,
+      phone,
+      address: parsedAddress,
+      guardianName,
+      guardianContact,
+      photos
+    });
+
+    await student.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    res.status(201).json({ message: "Student created successfully", user, student });
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    res.status(500).json({ message: "Error creating student", error: error.message });
+  }
+};
+
 
 //update status or mark student graduate
 exports.graduateCourse = async (req, res) => {
@@ -107,8 +196,6 @@ exports.getAllStudents = async (req, res) => {
     res.status(500).json({ message: "Error fetching students", error: error.message });
   }
 };
-
-
 
 // update student
 exports.updateStudent = async (req, res) => {

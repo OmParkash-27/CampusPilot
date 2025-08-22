@@ -47,7 +47,7 @@ connectDB();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/students', verifyToken, studentRoutes); // protected
-app.use('/api/users', userRoutes);
+app.use('/api/users', verifyToken, userRoutes);
 app.use('/api/admin', verifyToken, dashboardRoutes);
 
 // Start server
