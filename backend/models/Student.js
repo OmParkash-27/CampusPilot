@@ -9,9 +9,7 @@ const courseSchema = new mongoose.Schema({
   },
   batchYear: {
     type: Number,
-    required: true,
-    min: 1900, // optional validation
-    max: new Date().getFullYear() 
+    required: true
   },
   status: {
     type: String,
