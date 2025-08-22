@@ -35,7 +35,7 @@
       <div *ngIf="previewUrl" class="mb-2">
         <img [src]="this.API_URL + '/img/' + previewUrl" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
-      <p-fileUpload name="profilePic" customUpload (uploadHandler)="onFileSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+      <p-fileUpload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
     </div>
 
     <button pButton type="submit" label="{{ userId ? 'Update User' : 'Add User' }}" class="submit-btn"></button>

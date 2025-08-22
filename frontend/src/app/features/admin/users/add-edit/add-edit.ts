@@ -51,6 +51,7 @@ export class AddEdit implements OnInit {
         try{
           this.previewUrl = user.profilePic
         } catch(err) {
+          console.log("profile error", err);
           
         }
       });
@@ -64,6 +65,10 @@ export class AddEdit implements OnInit {
       this.userForm.patchValue({ profilePic: event.files[0] });
       this.previewUrl = '';
     }
+  }
+
+  onFileDeSelect(event: any) {
+    this.userForm.patchValue({profilePic: null});    
   }
 
   onSubmit() {
