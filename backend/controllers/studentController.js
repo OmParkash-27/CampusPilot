@@ -1,5 +1,4 @@
-// backend/controllers/studentController.js
-
+const mongoose = require('mongoose');
 const Student = require('../models/Student');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
@@ -25,11 +24,9 @@ exports.addStudentDetails = async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
     if (user.role !== "student") return res.status(400).json({ message: "Only student users can be linked" });
 
-    // agar pehle hi details add hain
     let student = await Student.findOne({ user: userId });
     if (student) return res.status(400).json({ message: "Student details already exist" });
 
-    // handle parse
     const parsedCourses = courses ? JSON.parse(courses) : [];
     const parsedAddress = address ? JSON.parse(address) : {};
 
@@ -61,7 +58,7 @@ exports.addStudentDetails = async (req, res) => {
 };
 
 //create new student and details
-exports.createStudentByAdmin = async (req, res) => {
+exports.createNewStudent = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -82,7 +79,6 @@ exports.createStudentByAdmin = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(name, 10);
 
-    // 1. User create karo
     const user = new User({
       name,
       email,
@@ -92,7 +88,6 @@ exports.createStudentByAdmin = async (req, res) => {
 
     await user.save({ session });
 
-    // 2. Student create karo
     const parsedCourses = courses ? JSON.parse(courses) : [];
     const parsedAddress = address ? JSON.parse(address) : {};
 
@@ -204,8 +199,10 @@ exports.updateStudent = async (req, res) => {
   session.startTransaction();
 
   const { id } = req.params; // student id
-  const { name, email, rollNo, courseIndex, courseUpdate, replacePhotoIndex } = req.body;
+  const { name, email, rollNo, courseIndex, courseUpdate, addressUpdate, replacePhotoIndex } = req.body;
 
+  const parsedCourses = courses ? JSON.parse(courseUpdate) : [];
+  const parsedAddress = address ? JSON.parse(addresaddressUpdates) : {};
 
   try {
     const student = await Student.findById(id).populate("user"); // get linked user also
@@ -214,7 +211,7 @@ exports.updateStudent = async (req, res) => {
       return res.status(404).json({ message: "Student not found" });
     } 
 
-    // ---------------- CASE 1: Basic fields update ----------------
+    // ---------------- Basic fields update ----------------
     if (rollNo) student.rollNo = rollNo;
 
     // User fields (name, email, profilePic)
@@ -228,19 +225,22 @@ exports.updateStudent = async (req, res) => {
       student.user.profilePic = req.file.filename;
     }
 
-    // ---------------- CASE 2: Update specific course ----------------
+    // ---------------- Update specific course ----------------
     if (
       typeof courseIndex === "number" &&
       student.courses &&
       student.courses[courseIndex]
     ) {
-      Object.assign(student.courses[courseIndex], courseUpdate);
+      Object.assign(student.courses[courseIndex], parsedCourses);
     }
 
-    // ---------------- CASE 3: Photos array update ----------------
+    // ---------------- Address object update update ----------------
+
+    Object.assign(student.address, parsedAddress);
+
+    // ---------------- Photos array update ----------------
     if (req.files && req.files.length > 0) {
       const newPhotos = req.files.map((f) => f.filename);
-
       if (typeof replacePhotoIndex === "number") {
         const oldPhoto = student.photos[replacePhotoIndex];
         if (oldPhoto) {
@@ -252,7 +252,6 @@ exports.updateStudent = async (req, res) => {
       }
     }
 
-    // Save dono collections me
     await student.user.save();
     const updatedStudent = await student.save();
 
