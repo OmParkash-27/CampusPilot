@@ -1,42 +1,137 @@
-<div class="user-form-card">
-  <h2>{{ studentId ? 'Edit Student' : 'Add New Student' }}</h2>
+<div class="student-form-card">
+  <h2>{{ isEditMode ? 'Edit Student' : 'Add New Student' }}</h2>
 
-  <form [formGroup]="studentForm" (ngSubmit)="onSubmit()">
-    
+  <form [formGroup]="studentForm" (ngSubmit)="saveStudent()">
+
+    <!-- Name -->
     <div class="form-group">
       <label for="name">Name</label>
-      <input id="name" type="text" pInputText formControlName="name" />
-      <small *ngIf="submitted && f['name'].invalid" class="error">Name is required</small>
+      <input id="name" type="text" pInputText formControlName="name" [readonly]="!!userData" />
+      <small *ngIf="f['name'].touched && f['name'].hasError('required')" class="p-error">
+        Name is required
+      </small>
     </div>
 
+    <!-- Email -->
     <div class="form-group">
       <label for="email">Email</label>
-      <input id="email" type="email" pInputText formControlName="email" />
-      <small *ngIf="submitted && f['email'].invalid" class="error">Valid email is required</small>
+      <input id="email" type="email" pInputText formControlName="email" [readonly]="!!userData" />
+      <small *ngIf="f['email'].touched && f['email'].hasError('required')" class="p-error">
+        Email is required
+      </small>
+      <small *ngIf="f['email'].touched && f['email'].hasError('email')" class="p-error">
+        Enter valid email
+      </small>
     </div>
 
+    <!-- Roll No -->
     <div class="form-group">
       <label for="rollNo">Roll No</label>
       <input id="rollNo" type="text" pInputText formControlName="rollNo" />
-      <small *ngIf="submitted && f['rollNo'].invalid" class="error">Roll No is required</small>
+      <small *ngIf="f['rollNo'].touched && f['rollNo'].hasError('required')" class="p-error">
+        Roll No is required
+      </small>
     </div>
 
+    <!-- Enrollment No -->
     <div class="form-group">
-      <label>Status</label>
-      <select formControlName="status">
-        <option *ngFor="let s of statusOptions" [ngValue]="s.value">{{ s.label }}</option>
-      </select>
+      <label for="enrollmentNo">Enrollment No</label>
+      <input id="enrollmentNo" type="text" pInputText formControlName="enrollmentNo" />
     </div>
 
+    <!-- DOB -->
+    <div class="form-group">
+      <label for="dob">Date of Birth</label>
+      <p-datepicker formControlName="dob" dateFormat="dd.mm.yy" inputId="dob"></p-datepicker>
+    </div>
+
+    <!-- Gender -->
+    <div class="form-group">
+      <label for="gender">Gender</label>
+      <p-select [options]="genderList" formControlName="gender" placeholder="Select Gender"></p-select>
+    </div>
+
+    <!-- Phone -->
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input id="phone" type="text" pInputText formControlName="phone" />
+    </div>
+
+    <!-- Address -->
+    <div class="form-group">
+      <label>Address</label>
+      <div formGroupName="address" class="address-grid">
+        <input pInputText placeholder="Street" formControlName="street" />
+        <input pInputText placeholder="City" formControlName="city" />
+        <input pInputText placeholder="State" formControlName="state" />
+        <input pInputText placeholder="Zip" formControlName="zip" />
+      </div>
+    </div>
+
+    <!-- Guardian Name -->
+    <div class="form-group">
+      <label for="guardianName">Guardian Name</label>
+      <input id="guardianName" type="text" pInputText formControlName="guardianName" />
+    </div>
+
+    <!-- Guardian Contact -->
+    <div class="form-group">
+      <label for="guardianContact">Guardian Contact</label>
+      <input id="guardianContact" type="text" pInputText formControlName="guardianContact" />
+    </div>
+
+    <!-- profilePic -->
     <div class="form-group">
       <label>Profile Picture</label>
       <div *ngIf="previewUrl" class="mb-2">
         <img [src]="this.API_URL + '/img/' + previewUrl" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
-      <p-fileUpload name="profilePic" customUpload (uploadHandler)="onFileSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+      <p-fileUpload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
     </div>
 
-    <button pButton type="submit" label="{{ studentId ? 'Update Student' : 'Add Student' }}" class="submit-btn"></button>
-    <button pButton type="button" label="Cancel" class="cancel-btn" (click)="router.navigate(['/admin/student-list'])"></button>
+
+    <!-- Courses -->
+    <div class="form-group">
+      <label>Courses</label>
+      <div formArrayName="courses" class="courses-wrapper">
+        <div *ngFor="let course of courses.controls; let i=index" [formGroupName]="i" class="course-row">
+          <div>
+            <p-select [options]="coursesList" formControlName="course" placeholder="Course"></p-select>
+            <small *ngIf="course.get('course')?.touched && course.get('course')?.hasError('required')" class="p-error">
+              Course is required
+            </small>
+          </div>
+
+          <div>
+            <p-datepicker formConrolName="batchYear" view="year" dateFormat="yy" [readonlyInput]="true" [minDate]="minDateBatch" [maxDate]="maxDateBatch" placeholder="Batch Year"/>
+            <small *ngIf="course.get('batchYear')?.touched && course.get('batchYear')?.hasError('required')" class="p-error">
+              Batch Year is required
+            </small>
+          </div>
+
+          <p-select [options]="statusList" formControlName="status"></p-select>
+          <button pButton type="button" icon="pi pi-trash" class="remove-btn" (click)="removeCourse(i)" *ngIf="courses.length > 1"></button>
+        </div>
+        <button pButton type="button" label="Add Course" icon="pi pi-plus" class="add-course-btn" (click)="addCourse()"></button>
+      </div>
+    </div>
+
+    <!-- Docs as Photos -->
+    <div class="form-group">
+      <label>Student's Docs Photos</label>
+      <div class="photos-preview">
+        <div *ngFor="let p of photoPreviews; let i=index" class="photo-item">
+          <img [src]="API_URL + '/img/' + p" width="100" style="border-radius:6px;" />
+          <button type="button" pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm ml-2" (click)="onPhotoRemove(i)"></button>
+        </div>
+      </div>
+      <p-fileUpload name="photos" multiple="true" customUpload (onSelect)="onPhotosSelect($event)" chooseLabel="Add Photos" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <button [disabled]="this.studentForm.invalid" pButton type="submit" label="Save Student" class="submit-btn"></button>
+      <button pButton type="button" label="Cancel" class="cancel-btn" (click)="onCancel()"></button>
+    </div>
   </form>
 </div>

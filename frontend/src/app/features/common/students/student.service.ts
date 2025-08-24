@@ -1,37 +1,45 @@
-import { Injectable } from '@angular/core';
+// src/app/services/student.service.ts
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpService } from '../../../core/services/common/http.service';
 import { Student } from '../../../core/models/Student';
+import { HttpService } from '../../../core/services/common/http.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class StudentService {
-  private model = 'students';
-  
-  constructor(private http: HttpService) {}
 
-  getAll(): Observable<Student[]> {
+  private http = inject(HttpService);
+
+  model:string = 'students';
+
+  // Get all students
+  getAllStudents() {
     return this.http.getAll(this.model);
   }
 
-  getById(id: string): Observable<Student> {
+  // Get single student by ID
+  getStudentById(id: string): Observable<Student> {
     return this.http.getById(this.model, id);
   }
 
-  create(formData: FormData): Observable<Student> {
-    return this.http.post(formData, this.model);
+  // Create student
+  createStudent(student: FormData): Observable<Student> { 
+    return this.http.post(student, this.model);
   }
 
-  update(formData: FormData, id: string): Observable<Student> {
-    return this.http.put(formData, this.model, id);
+  // Update student
+  updateStudent(id: string, student: FormData): Observable<Student> {
+    return this.http.put(student, this.model, id);
   }
 
-  delete(id: string): Observable<any> {
+  // Delete student
+  deleteStudent(id: string): Observable<any> {
     return this.http.deleteById(this.model, id);
   }
 
-  updateStatus(userId: string, status: boolean): Observable<any> {
-    const fd = new FormData();
-    fd.append('status', status ? 'true' : 'false');
-    return this.http.put(fd, 'users', userId, '/update-status'); // updates status in linked user
-  }
+  // Get all newly registered users (role: student, but not yet in Student collection)
+  // getNewRegisteredStudents(): Observable<User[]> {
+  //   return this.http.getAll();
+  // }
 }
