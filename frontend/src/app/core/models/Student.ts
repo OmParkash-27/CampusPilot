@@ -16,17 +16,15 @@ export interface Address {
 
 export interface Student {
   _id?: string;
-  user: string | User;
+  user:  User;
   rollNo: string;
   enrollmentNo?: string;
   courses: Course[];
-  dob?: string | Date;
+  dob?:  Date;
   gender?: 'Male' | 'Female' | 'Other';
   phone?: string;
   address?: Address;
   guardianName?: string;
   guardianContact?: string;
   photos?: string[];
-  createdAt?: string;
-  updatedAt?: string;
 }

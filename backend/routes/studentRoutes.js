@@ -21,9 +21,9 @@ router.post('/', verifyToken, isTeacherORisEditor, upload.fields([ { name: 'phot
   }
 });
 
-
 // Allow all logged-in users to read
 router.get('/', verifyToken, getAllStudents);
+
 router.get('/:id', verifyToken, getStudent);
 
 router.put('/:id', verifyToken, isEditor, upload.fields([ { name: 'photos', maxCount: 10 }, { name: 'profilePic', maxCount: 1 }]), updateStudent);

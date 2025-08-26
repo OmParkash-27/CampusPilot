@@ -10,7 +10,11 @@ export const COMMON_ROUTES:Routes = [
         loadComponent: () => import('../common/students/student-add-edit/student-add-edit').then(m => m.AddEditStudent)
     },
     {
-        path: 'student-add-edit/:id',
+        path: 'student-add-edit/add-details/:userId',
+        loadComponent: () => import('../common/students/student-add-edit/student-add-edit').then(m => m.AddEditStudent)
+    },
+    {
+        path: 'student-add-edit/edit/:studentId',
         loadComponent: () => import('../common/students/student-add-edit/student-add-edit').then(m => m.AddEditStudent)
     },
 ]

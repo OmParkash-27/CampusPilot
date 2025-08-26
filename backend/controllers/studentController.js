@@ -3,6 +3,14 @@ const Student = require('../models/Student');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const deleteFiles = require('../utils/deleteUploadedFiles');
+const {
+  parseDate,
+  parseCourses,
+  parseAddress,
+  extractPhotos,
+  extractProfilePic,
+  cleanupUploads
+} = require('../utils/studentHelper');
 
 // Add existing student details
 exports.addStudentDetails = async (req, res) => {
@@ -22,42 +30,36 @@ exports.addStudentDetails = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (user.role !== "student") return res.status(400).json({ message: "Only student users can be linked" });
+    if (user.role !== "student") {
+      return res.status(400).json({ message: "Only student users can be linked" });
+    }
 
     let student = await Student.findOne({ user: userId });
     if (student) return res.status(400).json({ message: "Student details already exist" });
-
-    const parsedCourses = courses ? JSON.parse(courses) : [];
-    const parsedAddress = address ? JSON.parse(address) : {};
-
-    let photos = [];
-    if (req.files && req.files.photos) {
-      photos = req.files.photos.map(f => f.filename);
-    }
 
     student = new Student({
       user: userId,
       rollNo,
       enrollmentNo,
-      courses: parsedCourses,
-      dob,
+      courses: parseCourses(courses),
+      dob: parseDate(dob),
       gender,
       phone,
-      address: parsedAddress,
+      address: parseAddress(address),
       guardianName,
       guardianContact,
-      photos
+      photos: extractPhotos(req.files)
     });
 
     await student.save();
     res.status(201).json({ message: "Student details added successfully", student });
-
   } catch (error) {
+    await cleanupUploads(req.files);
     res.status(500).json({ message: "Error adding student details", error: error.message });
   }
 };
 
-//create new student and details
+// Create new student and details
 exports.createNewStudent = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -83,31 +85,24 @@ exports.createNewStudent = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: "student"
+      role: "student",
+      profilePic: extractProfilePic(req.files)
     });
 
     await user.save({ session });
-
-    const parsedCourses = courses ? JSON.parse(courses) : [];
-    const parsedAddress = address ? JSON.parse(address) : {};
-
-    let photos = [];
-    if (req.files && req.files.photos) {
-      photos = req.files.photos.map(f => f.filename);
-    }
 
     const student = new Student({
       user: user._id,
       rollNo,
       enrollmentNo,
-      courses: parsedCourses,
-      dob,
+      courses: parseCourses(courses),
+      dob: parseDate(dob),
       gender,
       phone,
-      address: parsedAddress,
+      address: parseAddress(address),
       guardianName,
       guardianContact,
-      photos
+      photos: extractPhotos(req.files)
     });
 
     await student.save({ session });
@@ -117,62 +112,17 @@ exports.createNewStudent = async (req, res) => {
 
     res.status(201).json({ message: "Student created successfully", user, student });
   } catch (error) {
+    await cleanupUploads(req.files);
     await session.abortTransaction();
     session.endSession();
     res.status(500).json({ message: "Error creating student", error: error.message });
   }
 };
 
-
-//update status or mark student graduate
-exports.graduateCourse = async (req, res) => {
-  try {
-    const { studentId, courseName } = req.body;
-
-    const student = await Student.findById(studentId);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-
-    // Find course and mark as graduated
-    const course = student.courses.find(c => c.course === courseName && c.status === "active");
-    if (!course) return res.status(400).json({ message: "Active course not found" });
-
-    course.status = "graduated";
-
-    await student.save();
-
-    res.json({ message: "Course marked as graduated", student });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating course", error: error.message });
-  }
-};
-
-//add new course
-exports.addNewCourse = async (req, res) => {
-  try {
-    const { studentId, course, batchYear } = req.body;
-
-    const student = await Student.findById(studentId);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-
-    // Ensure no duplicate active course of same type
-    const existing = student.courses.find(c => c.course === course && c.status === "active");
-    if (existing) return res.status(400).json({ message: "Student already enrolled in this course" });
-
-    // Push new course
-    student.courses.push({ course, batchYear, status: "active" });
-
-    await student.save();
-
-    res.status(201).json({ message: "New course added successfully", student });
-  } catch (error) {
-    res.status(500).json({ message: "Error adding course", error: error.message });
-  }
-};
-
-//get student
+// Get student by ID
 exports.getStudent = async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id).populate("user", "name email role");
+    const student = await Student.findById(req.params.id).populate("user", "name email role profilePic");
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     res.json(student);
@@ -184,131 +134,116 @@ exports.getStudent = async (req, res) => {
 // Get all students with populated user data
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find().populate("user", "name email role profilePic")
-
+    const students = await Student.find().populate("user", "name email role profilePic");
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: "Error fetching students", error: error.message });
   }
 };
 
-// update student
+// Update student
 exports.updateStudent = async (req, res) => {
-  //start session for condition of error then rollback
   const session = await mongoose.startSession();
   session.startTransaction();
 
-  const { id } = req.params; // student id
-  const { name, email, rollNo, courseIndex, courseUpdate, addressUpdate, replacePhotoIndex } = req.body;
+  const { id } = req.params;
+  const {
+    name,
+    email,
+    rollNo,
+    enrollmentNo,
+    dob,
+    gender,
+    phone,
+    guardianName,
+    guardianContact,
+    courses,
+    address,
+    deletePhotosUrls
+  } = req.body;
 
-  const parsedCourses = courses ? JSON.parse(courseUpdate) : [];
-  const parsedAddress = address ? JSON.parse(addresaddressUpdates) : {};
+  const parsedDeletePhotos = deletePhotosUrls ? JSON.parse(deletePhotosUrls) : [];
+  let deletedPhotos = [];
+  let oldProfile = '';
 
   try {
-    const student = await Student.findById(id).populate("user"); // get linked user also
+    const student = await Student.findById(id).populate("user");
     if (!student) {
       await session.abortTransaction();
       return res.status(404).json({ message: "Student not found" });
-    } 
-
-    // ---------------- Basic fields update ----------------
-    if (rollNo) student.rollNo = rollNo;
-
-    // User fields (name, email, profilePic)
-    if (name) student.user.name = name;
-    if (email) student.user.email = email;
-
-    if (req.file && req.file.filename) {
-      if (student.user.profilePic) {
-        await deleteFiles(student.user.profilePic);
-      }
-      student.user.profilePic = req.file.filename;
     }
 
-    // ---------------- Update specific course ----------------
-    if (
-      typeof courseIndex === "number" &&
-      student.courses &&
-      student.courses[courseIndex]
-    ) {
-      Object.assign(student.courses[courseIndex], parsedCourses);
+    // update user fields
+    student.user.name = name;
+    student.user.email = email;
+
+    // update student fields
+    student.rollNo = rollNo;
+    student.enrollmentNo = enrollmentNo;
+    student.dob = parseDate(dob);
+    student.gender = gender;
+    student.phone = phone;
+    student.guardianName = guardianName;
+    student.guardianContact = guardianContact;
+
+    if (req.files && req.files.profilePic) {
+      if (student.user.profilePic) oldProfile = student.user.profilePic;
+      student.user.profilePic = extractProfilePic(req.files);
     }
 
-    // ---------------- Address object update update ----------------
+    if (courses?.length > 0) student.courses = parseCourses(courses);
 
-    Object.assign(student.address, parsedAddress);
+    Object.assign(student.address, parseAddress(address));
 
-    // ---------------- Photos array update ----------------
-    if (req.files && req.files.length > 0) {
-      const newPhotos = req.files.map((f) => f.filename);
-      if (typeof replacePhotoIndex === "number") {
-        const oldPhoto = student.photos[replacePhotoIndex];
-        if (oldPhoto) {
-          await deleteFiles(oldPhoto);
-          student.photos[replacePhotoIndex] = newPhotos[0];
-        }
-      } else {
-        student.photos.push(...newPhotos);
-      }
+    // update photos
+    const newPhotos = extractPhotos(req.files);
+    if (Array.isArray(parsedDeletePhotos) && parsedDeletePhotos.length > 0) {
+      deletedPhotos.push(...student.photos.filter(photoUrl => parsedDeletePhotos.includes(photoUrl)));
+      student.photos = student.photos.filter(photoUrl => !parsedDeletePhotos.includes(photoUrl));
     }
+    if (newPhotos.length > 0) student.photos.push(...newPhotos);
 
-    await student.user.save();
-    const updatedStudent = await student.save();
+    await student.user.save({ session });
+    const updatedStudent = await student.save({ session });
 
-    //session end when transaction completed
     await session.commitTransaction();
     session.endSession();
 
+    if (deletedPhotos.length > 0) {
+      await deleteFiles(deletedPhotos);
+    }
+    if (oldProfile) {
+      await deleteFiles([oldProfile]);
+    }
+
     res.json({ message: "Student updated successfully", student: updatedStudent });
   } catch (error) {
-    //abort transaction 
+    await cleanupUploads(req.files);
     await session.abortTransaction();
     session.endSession();
-    if (req.file) {
-      await deleteFiles(req.file.filename);
-    }
-    if (req.files) {
-      await deleteFiles(req.files.map((f) => f.filename));
-    }
     res.status(500).json({ message: "Error updating student", error: error.message });
   }
 };
 
-//delete student
+// Delete student
 exports.deleteStudent = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
     const { id } = req.params;
 
-    // 1. Student find with user
-    const student = await Student.findById(id).populate("user").session(session);
+    const student = await Student.findById(id);
     if (!student) {
-      await session.abortTransaction();
       return res.status(404).json({ message: "Student not found" });
     }
 
-    // 2. Delete profile pic if exists
-    if (student.user.profilePic) {
-      await deleteFiles(student.user.profilePic);
+    if (student.photos && student.photos.length) {
+      await deleteFiles(student.photos);
     }
 
-    // 3. Delete Student
-    await Student.deleteOne({ _id: student._id }, { session });
+    await Student.deleteOne({ _id: student._id });
 
-    // 4. Delete linked User
-    await User.deleteOne({ _id: student.user._id }, { session });
-
-    // 5. Commit transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(200).json({ message: "Student and linked User deleted successfully" });
+    res.status(200).json({ message: "Student deleted successfully" });
   } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
     console.error("Delete student error:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
-}
+};

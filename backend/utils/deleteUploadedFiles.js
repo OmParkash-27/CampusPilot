@@ -5,10 +5,9 @@ const deleteFiles = async (filenames, folder = 'public/img/') => {
 
   if (!filenames) return;
 
-  const files = Array.isArray(filenames) ? filenames : [filenames];
-
+  const files = Array.isArray(filenames) ? filenames : [filenames];  
   try {
-    await Promise.all(
+    await Promise.allSettled(
       files.filter(Boolean).map(async (filename) => { // filter(Boolean) for skip null, undefined, '' string values.
         const filePath = path.join(__dirname, '..', folder, filename);
 

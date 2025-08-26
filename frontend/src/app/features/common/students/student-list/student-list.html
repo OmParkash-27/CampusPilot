@@ -1,1 +1,115 @@
-<p>student-list works!</p>
+<div class="student-list-card">
+  <h2>All Students</h2>
+
+  <p-table *ngIf="students()?.length" [value]="students()" [paginator]="true" [rows]="10" [loading]="loading()">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Profile</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Enrollment No</th>
+        <th>DOB</th>
+        <th>Gender</th>
+        <th>GuardianName</th>
+        <th>GuardianContact</th>
+        <th>Address</th>
+        <th>Photos</th>
+        <th>Courses</th>
+        <th>Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-student>
+      <tr *ngIf="student">
+        <!-- Profile -->
+        <td>
+          <img
+            [src]="API_URL + '/img/' + student?.user?.profilePic"
+            alt="profile pic"
+            class="w-7rem border-round max-h-5rem"
+          />
+        </td>
+
+        <!-- Basic Info -->
+        <td>{{ student?.user?.name }}</td>
+        <td>{{ student?.user?.email }}</td>
+        <td>{{ student?.phone }}</td>
+        <td>{{ student?.enrollmentNo}}</td>
+        <td>{{ student?.dob | date:'dd/MM/yyyy' }}</td>
+        <td>{{ student?.gender }}</td>
+        <td>{{ student?.guardianName }}</td>
+        <td>{{ student?.guardianContact }}</td>
+
+        <!-- Address Modal -->
+        <td>
+          <button pButton type="button" icon="pi pi-eye" label="View" (click)="viewAddress(student.address)"></button>
+        </td>
+
+        <!-- Photos Modal -->
+        <td>
+          <button pButton type="button" icon="pi pi-images" label="View" (click)="viewPhotos(student.photos)"></button>
+        </td>
+
+        <!-- Courses Accordion Modal -->
+        <td>
+          <button pButton type="button" icon="pi pi-book" label="View" (click)="viewCourses(student.courses)"></button>
+        </td>
+
+        <!-- Actions -->
+        <td>
+          <div class="action-icons">
+            <i class="pi pi-pencil edit-icon" 
+               title="Edit Student" 
+               (click)="navigate(student._id)">
+            </i>
+            <i class="pi pi-trash delete-icon" 
+               title="Delete Student" 
+               (click)="deleteStudent(student._id)">
+            </i>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p *ngIf="!students()?.length && !loading()">No students found.</p>
+</div>
+
+<!-- Address Modal -->
+<p-dialog header="Student Address" [(visible)]="showAddressDialog" [modal]="true" [style]="{width: '400px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <p *ngIf="selectedAddress">{{ selectedAddress.street }}, {{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.zip }}</p>
+  <p *ngIf="!selectedAddress">No address available</p>
+</p-dialog>
+
+<!-- Photos Modal -->
+<p-dialog header="Student Photos" [(visible)]="showPhotosDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+  <p-galleria *ngIf="selectedPhotos?.length" [value]="selectedPhotos" [showItemNavigators]="true" [showThumbnails]="true" [circular]="true">
+    <ng-template pTemplate="item" let-photo>
+      <img [src]="API_URL + '/img/' + photo" class="w-full border-round" />
+    </ng-template>
+    <ng-template pTemplate="thumbnail" let-photo>
+      <img [src]="API_URL + '/img/' + photo" class="w-5rem border-round" />
+    </ng-template>
+  </p-galleria>
+  <p *ngIf="!selectedPhotos?.length">No photos uploaded</p>
+</p-dialog>
+
+<!-- Courses Modal with Accordion -->
+<p-dialog header="Student Courses" [(visible)]="showCoursesDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+    <p-accordion [value]="['0']" [multiple]="true" *ngIf="selectedCourses?.length">
+        <p-accordion-panel *ngFor="let course of selectedCourses; let i = index" [value]="i.toString()">
+            <p-accordion-header>
+                {{ course.course }}
+            </p-accordion-header>
+            <p-accordion-content>
+                <p><b>Name:</b> {{ course.course }}</p>
+                <p><b>Batch Year:</b> {{ course.batchYear }}</p>
+                <p><b>Status:</b> {{ course.status }}</p>
+            </p-accordion-content>
+        </p-accordion-panel>
+    </p-accordion>
+
+    <p *ngIf="!selectedCourses?.length">No courses enrolled</p>
+
+</p-dialog>

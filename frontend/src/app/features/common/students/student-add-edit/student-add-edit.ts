@@ -65,6 +65,7 @@ export class AddEditStudent implements OnInit {
   // Data
   userData?: User;
   studentData?: Student;
+  photosRemoveUrls:string[]= [];
 
   constructor(
     private fb: FormBuilder,
@@ -75,74 +76,91 @@ export class AddEditStudent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const userId = this.route.snapshot.paramMap.get('userId');     // case 2 (add details)
-    const studentId = this.route.snapshot.paramMap.get('studentId'); // case 3 (edit)
-    
-    if (studentId) {
-      // EDIT MODE
-      this.isEditMode = true;
-      this.loadStudent(studentId);
-    } else if (userId) {
-      // ADD DETAILS MODE
-      this.isPartialAdd = true;
-      this.loadUser(userId);
-    } else {
-      // ADD NEW STUDENT MODE
-      this.initForm();
-    }
+  this.studentForm = this.fb.group({
+    userId: [''],
+    name: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
+    profilePic: [null],
+    photos: [[]],
+    rollNo: ['', Validators.required],
+    enrollmentNo: [''],
+    dob: [null],
+    gender: [''],
+    phone: [''],
+    address: this.fb.group({
+      street: [''],
+      city: [''],
+      state: [''],
+      zip: [''],
+    }),
+    guardianName: [''],
+    guardianContact: [''],
+    courses: this.fb.array([]),
+  });
+
+  const userId = this.route.snapshot.paramMap.get('userId');
+  const studentId = this.route.snapshot.paramMap.get('studentId');
+
+  if (studentId) {
+    this.isEditMode = true;
+    this.loadStudent(studentId);
+  } else if (userId) {
+    this.isPartialAdd = true;
+    this.loadUser(userId);
+  } else {
+    this.addCourse(); // kam se kam ek course blank
   }
+}
 
   private loadUser(userId: string) {
-    this.userService.getById(userId).subscribe(user => {
+    this.userService.getUserById(userId).subscribe(user => {
       this.userData = user;
-      this.initForm();
+      this.studentForm.patchValue({
+      name: this.userData?.name,
+      email: this.userData?.email
+      })
+      if (this.userData?.profilePic) {
+        this.previewUrl = this.userData.profilePic;
+      }
     });
   }
 
   private loadStudent(studentId: string) {
     this.studentService.getStudentById(studentId).subscribe(student => {
-      this.studentData = student;
-      this.userData = student.user as any; // populated via populate in backend
-      this.initForm();
-    });
-  }
+    this.studentData = student;
+    this.userData = student.user as any;
 
-  private initForm() {
-    this.studentForm = this.fb.group({
-      userId: [this.userData?._id || (this.studentData?.user as any)?._id ],
-      name: [this.userData?.name || '', Validators.required],
-      email: [this.userData?.email || '', [Validators.required, Validators.email]],
-      profilePic: [null],
-      photos: [[]],
-      rollNo: [this.studentData?.rollNo || '', Validators.required],
-      enrollmentNo: [this.studentData?.enrollmentNo || ''],
-      dob: [this.studentData?.dob || ''],
-      gender: [this.studentData?.gender || ''],
-      phone: [this.studentData?.phone || ''],
-      address: this.fb.group({
-        street: [this.studentData?.address?.street || ''],
-        city: [this.studentData?.address?.city || ''],
-        state: [this.studentData?.address?.state || ''],
-        zip: [this.studentData?.address?.zip || ''],
-      }),
-      guardianName: [this.studentData?.guardianName || ''],
-      guardianContact: [this.studentData?.guardianContact || ''],
-      courses: this.fb.array([]),
+    this.studentForm.patchValue({
+      userId: (this.studentData?.user as any)?._id,
+      name: this.userData?.name,
+      email: this.userData?.email,
+      rollNo: this.studentData?.rollNo,
+      enrollmentNo: this.studentData?.enrollmentNo,
+      dob: this.studentData?.dob ? new Date(this.studentData.dob) : null,
+      gender: this.studentData?.gender,
+      phone: this.studentData?.phone,
+      address: this.studentData?.address,
+      guardianName: this.studentData?.guardianName,
+      guardianContact: this.studentData?.guardianContact,
     });
 
-    if (this.userData?.profilePic) {
-      this.previewUrl = this.userData.profilePic;
-    }
-    if (this.studentData?.photos?.length) {
-      this.photoPreviews = this.studentData.photos;
-    }
+    // reset courses formArray
+    this.courses.clear();
     if (this.studentData?.courses?.length) {
       this.studentData.courses.forEach(c =>
-        this.addCourse(c.course, c.batchYear, c.status)
+        this.addCourse(c.course, new Date(c.batchYear,0,1), c.status)
       );
     } else {
       this.addCourse();
     }
+
+    if (this.studentData.user?.profilePic) {
+      this.previewUrl = this.studentData?.user?.profilePic;
+    }
+    if (this.studentData?.photos?.length) {
+      this.photoPreviews = this.studentData.photos;
+    }
+  });
   }
 
   get f() {
@@ -157,7 +175,7 @@ export class AddEditStudent implements OnInit {
     return this.studentForm.get('courses') as FormArray;
   }
 
-  addCourse(course: string = '', batchYear: number | null = null, status: string = 'active') {
+  addCourse(course: string = '', batchYear: Date | null = null, status: string = 'active') {
     this.courses.push(
       this.fb.group({
         course: [course, Validators.required],
@@ -173,6 +191,10 @@ export class AddEditStudent implements OnInit {
 
   //for Profile
   onFileSelect(event: any) {
+    if (event.files[0].size > 1000000){
+      event.currentFiles.splice(event.currentFiles.indexOf(event.files[0]), 1);
+      return;
+    } 
     if (event.files && event.files.length) {
       this.studentForm.patchValue({ profilePic: event.files[0] });
       this.previewUrl = '';
@@ -185,16 +207,38 @@ export class AddEditStudent implements OnInit {
 
   // Multiple Photos for docs
   onPhotosSelect(event: any) {
+    const maxSize = 1000000; // 1 MB
+    const validFiles: File[] = [];
+
     if (event.files && event.files.length) {
+      event.files.forEach((file: File) => {
+        if (file.size <= maxSize) {
+          validFiles.push(file);
+        } 
+      });
+
+      // Patch only valid files
       const currentPhotos = this.studentForm.get('photos')?.value || [];
-      this.studentForm.patchValue({ photos: [...currentPhotos, ...event.files] });
+      this.studentForm.patchValue({ photos: [...currentPhotos, ...validFiles] });
     }
   }
-  onPhotoRemove(index: number) {
-    const photos = [...this.studentForm.get('photos')?.value];
-    photos.splice(index, 1);
-    this.studentForm.patchValue({ photos });
-    this.photoPreviews.splice(index, 1); // remove preview
+
+
+  //for deselect photo
+  onRemoveFile(event: any) {
+    if(event.file) {
+      const currentPhotos = this.studentForm.get('photos')?.value || [];
+      const updatedPhotos = currentPhotos.filter((photo: File) => photo !== event.file);
+      this.studentForm.patchValue({ photos: updatedPhotos });
+      console.log("after remove file", updatedPhotos);
+    }
+  }
+
+  //for old photos from backend
+  onOldPhotoRemove(photoUrl: string, index: number) {
+    this.studentData?.photos?.splice(index, 1);
+    // this.studentData?.photos?.length ? this.photoPreviews = this.studentData?.photos : this.photoPreviews = [];
+    this.photosRemoveUrls.push(photoUrl);
   }
 
   saveStudent() {
@@ -215,12 +259,12 @@ export class AddEditStudent implements OnInit {
     formData.append('guardianName', formValue.guardianName);
     formData.append('guardianContact', formValue.guardianContact);
 
-    // nested objects / arrays → stringify
+    // data in formData always should be string to send on server
     formData.append('address', JSON.stringify(formValue.address));
     formData.append('courses', JSON.stringify(formValue.courses));
 
     // files (single profilePic)
-    if (formValue.profilePic) {
+    if (formValue.profilePic) {      
       formData.append('profilePic', formValue.profilePic);
     }
 
@@ -233,6 +277,8 @@ export class AddEditStudent implements OnInit {
 
     // Call service
     if (this.isEditMode) {
+      formData.append("deletePhotosUrls", JSON.stringify(this.photosRemoveUrls));
+
       this.studentService.updateStudent(this.studentData!._id!, formData).subscribe(()=>{
         this.router.navigate(['/common/student-list']);
       });

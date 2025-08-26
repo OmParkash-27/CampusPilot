@@ -10,7 +10,7 @@ const courseSchema = new mongoose.Schema({
   batchYear: {
     type: Number,
     required: true,
-    min: 1900, // optional validation
+    min: 1900, 
     max: new Date().getFullYear() 
   },
   status: {
@@ -39,7 +39,7 @@ const studentSchema = new mongoose.Schema({
   },
   courses: [courseSchema], // multiple courses for same student
   dob: { type: Date },
-  gender: { type: String, enum: ['Male', 'Female', 'Other'] },
+  gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Male', required: true },
   phone: { type: String },
   address: {
     street: String,

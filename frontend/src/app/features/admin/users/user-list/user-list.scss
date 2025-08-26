@@ -13,9 +13,7 @@
           column-gap: 8px;
         }
        }
-      }
-
-      
+      }      
     }
 
 
@@ -28,26 +26,26 @@
   border-radius: 1rem;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 
-  h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-  .action-icons {
-  display: flex;
-  gap: 0.8rem;  // space between icons
-  align-items: center;
+    .action-icons {
+    display: flex;
+    gap: 0.8rem;  // space between icons
+    align-items: center;
 
-  .edit-icon {
-    color: #42A5F5;
-    cursor: pointer;
-  }
+    .edit-icon {
+      color: #42A5F5;
+      cursor: pointer;
+    }
 
-  .delete-icon {
-    color: #FF7043;
-    cursor: pointer;
+    .delete-icon {
+      color: #FF7043;
+      cursor: pointer;
+    }
   }
-}
 
 
   // Make table scrollable on small screens

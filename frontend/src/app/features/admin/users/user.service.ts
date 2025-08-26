@@ -17,7 +17,7 @@ export class UserService {
     return this.http.getAll(this.model);
   }
 
-  getById(id: string): Observable<User> {
+  getUserById(id: string): Observable<User> {
     return this.http.getById(this.model, id);
   }
 

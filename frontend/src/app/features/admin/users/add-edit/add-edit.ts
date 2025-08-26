@@ -46,7 +46,7 @@ export class AddEdit implements OnInit {
 
     this.userId = this.route.snapshot.paramMap.get('id');
     if (this.userId) {
-      this.userService.getById(this.userId).subscribe((user: User) => {
+      this.userService.getUserById(this.userId).subscribe((user: User) => {
         this.userForm.patchValue(user);
         try{
           this.previewUrl = user.profilePic

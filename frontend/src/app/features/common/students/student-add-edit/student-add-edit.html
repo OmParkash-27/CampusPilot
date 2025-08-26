@@ -42,13 +42,16 @@
     <!-- DOB -->
     <div class="form-group">
       <label for="dob">Date of Birth</label>
-      <p-datepicker formControlName="dob" dateFormat="dd.mm.yy" inputId="dob"></p-datepicker>
+      <p-datepicker formControlName="dob" dateFormat="dd.mm.yy" inputId="dob" placeholder="Date of Birth"></p-datepicker>
     </div>
 
     <!-- Gender -->
     <div class="form-group">
       <label for="gender">Gender</label>
       <p-select [options]="genderList" formControlName="gender" placeholder="Select Gender"></p-select>
+      <small *ngIf="f['gender'].touched && f['gender'].hasError('required')" class="p-error">
+        Roll No is required
+      </small>
     </div>
 
     <!-- Phone -->
@@ -103,7 +106,7 @@
           </div>
 
           <div>
-            <p-datepicker formConrolName="batchYear" view="year" dateFormat="yy" [readonlyInput]="true" [minDate]="minDateBatch" [maxDate]="maxDateBatch" placeholder="Batch Year"/>
+            <p-datepicker inputId="batchYear" formControlName="batchYear" view="year" dateFormat="yy"  [minDate]="minDateBatch" [maxDate]="maxDateBatch" placeholder="Batch year" />
             <small *ngIf="course.get('batchYear')?.touched && course.get('batchYear')?.hasError('required')" class="p-error">
               Batch Year is required
             </small>
@@ -119,18 +122,18 @@
     <!-- Docs as Photos -->
     <div class="form-group">
       <label>Student's Docs Photos</label>
-      <div class="photos-preview">
+      <div class="photos-preview flex flex-row flex-wrap">
         <div *ngFor="let p of photoPreviews; let i=index" class="photo-item">
-          <img [src]="API_URL + '/img/' + p" width="100" style="border-radius:6px;" />
-          <button type="button" pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm ml-2" (click)="onPhotoRemove(i)"></button>
+          <img [src]="API_URL + '/img/' + p" width="100" style="border-radius:6px; max-height: 90px; object-fit: cover;" />
+          <button type="button" pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm ml-2" (click)="onOldPhotoRemove(p, i)"></button>
         </div>
       </div>
-      <p-fileUpload name="photos" multiple="true" customUpload (onSelect)="onPhotosSelect($event)" chooseLabel="Add Photos" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+      <p-fileUpload name="photos" multiple="true" customUpload (onSelect)="onPhotosSelect($event)" (onRemove)="onRemoveFile($event)" chooseLabel="Add Photos" accept="image/*" fileLimit="10" maxFileSize="1000000" auto="true"></p-fileUpload>
     </div>
 
     <!-- Buttons -->
     <div class="form-actions">
-      <button [disabled]="this.studentForm.invalid" pButton type="submit" label="Save Student" class="submit-btn"></button>
+      <button [disabled]="studentForm.invalid" pButton type="submit" label="Save Student" class="submit-btn"></button>
       <button pButton type="button" label="Cancel" class="cancel-btn" (click)="onCancel()"></button>
     </div>
   </form>
