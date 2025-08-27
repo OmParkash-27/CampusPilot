@@ -211,7 +211,8 @@ export class AddEditStudent implements OnInit {
     const validFiles: File[] = [];
 
     if (event.files && event.files.length) {
-      event.files.forEach((file: File) => {
+      const filesArray = Array.from(event.files);
+      filesArray.forEach((file: any) => {
         if (file.size <= maxSize) {
           validFiles.push(file);
         } 
@@ -283,6 +284,7 @@ export class AddEditStudent implements OnInit {
         this.router.navigate(['/common/student-list']);
       });
     } else {
+      if(this.isPartialAdd) formData.append('userId', this.userData?._id!);
       this.studentService.createStudent(formData).subscribe(()=>{
         this.router.navigate(['/common/student-list']);
       });

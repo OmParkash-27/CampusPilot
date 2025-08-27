@@ -31,26 +31,6 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: ['admin'],
   },
 
-  // Editor menu
-  {
-    label: 'EDashboard',
-    icon: 'pi pi-chart-line',
-    routerLink: '/editor/dashboard',
-    visible: false,
-    public:false,
-    showWhenLoggedIn: true,
-    roles: ['admin', 'editor'],
-  },
-  // Teacher menu
-  {
-    label: 'TDashboard',
-    icon: 'pi pi-chart-line',
-    routerLink: '/teacher/dashboard',
-    visible: false,
-    public: false,
-    showWhenLoggedIn: true,
-    roles: ['admin', 'teacher'],
-  },
   {
     label: 'Users',
     icon: 'pi pi-users',
@@ -72,9 +52,32 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: ['admin', 'editor', 'teacher'],
     items: [
       { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor'] },
-      { label: 'List Students', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] }
+      { label: 'List Students', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
+      { label: 'New Register Students', icon: 'pi pi-list', routerLink: '/common/student-new-register-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
     ]
   },
+
+  // Editor menu
+  {
+    label: 'EDashboard',
+    icon: 'pi pi-chart-line',
+    routerLink: '/editor/dashboard',
+    visible: false,
+    public:false,
+    showWhenLoggedIn: true,
+    roles: ['admin', 'editor'],
+  },
+  // Teacher menu
+  {
+    label: 'TDashboard',
+    icon: 'pi pi-chart-line',
+    routerLink: '/teacher/dashboard',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['admin', 'teacher'],
+  },
+  
   {
     label: 'About',
     icon: 'pi pi-info-circle',

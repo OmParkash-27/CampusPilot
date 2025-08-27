@@ -48,7 +48,9 @@ exports.addStudentDetails = async (req, res) => {
       address: parseAddress(address),
       guardianName,
       guardianContact,
-      photos: extractPhotos(req.files)
+      photos: extractPhotos(req.files),
+      createdBy: req.user.email,   
+      updatedBy: req.user.email
     });
 
     await student.save();
@@ -79,7 +81,8 @@ exports.createNewStudent = async (req, res) => {
       guardianContact
     } = req.body;
 
-    const hashedPassword = await bcrypt.hash(name, 10);
+    const pass = Array.from(name).length > 6 ? name : '123456';
+    const hashedPassword = await bcrypt.hash(pass, 10);
 
     const user = new User({
       name,
@@ -102,7 +105,9 @@ exports.createNewStudent = async (req, res) => {
       address: parseAddress(address),
       guardianName,
       guardianContact,
-      photos: extractPhotos(req.files)
+      photos: extractPhotos(req.files),
+      createdBy: req.user.email,   // from token
+      updatedBy: req.user.email
     });
 
     await student.save({ session });
@@ -141,6 +146,20 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
+//Get new Registered students
+exports.getNewRegisteredStudents = async (req, res) => {
+    try {
+       const ActivstudentIds = await Student.find().distinct("user");
+      const students = await User.find({
+        role: "student",
+        _id: { $nin: ActivstudentIds }
+      }).select("-password");;
+      res.status(200).json(students);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching new registered students", error: error.message });
+    }
+}
+
 // Update student
 exports.updateStudent = async (req, res) => {
   const session = await mongoose.startSession();
@@ -160,7 +179,7 @@ exports.updateStudent = async (req, res) => {
     courses,
     address,
     deletePhotosUrls
-  } = req.body;
+  } = req.body;  
 
   const parsedDeletePhotos = deletePhotosUrls ? JSON.parse(deletePhotosUrls) : [];
   let deletedPhotos = [];
@@ -185,6 +204,7 @@ exports.updateStudent = async (req, res) => {
     student.phone = phone;
     student.guardianName = guardianName;
     student.guardianContact = guardianContact;
+    student.updatedBy = req.user.email;   // from token
 
     if (req.files && req.files.profilePic) {
       if (student.user.profilePic) oldProfile = student.user.profilePic;

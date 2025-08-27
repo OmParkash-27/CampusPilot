@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addStudentDetails, createNewStudent, getAllStudents, getStudent, updateStudent, addNewCourse, graduateCourse, deleteStudent} = require('../controllers/studentController');
+const { addStudentDetails, createNewStudent, getAllStudents, getStudent, updateStudent, getNewRegisteredStudents, deleteStudent} = require('../controllers/studentController');
 const verifyToken = require('../middleware/authMiddleware');
 const { isAdmin, isTeacher, isEditor, isTeacherORisEditor } = require('../middleware/roleMiddleware');
 const upload = require('../middleware/uploadMiddleware');
@@ -23,6 +23,7 @@ router.post('/', verifyToken, isTeacherORisEditor, upload.fields([ { name: 'phot
 
 // Allow all logged-in users to read
 router.get('/', verifyToken, getAllStudents);
+router.get('/new-registered', verifyToken, getNewRegisteredStudents)
 
 router.get('/:id', verifyToken, getStudent);
 

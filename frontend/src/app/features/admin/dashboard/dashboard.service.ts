@@ -8,6 +8,6 @@ export class DashboardService {
   constructor(private commonService: HttpService) {}
 
   getDashboardData(): Observable<any> {
-    return this.commonService.get('admin/dashboard');
+    return this.commonService.get('dashboard/admin');
   }
 }

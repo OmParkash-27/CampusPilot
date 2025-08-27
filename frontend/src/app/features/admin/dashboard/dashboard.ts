@@ -45,10 +45,11 @@ export class Dashboard implements OnInit {
   chartOptions: any = {};
 
   studentCols = [
-    { field: 'name', header: 'Name' },
-    { field: 'email', header: 'Email' },
-    { field: 'class', header: 'Class' },
-    { field: 'rollNo', header: 'Roll No' }
+    { field: 'user.name', header: 'Name' },
+    { field: 'courses[0].course', header: 'Course' },
+    { field: 'rollNo', header: 'Roll No' },
+    { field: 'createdBy', header: 'Create By'},
+    { field: 'updatedBy', header: 'Update By'},
   ];
 
   userCols = [

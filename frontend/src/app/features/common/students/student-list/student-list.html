@@ -1,4 +1,4 @@
-<div class="student-list-card">
+<div class="list-card">
   <h2>All Students</h2>
 
   <p-table *ngIf="students()?.length" [value]="students()" [paginator]="true" [rows]="10" [loading]="loading()">
@@ -63,10 +63,12 @@
                title="Edit Student" 
                (click)="navigate(student._id)">
             </i>
-            <i class="pi pi-trash delete-icon" 
-               title="Delete Student" 
-               (click)="deleteStudent(student._id)">
-            </i>
+            @if(loggedUserRole === 'admin') {
+              <i class="pi pi-trash delete-icon" 
+                title="Delete Student" 
+                (click)="deleteStudent(student._id)">
+              </i>
+            }
           </div>
         </td>
       </tr>

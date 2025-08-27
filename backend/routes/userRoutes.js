@@ -8,7 +8,7 @@ const { updateUserRole, getAllUsers, updateUser, updateUserStatus, getUser, dele
 router.post('/', upload.single('profilePic'), verifyToken, isAdmin, addUser)
 router.put('/update-role/:id',upload.none(), verifyToken, isAdmin, updateUserRole);
 router.get('/', verifyToken, isAdmin, getAllUsers);
-router.get('/:id', verifyToken, isAdmin, getUser);
+router.get('/:id', verifyToken, getUser);
 router.put('/:id', upload.single('profilePic'), verifyToken, isAdmin, updateUser);
 router.put('/update-status/:id',upload.none(), verifyToken, updateUserStatus);
 router.delete('/:id', verifyToken, deleteUser);

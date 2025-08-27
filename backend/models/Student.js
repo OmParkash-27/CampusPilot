@@ -49,7 +49,15 @@ const studentSchema = new mongoose.Schema({
   },
   guardianName: { type: String },
   guardianContact: { type: String },
-  photos: [{ type: String }]
+  photos: [{ type: String }],
+  createdBy: {
+    type: String,
+    required: true
+  },
+  updatedBy: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Student', studentSchema);

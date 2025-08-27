@@ -1,0 +1,42 @@
+<div class="list-card">
+  <h2>All Students</h2>
+
+  <p-table *ngIf="students()?.length" [value]="students()" [paginator]="true" [rows]="10" [loading]="loading()">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Profile</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-student>
+      <tr *ngIf="student">
+        <!-- Profile -->
+        <td>
+          <img
+            [src]="API_URL + '/img/' + student?.user?.profilePic"
+            alt="profile pic"
+            class="w-7rem border-round max-h-5rem"
+          />
+        </td>
+
+        <!-- Basic Info -->
+        <td>{{ student?.name }}</td>
+        <td>{{ student?.email }}</td>        
+        <!-- Actions -->
+        <td class="justify-content-center">
+          <div class="action-icons justify-content-center">
+            <i class="pi pi-plus add-icon" 
+               title="Edit Student" 
+               (click)="navigate(student._id)">
+            </i>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p *ngIf="!students()?.length && !loading()">No students found.</p>
+</div>

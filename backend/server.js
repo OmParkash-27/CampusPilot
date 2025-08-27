@@ -48,7 +48,7 @@ connectDB();
 app.use('/api/auth', authRoutes);
 app.use('/api/students', verifyToken, studentRoutes); // protected
 app.use('/api/users', verifyToken, userRoutes);
-app.use('/api/admin', verifyToken, dashboardRoutes);
+app.use('/api/dashboard', verifyToken, dashboardRoutes);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

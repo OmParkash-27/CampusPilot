@@ -2,7 +2,7 @@
 const User = require('../models/User');
 const Student = require('../models/Student');
 
-const getDashboardStats = async (req, res) => {
+const getAdminDashboardStats = async (req, res) => {
   try {
     const totalStudents = await Student.countDocuments();
     const totalUsers = await User.countDocuments();
@@ -11,8 +11,8 @@ const getDashboardStats = async (req, res) => {
     const totalEditors = await User.countDocuments({ role: 'editor' });
     const totalStudentUsers = await User.countDocuments({ role: 'student' });
 
-    const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5);
-    const latestUsers = await User.find().sort({ createdAt: -1 }).limit(5);
+    const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");
+    const latestUsers = await User.find({ role: { $ne: "student" } }).sort({ createdAt: -1 }).limit(5);
 
     res.json({
       totalStudents,
@@ -30,4 +30,8 @@ const getDashboardStats = async (req, res) => {
   }
 };
 
-module.exports = { getDashboardStats };
+const geEditortDashboardStats = async(req, res) => {
+
+}
+
+module.exports = { getAdminDashboardStats, geEditortDashboardStats };

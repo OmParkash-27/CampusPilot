@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Student } from '../../../core/models/Student';
 import { HttpService } from '../../../core/services/common/http.service';
+import { User } from '../../../core/models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,11 @@ export class StudentService {
   // Get all students
   getAllStudents() {
     return this.http.getAll(this.model);
+  }
+
+  //Get New Registered students
+  getNewRegisteredStudent() {
+    return this.http.getAll(this.model + '/' + 'new-registered');
   }
 
   // Get single student by ID

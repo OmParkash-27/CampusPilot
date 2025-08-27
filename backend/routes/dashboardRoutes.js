@@ -1,8 +1,9 @@
 const express = require('express');
-const { getDashboardStats } = require('../controllers/dashboardController');
-const { isAdmin } = require('../middleware/roleMiddleware');
+const { getAdminDashboardStats, geEditortDashboardStats } = require('../controllers/dashboardController');
+const { isAdmin, isEditor } = require('../middleware/roleMiddleware');
 const router = express.Router();
 
-router.get('/dashboard',isAdmin , getDashboardStats);
+router.get('/admin',isAdmin , getAdminDashboardStats);
+router.get('/editor', isEditor, geEditortDashboardStats)
 
 module.exports = router;

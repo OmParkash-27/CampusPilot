@@ -6,7 +6,7 @@
     <!-- Name -->
     <div class="form-group">
       <label for="name">Name</label>
-      <input id="name" type="text" pInputText formControlName="name" [readonly]="!!userData" />
+      <input id="name" type="text" pInputText formControlName="name" [readonly]="!!userData" [disabled]="isPartialAdd" />
       <small *ngIf="f['name'].touched && f['name'].hasError('required')" class="p-error">
         Name is required
       </small>
@@ -15,7 +15,7 @@
     <!-- Email -->
     <div class="form-group">
       <label for="email">Email</label>
-      <input id="email" type="email" pInputText formControlName="email" [readonly]="!!userData" />
+      <input id="email" type="email" pInputText formControlName="email" [readonly]="!!userData" [disabled]="isPartialAdd" />
       <small *ngIf="f['email'].touched && f['email'].hasError('required')" class="p-error">
         Email is required
       </small>
@@ -89,7 +89,7 @@
       <div *ngIf="previewUrl" class="mb-2">
         <img [src]="this.API_URL + '/img/' + previewUrl" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
-      <p-fileUpload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true"></p-fileUpload>
+      <p-fileUpload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true" [disabled]="isPartialAdd"></p-fileUpload>
     </div>
 
 

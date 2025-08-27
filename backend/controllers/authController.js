@@ -8,7 +8,7 @@
   // Generate JWT Token
   const generateToken = (user) => {
     return jwt.sign(
-      { id: user._id, name: user.name, role: user.role },
+      { id: user._id, name: user.name, role: user.role, email:user.email },
       process.env.JWT_SECRET,
       { expiresIn: '1d' }
     );

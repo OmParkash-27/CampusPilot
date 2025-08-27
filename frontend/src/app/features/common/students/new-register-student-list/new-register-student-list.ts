@@ -15,14 +15,15 @@ import { GalleriaModule } from 'primeng/galleria';
 import { DialogModule } from 'primeng/dialog';
 import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { User } from '../../../../core/models/User';
 
 @Component({
-  selector: 'app-student-list',
+  selector: 'app-new-register-student',
   imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
-  templateUrl: './student-list.html',
-  styleUrl: './student-list.scss'
+  templateUrl: './new-register-student-list.html',
+  styleUrl: './new-register-student-list.scss'
 })
-export class StudentList {
+export class NewRegisterStudent {
   API_URL = environment.apiUrl;
   roles = [
     { label: 'Admin', value: 'admin' },
@@ -31,15 +32,12 @@ export class StudentList {
     { label: 'Teacher', value: 'teacher' }
   ];
   loading = signal<boolean>(true);
-  students = signal<Student[]>([]);
+  students = signal<User[]>([]);
 
-  showAddressDialog = false;
   selectedAddress: any = null;
 
-  showPhotosDialog = false;
   selectedPhotos: string[] = [];
 
-  showCoursesDialog = false;
   selectedCourses: any[] = [];
   loggedUserRole: string| undefined= '';
   
@@ -54,8 +52,8 @@ export class StudentList {
 
   fetchStudents(): void {
     this.loading.set(true);
-    this.studentService.getAllStudents().subscribe({
-      next: (data: Student[]) => {
+    this.studentService.getNewRegisteredStudent().subscribe({
+      next: (data: User[]) => {
         this.students.set(data);
         this.loading.set(false);
       },
@@ -66,38 +64,9 @@ export class StudentList {
     });
   }
 
-  viewAddress(address: any) {
-    this.selectedAddress = address;
-    this.showAddressDialog = true;
-  }
-
-  viewPhotos(photos: string[]) {
-    this.selectedPhotos = photos;
-    this.showPhotosDialog = true;
-  }
-
-  viewCourses(courses: any[]) {
-    this.selectedCourses = courses;
-    this.showCoursesDialog = true;
-  }
-
   navigate(id: string) {
-    this.router.navigate(['common/student-add-edit/edit',id]);
+    this.router.navigate(['common/student-add-edit/add-details',id]);
   }
 
-  deleteStudent(id: string) {
-    if (!confirm('Are you sure you want to delete this student?')) {
-      return;
-    }
 
-    this.studentService.deleteStudent(id).subscribe({
-      next: () => {
-        // Remove deleted student from local state
-        this.students.set(this.students().filter(s => s._id !== id));
-      },
-      error: (err) => {
-        console.error('Failed to delete student', err);
-      }
-    });
-  }
 }
