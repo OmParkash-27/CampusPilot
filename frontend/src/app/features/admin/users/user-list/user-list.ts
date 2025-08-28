@@ -12,17 +12,23 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { environment } from '../../../../../environments/environment';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
+
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
 export class UserList implements OnInit {
   API_URL = environment.apiUrl;
   users = signal<User[]>([]);
+  searchTerm: string = '';
+  filteredUsers: User[] = [];
+
   roles = [
     { label: 'Admin', value: 'admin' },
     { label: 'Student', value: 'student' },
@@ -44,17 +50,37 @@ export class UserList implements OnInit {
   loadUsers() {
     this.loading.set(true);
     this.userService.getAll().subscribe({
-      next: (res) => {
-        // Ensure each user.role matches the 'value' in roles
-        const users = (res || []).map(user => ({
-          ...user,
-          // id: user._id,
-          // role: user.role || '' // fallback if role is missing
-        })) // .filter(user => this.userService.currentUser?.email != user.email);
+      next: (users) => {
         this.users.set(users);
+        this.filteredUsers = this.users();
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
+    });
+  }
+
+    // Filtering logic
+filterUsers() {
+  const term = this.searchTerm.trim().toLowerCase();
+  if (!term) {
+    this.filteredUsers = this.users();
+    return;
+  }
+
+  // multiple words split
+  const keywords = term.split(/\s+/);
+
+    this.filteredUsers = this.users().filter(user => {
+      // fields to search in
+      const haystack = [
+        user?.name,
+        user?.email,
+        user?.status,
+        user?.role
+      ].join(' ').toLowerCase();
+
+      // check if *all keywords* exist
+      return keywords.every(k => haystack.includes(k));
     });
   }
 

@@ -16,10 +16,12 @@ import { DialogModule } from 'primeng/dialog';
 import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { User } from '../../../../core/models/User';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-new-register-student',
-  imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
+  imports: [CommonModule, TableModule, ButtonModule,IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
   templateUrl: './new-register-student-list.html',
   styleUrl: './new-register-student-list.scss'
 })
@@ -40,6 +42,9 @@ export class NewRegisterStudent {
 
   selectedCourses: any[] = [];
   loggedUserRole: string| undefined= '';
+
+  searchTerm: string = '';
+  filteredStudents: User[] = [];
   
   constructor(public router: Router, private studentService: StudentService, private authService: AuthService) {
     const user = this.authService.current_user();
@@ -55,6 +60,7 @@ export class NewRegisterStudent {
     this.studentService.getNewRegisteredStudent().subscribe({
       next: (data: User[]) => {
         this.students.set(data);
+        this.filteredStudents = this.students();
         this.loading.set(false);
       },
       error: (err) => {
@@ -63,6 +69,31 @@ export class NewRegisterStudent {
       }
     });
   }
+
+    // Filtering logic
+filterStudents() {
+  const term = this.searchTerm.trim().toLowerCase();
+  if (!term) {
+    this.filteredStudents = this.students();
+    return;
+  }
+
+  // multiple words split
+  const keywords = term.split(/\s+/);
+
+    this.filteredStudents = this.students().filter(student => {
+      // fields to search in
+      const haystack = [
+        student?.name,
+        student?.email,
+        student?.status
+      ].join(' ').toLowerCase();
+
+      // check if *all keywords* exist
+      return keywords.every(k => haystack.includes(k));
+    });
+  }
+
 
   navigate(id: string) {
     this.router.navigate(['common/student-add-edit/add-details',id]);

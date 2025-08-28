@@ -15,10 +15,12 @@ import { GalleriaModule } from 'primeng/galleria';
 import { DialogModule } from 'primeng/dialog';
 import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 
 @Component({
   selector: 'app-student-list',
-  imports: [CommonModule, TableModule, ButtonModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
   templateUrl: './student-list.html',
   styleUrl: './student-list.scss'
 })
@@ -42,6 +44,9 @@ export class StudentList {
   showCoursesDialog = false;
   selectedCourses: any[] = [];
   loggedUserRole: string| undefined= '';
+
+  searchTerm: string = '';
+  filteredStudents: Student[] = [];
   
   constructor(public router: Router, private studentService: StudentService, private authService: AuthService) {
     const user = this.authService.current_user();
@@ -57,12 +62,44 @@ export class StudentList {
     this.studentService.getAllStudents().subscribe({
       next: (data: Student[]) => {
         this.students.set(data);
+        this.filteredStudents = this.students();
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Failed to fetch students', err);
         this.loading.set(false);
       }
+    });
+  }
+
+  // Filtering logic
+filterStudents() {
+  const term = this.searchTerm.trim().toLowerCase();
+  if (!term) {
+    this.filteredStudents = this.students();
+    return;
+  }
+
+  // multiple words split
+  const keywords = term.split(/\s+/);
+
+    this.filteredStudents = this.students().filter(student => {
+      // fields to search in
+      const haystack = [
+        student?.user?.name,
+        student?.user?.email,
+        student?.user?.role,
+        student?.phone,
+        student?.guardianName,
+        student?.guardianContact,
+        student?.gender,
+        ...(student?.courses?.map((c: any) => c.course) || []),
+        ...(student?.courses?.map((c: any) => c.batchYear?.toString()) || []),
+        ...(student?.courses?.map((c: any) => c.status) || [])
+      ].join(' ').toLowerCase();
+
+      // check if *all keywords* exist
+      return keywords.every(k => haystack.includes(k));
     });
   }
 
