@@ -81,7 +81,7 @@ exports.createNewStudent = async (req, res) => {
       guardianContact
     } = req.body;
 
-    const pass = Array.from(name).length > 6 ? name : '123456';
+    const pass = Array.from(name).length >= 6 ? name : '123456';
     const hashedPassword = await bcrypt.hash(pass, 10);
 
     const user = new User({
