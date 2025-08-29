@@ -10,8 +10,8 @@ import { CardModule } from 'primeng/card';
   standalone: true
 })
 export class StatsCard {
-  @Input() title!: string;
-  @Input() value!: number | string;
+  @Input() title!: string[];
+  @Input() value!: number[] | string[];
   @Input() icon!: string;
   @Input() color!: string; // e.g. 'linear-gradient(...)'
 }

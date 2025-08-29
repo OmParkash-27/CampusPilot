@@ -6,6 +6,9 @@
         <img src="images/logo.png" alt="CampusPilot Logo" class="app-logo" />
         <span class="app-title">CampusPilot</span>
       </div>
+      <div *ngIf="!isMobile() && !!user()">
+        <p-chip [label]="user()?.name" [image]="API_URL + '/img/' + user()?.profilePic" />
+      </div>
       <button *ngIf="isMobile() && !drawerVisible()" (click)="toggleDrawer()" pButton icon="pi pi-bars"
         aria-label="Toggle Sidebar" class="menu-btn"></button>
     </div>
@@ -25,6 +28,11 @@
       <!-- Drawer for small screens -->
       <p-drawer [visible]="drawerVisible()" [modal]="true" position="left" [dismissible]="true"
         (onHide)="closeDrawer()">
+        <ng-template pTemplate="header">
+          <p-chip [label]="user()?.name"
+                [image]="user()?.profilePic ? (API_URL + '/img/' + user()?.profilePic) : undefined" [icon]="!user()?.profilePic ? 'pi pi-user' : undefined">
+          </p-chip>
+        </ng-template>
         <p-menubar [model]="itemsSignal()"></p-menubar>
       </p-drawer>
 

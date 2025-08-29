@@ -51,7 +51,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: ['admin', 'editor', 'teacher'],
     items: [
-      { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor'] },
+      { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
       { label: 'List Students', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
       { label: 'New Register Students', icon: 'pi pi-list', routerLink: '/common/student-new-register-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
     ]
@@ -100,6 +100,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     label: 'Login',
     icon: 'pi pi-sign-in',
     routerLink: '/login',
+    queryParams: { mode: 'login' },
     visible: false,
     public: true,
     showWhenLoggedIn: false,

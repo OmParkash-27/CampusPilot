@@ -79,7 +79,6 @@ filterUsers() {
         user?.role
       ].join(' ').toLowerCase();
 
-      // check if *all keywords* exist
       return keywords.every(k => haystack.includes(k));
     });
   }

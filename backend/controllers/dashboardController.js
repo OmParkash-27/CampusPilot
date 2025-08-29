@@ -30,8 +30,44 @@ const getAdminDashboardStats = async (req, res) => {
   }
 };
 
-const geEditortDashboardStats = async(req, res) => {
+const getCommonDashboardStats = async(req, res) => {
+ try {
+    const currentYear = new Date().getFullYear();
+    const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+    const currentTime = new Date();
+    const user = req.user.email;
 
+    const totalStudents = await Student.countDocuments();
+    const currentYearTotalStudents = await Student.countDocuments({createdAt: {$gte: startOfYear, $lte: currentTime}});
+    const totalBcaStudents = await Student.countDocuments({ "courses.course": "BCA" });
+    const currentYearBcaStudents = await Student.countDocuments({ "courses.course": "BCA", "courses.batchYear": currentYear });
+    const totalMcaStudents = await Student.countDocuments({ "courses.course": "MCA" });
+    const currentYearMcaStudents = await Student.countDocuments({ "courses.course": "MCA", "courses.batchYear": currentYear });
+    const totalBbaStudents = await Student.countDocuments({ "courses.course": "BBA" });
+    const currentYearBbaStudents = await Student.countDocuments({ "courses.course": "BBA", "courses.batchYear": currentYear });
+    const totalMbaStudents = await Student.countDocuments({ "courses.course": "MBA" });
+    const currentYearMbaStudents = await Student.countDocuments({ "courses.course": "MBA", "courses.batchYear": currentYear });
+    const lastCreated = await Student.find({'createdBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");;
+    const lastUpdated = await Student.find({'updatedBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");;
+
+    res.json({
+      totalStudents,
+      currentYearTotalStudents,
+      totalBcaStudents,
+      currentYearBcaStudents,
+      totalMcaStudents,
+      currentYearMcaStudents,
+      totalBbaStudents,
+      currentYearBbaStudents,
+      totalMbaStudents,
+      currentYearMbaStudents,
+      lastCreated,
+      lastUpdated
+    })
+ } catch(error) {
+    console.error(error);
+    res.status(500).json({message: "server error"});
+ }
 }
 
-module.exports = { getAdminDashboardStats, geEditortDashboardStats };
+module.exports = { getAdminDashboardStats, getCommonDashboardStats };

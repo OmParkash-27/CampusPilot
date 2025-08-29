@@ -1,1 +1,71 @@
-<p>dashboard works!</p>
+<div *ngIf="loading" class="p-text-center">Loading...</div>
+
+<div *ngIf="!loading" class="dashboard-container">
+
+  <!-- 📊 Stats Cards -->
+  <div class="stats-grid">
+    <app-stats-card
+      [title]="['Total Students', `${currentYear + ' Students'}`]"
+      [value]="[data.totalStudents, data.currentYearTotalStudents]"
+      icon="pi pi-users"
+      color="#42A5F5">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="['BCA Students', `${currentYear + ' Students'}`]"
+      [value]="[data.totalBcaStudents, data.currentYearBcaStudents]"
+      icon="pi pi-user"
+      color="#66BB6A">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="['BBA Students', `${currentYear + ' Students'}`,]"
+      [value]="[data.totalBbaStudents, data.currentYearBbaStudents]"
+      icon="pi pi-briefcase"
+      color="#AB47BC">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="['MCA Students', `${currentYear + ' Students'}`]"
+      [value]="[data.totalMcaStudents, data.currentYearMcaStudents]"
+      icon="pi pi-graduation-cap"
+      color="#FFA726">
+    </app-stats-card>
+
+    <app-stats-card
+      [title]="['MBA Students', `${currentYear + ' Students'}`]"
+      [value]="[data.totalMbaStudents, data.currentYearMbaStudents]"
+      icon="pi pi-shield"
+      color="#FF7043">
+    </app-stats-card>
+  </div>
+
+  <!-- 📈 Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h3>Counts (Bar)</h3>
+      <p-chart type="bar" [data]="barData" [options]="chartOptions" style="height:360px"></p-chart>
+    </div>
+
+    <div class="chart-card">
+      <h3>Distribution (Pie)</h3>
+      <p-chart type="pie" [data]="pieData" [options]="chartOptions" style="height:360px"></p-chart>
+    </div>
+  </div>
+
+  <!-- 🆕 Recent Lists -->
+  <div class="recent-section">
+    <app-recent-list
+      title="Last Created Students"
+      [data]="data.lastCreated"
+      [columns]="studentCols">
+    </app-recent-list>
+
+    <app-recent-list
+      title="Last Updated Students"
+      [data]="data.lastUpdated"
+      [columns]="userCols">
+    </app-recent-list>
+  </div>
+
+</div>

@@ -8,11 +8,13 @@ import { RoleMenuItem } from './main.const';
 import { AuthService } from '../core/services/auth/auth.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainLayoutService } from './main-layout.service';
+import { ChipModule } from 'primeng/chip';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, MenubarModule, DrawerModule, ButtonModule, RouterModule, ConfirmDialogModule],
+  imports: [CommonModule, RouterOutlet, MenubarModule, DrawerModule, ButtonModule, RouterModule, ConfirmDialogModule, ChipModule],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
 })
@@ -22,8 +24,10 @@ export class MainLayout implements AfterViewInit, OnDestroy {
   windowWidth = signal(window.innerWidth);
   isMobile = computed(() => this.windowWidth() < 768);
   private resizeHandler = () => this.windowWidth.set(window.innerWidth);
-
+  // user_name: string|undefined = '';
+  user = computed(() => this.mainLayoutService.user());
   itemsSignal!: Signal<RoleMenuItem[]>;
+  API_URL = environment.apiUrl;
   
   constructor(
     private mainLayoutService: MainLayoutService

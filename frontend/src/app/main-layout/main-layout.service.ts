@@ -3,6 +3,7 @@ import { ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth/auth.service';
 import { RoleMenuItem, sidebarMenuItems } from './main.const';
+import { User } from '../core/models/User';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +11,7 @@ import { RoleMenuItem, sidebarMenuItems } from './main.const';
 export class MainLayoutService {
   // Writable signal so we can update menu items dynamically
   private menuSignal: WritableSignal<RoleMenuItem[]> = signal<RoleMenuItem[]>([]);
+  user: WritableSignal<User|null> = signal<User|null> (null);
 
   constructor(
     private authService: AuthService,
@@ -21,13 +23,14 @@ export class MainLayoutService {
 
   private setupMenuWatcher() {
     effect(() => {
-      const user = this.authService.current_user();
+      this.user.set(this.authService.current_user());
+      const current_user = this.user();
 
       const filteredMenu = sidebarMenuItems.map(item => {
         const visible = !!(
-          user
+          current_user
             ? (item.public && item.showWhenLoggedIn) ||
-              (!item.public && item.roles?.includes(user.role))
+              (!item.public && item.roles?.includes(current_user.role))
             : item.public
         );
 
@@ -38,9 +41,9 @@ export class MainLayoutService {
           updatedItem.items = item.items
             .map(subItem => {
               const subVisible = !!(
-                user
+                current_user
                   ? (subItem.public && subItem.showWhenLoggedIn) ||
-                    (!subItem.public && subItem.roles?.includes(user.role))
+                    (!subItem.public && subItem.roles?.includes(current_user.role))
                   : subItem.public
               );
               return { ...subItem, visible: subVisible };
@@ -49,7 +52,7 @@ export class MainLayoutService {
         }
 
         // Special handling for logout
-        if (user && item.id === 'logout') {
+        if (this.user() && item.id === 'logout') {
           updatedItem = {
             ...updatedItem,
             visible: true,

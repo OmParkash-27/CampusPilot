@@ -26,7 +26,9 @@
         <th>Address</th>
         <th>Photos</th>
         <th>Courses</th>
-        <th>Actions</th>
+        @if(loggedUserRole === 'admin'|| loggedUserRole === 'editor') {
+          <th>Actions</th>
+        }
       </tr>
     </ng-template>
 
@@ -70,10 +72,12 @@
         <!-- Actions -->
         <td>
           <div class="action-icons">
-            <i class="pi pi-pencil edit-icon" 
-               title="Edit Student" 
-               (click)="navigate(student._id)">
-            </i>
+            @if(loggedUserRole === 'admin'|| loggedUserRole === 'editor') {
+              <i class="pi pi-pencil edit-icon" 
+                title="Edit Student" 
+                (click)="navigate(student._id)">
+              </i>
+            }
             @if(loggedUserRole === 'admin') {
               <i class="pi pi-trash delete-icon" 
                 title="Delete Student" 

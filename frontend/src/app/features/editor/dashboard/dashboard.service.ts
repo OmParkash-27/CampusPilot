@@ -8,6 +8,6 @@ export class DashboardService {
   constructor(private httpService: HttpService) {}
 
   getDashboardData(): Observable<any> {
-    return this.httpService.get('dashboard/admin');
+    return this.httpService.get('dashboard/editor');
   }
 }
