@@ -6,12 +6,12 @@
         <img src="images/logo.png" alt="CampusPilot Logo" class="app-logo" />
         <span class="app-title">CampusPilot</span>
       </div>
-      <div *ngIf="!isMobile() && !!user()">
+      <div *ngIf="!isMobile() && !!user()" class="mr-3">
         <p-chip  *ngIf="user()?.profilePic !== ''" [label]="user()?.name" [image]="API_URL + '/img/' + user()?.profilePic" />
         <p-chip *ngIf="user()?.profilePic == ''" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
       </div>
       <button *ngIf="isMobile() && !drawerVisible()" (click)="toggleDrawer()" pButton icon="pi pi-bars"
-        aria-label="Toggle Sidebar" class="menu-btn"></button>
+        aria-label="Toggle Sidebar" class="menu-btn mr-3"></button>
     </div>
   </div>
   

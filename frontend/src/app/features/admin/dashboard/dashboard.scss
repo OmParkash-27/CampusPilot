@@ -1,0 +1,21 @@
+.meter-group {
+    p-metergroup.p-metergroup {
+        position: absolute;
+        bottom: 1rem;
+        height: 85% !important;
+    }
+}
+
+@media (max-width : 768px ) {
+    .meter-group {
+        p-metergroup.p-metergroup {
+           position: static;
+           height: 20rem !important;
+        }
+    }
+}
+@media (max-width : 768px ) {
+    .students-avatar, .user-profile {
+        position: static !important;
+    }
+}

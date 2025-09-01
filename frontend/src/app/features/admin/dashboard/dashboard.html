@@ -1,1 +1,195 @@
-<p>dashboard works</p>
+<div class="grid nested-grid grid-nogutter gap-3 sm:gap-3 md:gap-3 justify-content-start bg-gray-100 p-3">
+    <div class="sm:col-12 md:col-7 lg:col-7">
+        <div class="grid grid-nogutter gap-3 sm:gap-3 md:gap-3">
+            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
+                <!-- Total Students -->
+                <p-card class="border-round-lg">
+                    <div class="flex flex-column row-gap-6">
+                        <div>
+                            <h2 class="text-lg text-400">Total Students</h2>
+                            <span class="text-3xl ">{{ dashboardData()?.totalStudents }}</span>
+                        </div>
+                        <div class="flex items-center justify-content-center">
+                            <img src="images/line-graph-svgrepo-com.svg" class="w-7" alt="students icon" />
+                        </div>
+
+                    </div>
+                </p-card>
+            </div>
+            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
+                <p-card class="border-round-lg">
+                    <div class="flex flex-column row-gap-6">
+                        <div>
+                            <h2 class="text-lg text-400">Total Admins</h2>
+                            <span class="text-3xl ">{{ dashboardData()?.totalAdmins }}</span>
+                        </div>
+                        <div class="flex items-center justify-content-center">
+                            <img src="images/pie-chart-svgrepo-com.svg" class="w-7" alt="students icon" />
+                        </div>
+                    </div>
+                </p-card>
+            </div>
+            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
+                <p-card class="border-round-lg">
+                    <div class="flex flex-column row-gap-6">
+                        <div>
+                            <h2 class="text-lg text-400">Total Teachers</h2>
+                            <span class="text-3xl ">{{ dashboardData()?.totalTeachers }}</span>
+                        </div>
+                        <div class="flex items-center justify-content-center">
+                            <img src="images/histogram-svgrepo-com.svg" class="w-7" alt="students icon" />
+                        </div>
+                    </div>
+                </p-card>
+            </div>
+            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
+                <p-card class="border-round-lg">
+                    <div class="flex flex-column row-gap-6">
+                        <div>
+                            <h2 class="text-lg text-400">Total Editors</h2>
+                            <span class="text-3xl ">{{ dashboardData()?.totalEditors }}</span>
+                        </div>
+                        <div class="flex items-center justify-content-center">
+                            <img src="images/picture-svgrepo-com.svg" class="w-7" alt="students icon" />
+                        </div>
+                    </div>
+                </p-card>
+            </div>
+        </div>
+    </div>
+    <!-- profile section  -->
+    <div class="sm:col-8 md:col-3 lg:col-3 flex-grow-1">
+        <p-card class="shadow-md border-round-lg min-h-full relative ">
+            <h2 class="text-lg text-400 mb-6">Profile</h2>
+            <div class="flex flex-column align-items-center gap-5">
+                <div class="flex flex-column absolute align-items-center gap-3 user-profile">
+                    @if(!!user() && user()?.profilePic != '') {
+                        <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.profilePic" shape="circle"></p-avatar>
+                    } @else {
+                        <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
+                    }
+                    <span class="text-3xl bg-white -mt-6 w-8rem text-center">{{ user()?.name }}</span>
+                    <p>{{user()?.email}}</p>
+                    <p>{{user()?.role}}</p>
+                </div>
+                <div class="card flex flex-column absolute bottom-0 mb-3 align-items-center gap-2 students-avatar">
+                    <p>You Created Students</p>
+                    <p-avatar-group>
+                        @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
+                            @if(idx < 2) {
+                                @if(cUser?.user?.profilePic != '') {
+                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [image]="API_URL + '/img/' + cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />
+                                } @else {
+                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />                                
+                                }
+                            } @if(idx === 2) {
+                                <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)" (click)="showAllUsers()"  shape="circle" size="large" />
+                            }
+                        } @empty {
+                            no data
+                        }
+                    </p-avatar-group>
+                </div>
+            </div>
+
+        </p-card>
+    </div>
+</div>
+
+<!-- Section 2 -->
+
+<div class="grid grid-nogutter nested-grid bg-gray-100 justify-content-start gap-3 p-3 pt-0">
+    <div class="col-12 sm:col-12 md:col-3 lg:col-3 meter-group flex-grow-1" >
+        <!-- Avatar + MeterGroup -->
+        <p-card class="shadow-md min-h-full relative">
+        <h2 class="text-lg text-400 mb-6">Student Distribution</h2>
+        <p-metergroup [value]="[
+            { label: 'Apps', color: '#34d399', value: 16 },
+                { label: 'Messages', color: '#fbbf24', value: 8 },
+                { label: 'Media', color: '#60a5fa', value: 24 },
+                { label: 'System', color: '#c084fc', value: 10 }
+            ]" orientation="vertical" labelOrientation="horizontal" class="align-items-center flex-column-reverse "></p-metergroup>
+        </p-card>
+    </div>
+    <div class="col-12 sm:col-12 md:col-8 lg:col-8 flex-grow-1" >
+        <div class="grid grid-nogutter row-gap-3">
+            <div class="col-12 sm:col-12 md:col-12 lg:col-12 " >
+                <!-- Doughnut Chart -->
+                <p-card class="shadow-md ">
+                    <h2 class="text-lg text-400 mb-6">Doughnut Chart</h2>
+                    <p-chart type="doughnut" [data]="doughnutData" class="flex justify-content-center max-h-20rem"></p-chart>
+                </p-card>
+            </div>
+            <div class="col-12 sm:col-12 md:col-12 lg:col-12 ">
+                <!-- Line Chart -->
+                <p-card class="shadow-md ">
+                    <h2 class="text-lg text-400 mb-6">Line Chart</h2>
+                    <p-chart type="line" [data]="lineData" class="flex justify-content-center"></p-chart>
+                </p-card>
+            </div>
+       </div>
+    </div>
+</div>  
+
+<!-- section 3 -->
+
+<!-- Polar Chart -->
+<!-- <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
+                <p-card class="shadow-md flex flex-col justify-content-between">
+                    <h2 class="text-lg font-bold mb-6">Polar Area</h2>
+                    <p-chart type="polarArea" [data]="polarData"></p-chart>
+                </p-card>
+</div> -->
+
+<!-- All users -->
+    <!-- <p-card class="shadow-md border-round-lg min-h-full">
+                    <h2 class="text-lg text-400 mb-6">All Users</h2>
+                    <div class="flex flex-column align-items-between gap-5">
+                        <div class="flex flex-column align-items-center gap-3">
+                            @if(!!user() && user()?.profilePic != '') {
+                                <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.profilePic" shape="circle"></p-avatar>
+                            } @else {
+                                <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
+                            }
+                            <span class="text-3xl bg-white -mt-6 w-8rem text-center">{{ user()?.name }}</span>
+                            <p>{{user()?.email}}</p>
+                            <p>{{user()?.role}}</p>
+                        </div>
+                        <div class="card flex flex-column align-items-center gap-2">
+                            <p>You Created Students</p>
+                            <p-avatar-group>
+                                @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
+                                    @if(idx < 2) {
+                                        @if(cUser?.user?.profilePic != '') {
+                                            <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [image]="API_URL + '/img/' + cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />
+                                        } @else {
+                                            <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />                                
+                                        }
+                                    } @if(idx === 2) {
+                                        <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)" (click)="showAllUsers()"  shape="circle" size="large" />
+                                    }
+                                } @empty {
+                                    no data
+                                }
+                            </p-avatar-group>
+                        </div>
+                    </div>
+
+    </p-card>   -->
+
+<p-dialog header="You Created Students" [modal]="true" [(visible)]="usersDialongVisible" [breakpoints]="{ '1199px': '50vw', '575px': '95vw' }" [style]="{ width: '50vw' }">
+        <div class="flex flex-column align-items-start gap-3 mb-2">
+            @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
+                <div class="flex flex-row align-items-center gap-3">
+                    @if(cUser?.user?.profilePic != '') {
+                        <p-avatar [image]="API_URL + '/img/' + cUser?.user?.profilePic" size="large" shape="circle" />
+                    } @else {
+                        <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />                                
+                    }
+                    <span>{{cUser?.user?.name}}</span>
+                    <span>{{cUser?.user?.email}}</span>
+                    <span>{{cUser?.user?.role}}</span>
+                </div>
+            }
+        </div>
+</p-dialog>

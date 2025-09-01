@@ -26,6 +26,12 @@
         <th>Address</th>
         <th>Photos</th>
         <th>Courses</th>
+        @if(loggedUserRole === 'admin') {
+          <th>Created By</th>
+        }
+        @if(loggedUserRole === 'admin') {
+          <th>Updated By</th>
+        }
         @if(loggedUserRole === 'admin'|| loggedUserRole === 'editor') {
           <th>Actions</th>
         }
@@ -68,6 +74,14 @@
         <td>
           <button pButton type="button" icon="pi pi-book" label="View" (click)="viewCourses(student.courses)"></button>
         </td>
+
+        <!-- createdBy and updated By -->
+         @if(loggedUserRole === 'admin') {
+          <td>{{student?.createdBy}}</td>
+        }
+        @if(loggedUserRole === 'admin') {
+          <td>{{student?.updatedBy}}</td>
+        }
 
         <!-- Actions -->
         <td>
