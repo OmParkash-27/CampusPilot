@@ -61,11 +61,18 @@ export class MainLayoutService {
                 message: 'Are you sure you want to log out?',
                 header: 'Logout Confirmation',
                 icon: 'pi pi-exclamation-triangle',
-                rejectButtonStyleClass: 'text-red-500',
+                rejectButtonStyleClass: 'bg-red-500',
                 accept: () => this.logout()
               });
             }
           };
+        }
+
+        //Rename Dashboards
+        if(this.user()?.role === 'admin' && (item.id === 'eDashboard' || item.id === 'tDashboard')) {
+          console.log("item is ", item.id);
+          const label = item.id === 'eDashboard' ? 'Editor Dashboard' : 'Teacher Dashboard';
+          updatedItem = {...updatedItem, label:label}
         }
 
         return updatedItem;
@@ -75,7 +82,6 @@ export class MainLayoutService {
     });
   }
 
-  /** Expose readonly menu signal to components */
   getMenu() {
     return this.menuSignal.asReadonly();
   }

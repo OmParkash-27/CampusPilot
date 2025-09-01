@@ -24,7 +24,7 @@ export class MainLayout implements AfterViewInit, OnDestroy {
   windowWidth = signal(window.innerWidth);
   isMobile = computed(() => this.windowWidth() < 768);
   private resizeHandler = () => this.windowWidth.set(window.innerWidth);
-  // user_name: string|undefined = '';
+  
   user = computed(() => this.mainLayoutService.user());
   itemsSignal!: Signal<RoleMenuItem[]>;
   API_URL = environment.apiUrl;

@@ -98,21 +98,22 @@
       <label>Courses</label>
       <div formArrayName="courses" class="courses-wrapper">
         <div *ngFor="let course of courses.controls; let i=index" [formGroupName]="i" class="course-row">
-          <div>
+          <div class="course">
             <p-select [options]="coursesList" formControlName="course" placeholder="Course"></p-select>
             <small *ngIf="course.get('course')?.touched && course.get('course')?.hasError('required')" class="p-error">
               Course is required
             </small>
           </div>
 
-          <div>
+          <div class="batch-year">
             <p-datepicker inputId="batchYear" formControlName="batchYear" view="year" dateFormat="yy"  [minDate]="minDateBatch" [maxDate]="maxDateBatch" placeholder="Batch year" />
             <small *ngIf="course.get('batchYear')?.touched && course.get('batchYear')?.hasError('required')" class="p-error">
               Batch Year is required
             </small>
           </div>
-
-          <p-select [options]="statusList" formControlName="status"></p-select>
+          <div class="student-status">
+            <p-select [options]="statusList" formControlName="status"></p-select>
+          </div>
           <button pButton type="button" icon="pi pi-trash" class="remove-btn" (click)="removeCourse(i)" *ngIf="courses.length > 1"></button>
         </div>
         <button pButton type="button" label="Add Course" icon="pi pi-plus" class="add-course-btn" (click)="addCourse()"></button>

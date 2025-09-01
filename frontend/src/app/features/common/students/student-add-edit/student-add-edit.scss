@@ -86,3 +86,13 @@
     margin-top: 0.5rem !important;
   }
 }
+
+@media (max-width: 477px) {
+  .course-row {
+    flex-wrap: wrap;
+    .course, .batch-year, .student-status {
+      width: 100%;
+    }
+     
+  }
+}

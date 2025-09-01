@@ -22,7 +22,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
 
   // Admin menu
   {
-    label: 'ADashboard',
+    label: 'Dashboard',
     icon: 'pi pi-microsoft',
     routerLink: '/admin/dashboard',
     visible: false,
@@ -59,8 +59,9 @@ export const sidebarMenuItems: RoleMenuItem[] = [
 
   // Editor menu
   {
-    label: 'EDashboard',
-    icon: 'pi pi-chart-line',
+    id: 'eDashboard',
+    label: 'Dashboard',
+    icon: 'pi pi-microsoft',
     routerLink: '/editor/dashboard',
     visible: false,
     public:false,
@@ -69,8 +70,9 @@ export const sidebarMenuItems: RoleMenuItem[] = [
   },
   // Teacher menu
   {
-    label: 'TDashboard',
-    icon: 'pi pi-chart-line',
+    id: 'tDashboard',
+    label: 'Dashboard',
+    icon: 'pi pi-microsoft',
     routerLink: '/teacher/dashboard',
     visible: false,
     public: false,

@@ -7,7 +7,7 @@ import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ProgressSpinnerModule, CommonModule],
+  imports: [RouterOutlet, ProgressSpinnerModule, CommonModule, ToastModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   providers: []
