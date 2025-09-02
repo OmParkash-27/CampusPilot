@@ -26,7 +26,7 @@ export class AddEdit implements OnInit {
     { label: 'Inactive', value: false }
   ];
   submitted = false;
-  previewUrl:string | undefined = '';
+  previewUrl:string | undefined | null = '';
 
   constructor(
     private fb: FormBuilder,
@@ -49,7 +49,7 @@ export class AddEdit implements OnInit {
       this.userService.getUserById(this.userId).subscribe((user: User) => {
         this.userForm.patchValue(user);
         try{
-          this.previewUrl = user.profilePic
+          this.previewUrl = user?.profilePic
         } catch(err) {
           console.log("profile error", err);
           

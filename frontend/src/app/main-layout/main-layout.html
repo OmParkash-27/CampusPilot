@@ -7,8 +7,8 @@
         <span class="app-title">CampusPilot</span>
       </div>
       <div *ngIf="!isMobile() && !!user()" class="mr-3">
-        <p-chip  *ngIf="user()?.profilePic !== ''" [label]="user()?.name" [image]="API_URL + '/img/' + user()?.profilePic" />
-        <p-chip *ngIf="user()?.profilePic == ''" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
+        <p-chip  *ngIf="user()?.profilePic !== null" [label]="user()?.name" [image]="API_URL + '/img/' + user()?.profilePic" label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" />
+        <p-chip *ngIf="user()?.profilePic === null" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
       </div>
       <button *ngIf="isMobile() && !drawerVisible()" (click)="toggleDrawer()" pButton icon="pi pi-bars"
         aria-label="Toggle Sidebar" class="menu-btn mr-3"></button>
@@ -30,12 +30,12 @@
       <p-drawer [visible]="drawerVisible()" [modal]="true" position="left" [dismissible]="true"
         (onHide)="closeDrawer()">
         <ng-template pTemplate="header">
-          <p-chip *ngIf="!!user() && user()?.profilePic !== ''"
+          <p-chip *ngIf="!!user() && user()?.profilePic !== null"
             [image]="API_URL + '/img/' + user()?.profilePic"
-            label="{{ user()?.name }}">
+            label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null">
           </p-chip>
 
-          <p-chip *ngIf="user()?.profilePic == ''"
+          <p-chip *ngIf="user()?.profilePic === null"
             icon="pi pi-user"
             label="{{ user()?.name }}">
           </p-chip>

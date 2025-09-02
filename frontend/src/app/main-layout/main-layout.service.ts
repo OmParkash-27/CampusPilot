@@ -70,7 +70,6 @@ export class MainLayoutService {
 
         //Rename Dashboards
         if(this.user()?.role === 'admin' && (item.id === 'eDashboard' || item.id === 'tDashboard')) {
-          console.log("item is ", item.id);
           const label = item.id === 'eDashboard' ? 'Editor Dashboard' : 'Teacher Dashboard';
           updatedItem = {...updatedItem, label:label}
         }
