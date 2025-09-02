@@ -6,6 +6,32 @@
     }
 }
 
+::ng-deep p-card.student-section-card {
+    height: 100%;
+    display: flex;
+    .p-card-body {
+        min-height: 100%;
+        .p-card-content {
+            min-height: 100%;
+            .students-section {
+                min-height: 100%;
+                flex-direction: column;
+                justify-content: space-between;
+                gap: 2rem;
+                .chips-badge-section {
+                    .chips-badge {
+                        border-bottom: 3px dotted black;
+                    }
+                }
+                .view-all-btn {
+                    // bottom: 1rem;
+                    align-self:flex-end;
+                }
+            }
+        }
+    }
+}
+
 @media (max-width : 768px ) {
     .meter-group {
         p-metergroup.p-metergroup {
@@ -17,5 +43,14 @@
 @media (max-width : 768px ) {
     .students-avatar, .user-profile {
         position: static !important;
+    }
+}
+
+@media (max-width : 768px ) {
+    .chips-badge-section {
+        gap: 2rem;
+        .chips-badge {
+            padding: 1rem;
+        }
     }
 }

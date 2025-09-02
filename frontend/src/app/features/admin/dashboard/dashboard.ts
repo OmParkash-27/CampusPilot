@@ -11,11 +11,15 @@ import { environment } from '../../../../environments/environment';
 import { DashboardService } from './dashboard.service';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { ChipModule } from 'primeng/chip';
+import { BadgeModule } from 'primeng/badge';
+import { User } from '../../../core/models/User';
+import { Student } from '../../../core/models/Student';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, CardModule, AvatarModule, AvatarGroupModule, MeterGroupModule, ChartModule, DividerModule, DialogModule, ButtonModule],
+  imports: [CommonModule, CardModule, AvatarModule, AvatarGroupModule, MeterGroupModule, ChartModule, DividerModule, DialogModule, ButtonModule, ChipModule, BadgeModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
@@ -29,6 +33,8 @@ export class Dashboard implements OnInit {
 
   // signals for data
   dashboardData = signal<any>(null);
+  latestUsers: User[] = [];
+  latestStudents: Student[] = [];
 
   doughnutData: any;
   lineData: any;
@@ -38,7 +44,10 @@ export class Dashboard implements OnInit {
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe((res: any) => {
       this.dashboardData.set(res);
-
+      // Users
+      this.latestUsers = res.latestUsers;
+      //Students
+      this.latestStudents = res.latestStudents;
       // prepare charts
       this.doughnutData = {
         labels: ['Admins', 'Teachers', 'Editors', 'Students'],
