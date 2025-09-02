@@ -102,13 +102,8 @@
     <div class="col-12 sm:col-12 md:col-3 lg:col-3 meter-group flex-grow-1" >
         <!-- Avatar + MeterGroup -->
         <p-card class="shadow-md min-h-full relative">
-        <h2 class="text-lg text-400 mb-6">Student Distribution</h2>
-        <p-metergroup [value]="[
-            { label: 'Apps', color: '#34d399', value: 16 },
-                { label: 'Messages', color: '#fbbf24', value: 8 },
-                { label: 'Media', color: '#60a5fa', value: 24 },
-                { label: 'System', color: '#c084fc', value: 10 }
-            ]" orientation="vertical" labelOrientation="horizontal" class="align-items-center flex-column-reverse "></p-metergroup>
+        <h2 class="text-lg text-400 mb-6">{{current_year}} Courses Students</h2>
+        <p-metergroup [value]="meterGroupValues" orientation="vertical" labelOrientation="horizontal" [max]="40" class="align-items-center flex-column-reverse "></p-metergroup>
         </p-card>
     </div>
     <div class="col-12 sm:col-12 md:col-8 lg:col-8 flex-grow-1" >

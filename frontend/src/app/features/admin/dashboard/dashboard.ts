@@ -20,6 +20,7 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./dashboard.scss']
 })
 export class Dashboard implements OnInit {
+  current_year = new Date().getFullYear();
   private authService = inject(AuthService);
   private dashboardService = inject(DashboardService);
   user = this.authService.current_user; // aapke AuthService se
@@ -32,6 +33,7 @@ export class Dashboard implements OnInit {
   doughnutData: any;
   lineData: any;
   polarData: any;
+  meterGroupValues: any;
 
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe((res: any) => {
@@ -54,11 +56,11 @@ export class Dashboard implements OnInit {
       };
 
       this.lineData = {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        labels: ['BCA', 'BBA', 'MCA', 'MBA'],
         datasets: [
           {
-            label: 'Users Growth',
-            data: [5, 10, 15, 25, res.totalUsers],
+            label: `Students  ${this.current_year} `,
+            data: [res.currentYearBcaStudents, res.currentYearBbaStudents, res.currentYearMcaStudents, res.currentYearMbaStudents],
             fill: false,
             borderColor: '#42A5F5',
             tension: 0.4
@@ -80,6 +82,13 @@ export class Dashboard implements OnInit {
           }
         ]
       };
+
+      this.meterGroupValues = [
+            { label: 'BCA', color: '#34d399', value: res.currentYearBcaStudents },
+                { label: 'BBA', color: '#fbbf24', value: res.currentYearBbaStudents },
+                { label: 'MCA', color: '#60a5fa', value: res.currentYearMcaStudents },
+                { label: 'MBA', color: '#c084fc', value: res.currentYearMbaStudents }
+            ]
     });
   }
 
