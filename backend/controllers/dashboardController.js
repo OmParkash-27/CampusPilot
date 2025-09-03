@@ -14,7 +14,7 @@ const getAdminDashboardStats = async (req, res) => {
     // const totalStudentUsers = await User.countDocuments({ role: 'student' });
 
     const latestUsers = await User.find({ role: { $ne: "student" } }).sort({ createdAt: -1 }).limit(5);
-    const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5).populate('user', "name email role profilePic");
+    const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5).populate('user', "name email role status profilePic");
     const uCreatedStudent = await Student.find({createdBy: user}).populate('user', 'name email role profilePic');
     const currentYearBcaStudents = await Student.countDocuments({ "courses.course": "BCA", "courses.batchYear": currentYear });
     const currentYearMcaStudents = await Student.countDocuments({ "courses.course": "MCA", "courses.batchYear": currentYear });

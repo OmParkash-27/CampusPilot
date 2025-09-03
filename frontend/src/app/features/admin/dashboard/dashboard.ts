@@ -15,6 +15,7 @@ import { ChipModule } from 'primeng/chip';
 import { BadgeModule } from 'primeng/badge';
 import { User } from '../../../core/models/User';
 import { Student } from '../../../core/models/Student';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -40,6 +41,8 @@ export class Dashboard implements OnInit {
   lineData: any;
   polarData: any;
   meterGroupValues: any;
+
+  router = inject(Router);
 
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe((res: any) => {

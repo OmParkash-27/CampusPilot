@@ -55,7 +55,7 @@
       if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
 
       if (!user.status) {
-        return res.status(403).json({ message: "Account is inactive. Contact admin." });
+        return res.status(403).json({ message: "Account is inactive. Contact to admin." });
       }
 
       const token = generateToken(user);

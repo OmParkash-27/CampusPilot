@@ -50,7 +50,7 @@
                             <span class="text-3xl ">{{ dashboardData()?.totalEditors }}</span>
                         </div>
                         <div class="flex items-center justify-content-center">
-                            <img src="images/picture-svgrepo-com.svg" class="w-7" alt="students icon" />
+                            <img src="images/document-svgrepo-com.svg" class="w-7" alt="students icon" />
                         </div>
                     </div>
                 </p-card>
@@ -149,7 +149,7 @@
                     }
                 </div>
                 <div class="view-all-btn absolute right-0">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" />
+                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" (onClick)="router.navigate(['common/student-list'])" />
                 </div>
             </div>
         </p-card>
@@ -160,7 +160,7 @@
 <div class="grid grid-nogutter nested-grid bg-gray-100 gap-3 p-3 pt-0">
     <div class="col-12 sm:col-12 md:col-5 lg:col-7">
         <!-- Polar Chart -->
-            <p-card class="shadow-md flex flex-col justify-content-between">
+            <p-card class="shadow-md flex flex-col align-items-center">
                 <h2 class="text-lg font-bold mb-6">Polar Area</h2>
                 <p-chart type="polarArea" [data]="polarData"></p-chart>
             </p-card>
@@ -188,7 +188,7 @@
                     }
                 </div>
                 <div class="view-all-btn">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" />
+                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" (onClick)="router.navigate(['admin/user-list'])" />
                 </div>
             </div>
         </p-card>
