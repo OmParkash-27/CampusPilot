@@ -1,7 +1,7 @@
 <div class="home-wrapper">
     <!-- Hero Section -->
     <div class="hero-section">
-        <h1>Welcome to Student Portal</h1>
+        <h1>Welcome to Campus Pilot</h1>
         <p>Your journey to knowledge starts here!</p>
         <button *ngIf="!isLoggedIn()" pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
     </div>
@@ -12,18 +12,34 @@
     <div class="features-grid">
         <p-card header="Easy Registration" [style]="{width: '100%'}">
             <i class="pi pi-user-plus feature-icon"></i>
-            <p>Register quickly and manage your profile anytime.</p>
+            <p>Register quickly and see upload documents anytime.</p>
+        </p-card>
+
+        <p-card header="Users" [style]="{width: '100%'}">
+            <i class="pi pi-shield feature-icon"></i>
+            <p>There are four types of users:- Admins, Teachers, Editors, Students</p>
+        </p-card>
+
+        <p-card header="Student Management" [style]="{width: '100%'}">
+            <i class="pi pi-users feature-icon"></i>
+            <p>Students are manage by Admins, Editors, Teachers.</p>
+        </p-card>
+
+        <p-card header="Teachers & Editors Management" [style]="{width: '100%'}">
+            <i class="pi pi-key feature-icon"></i>
+            <p>Teachers and Editors are manage by Admins.</p>
+        </p-card>
+
+        <p-card header="Menu Bar" [style]="{width: '100%'}">
+            <i class="pi pi-list feature-icon"></i>
+            <p>Menu items are based on user Role.</p>
         </p-card>
 
         <p-card header="Assignments" [style]="{width: '100%'}">
             <i class="pi pi-file feature-icon"></i>
-            <p>Upload, submit, and view assignments easily.</p>
+            <p>Upload, Submit, and View Documents easily.</p>
         </p-card>
 
-        <p-card header="Notifications" [style]="{width: '100%'}">
-            <i class="pi pi-bell feature-icon"></i>
-            <p>Stay updated with important alerts and announcements.</p>
-        </p-card>
     </div>
 
     <p-divider></p-divider>

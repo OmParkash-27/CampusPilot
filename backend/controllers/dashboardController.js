@@ -59,8 +59,8 @@ const getCommonDashboardStats = async(req, res) => {
     const currentYearBbaStudents = await Student.countDocuments({ "courses.course": "BBA", "courses.batchYear": currentYear });
     const totalMbaStudents = await Student.countDocuments({ "courses.course": "MBA" });
     const currentYearMbaStudents = await Student.countDocuments({ "courses.course": "MBA", "courses.batchYear": currentYear });
-    const lastCreated = await Student.find({'createdBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");;
-    const lastUpdated = await Student.find({'updatedBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");;
+    const lastCreated = await Student.find({'createdBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");
+    const lastUpdated = await Student.find({'updatedBy': user}).sort({ createdAt: -1 }).limit(5).populate('user', "name email profilePic");
 
     res.json({
       totalStudents,
