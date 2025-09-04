@@ -2,7 +2,7 @@ import { Injectable, effect, signal, WritableSignal } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth/auth.service';
-import { RoleMenuItem, sidebarMenuItems } from './main.const';
+import { dashboardLabels, RoleMenuItem, sidebarMenuItems } from './main.const';
 import { User } from '../core/models/User';
 
 @Injectable({
@@ -69,8 +69,8 @@ export class MainLayoutService {
         }
 
         //Rename Dashboards
-        if(this.user()?.role === 'admin' && (item.id === 'eDashboard' || item.id === 'tDashboard')) {
-          const label = item.id === 'eDashboard' ? 'Editor Dashboard' : 'Teacher Dashboard';
+        if(this.user()?.role === 'admin' && dashboardLabels[item?.id!]) {
+          const label = dashboardLabels[item?.id!];
           updatedItem = {...updatedItem, label:label}
         }
 

@@ -40,7 +40,12 @@ export class Dashboard implements OnInit {
   doughnutData: any;
   lineData: any;
   polarData: any;
-  meterGroupValues: any;
+  meterGroupValues: any=  [
+            { label: 'BCA', color: '#34d399', value: 0 },
+                { label: 'BBA', color: '#fbbf24', value: 0 },
+                { label: 'MCA', color: '#60a5fa', value: 0 },
+                { label: 'MBA', color: '#c084fc', value: 0 }
+            ];
 
   router = inject(Router);
 

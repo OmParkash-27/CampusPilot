@@ -104,15 +104,16 @@ filterUsers() {
     this.prevRole = userRole;
   }
 
-  onRoleChange(user: User | undefined, event: any) {
+  onRoleChange(user: User, event:any) {
   if (!user) return;
-  const selectedRole = event.value;  
+  const selectedRole = event.value;
+  const oldRole = this.prevRole || user.role; 
   this.userService.updateRole(user._id, selectedRole).subscribe({
     next: () => {
       user.role = selectedRole;
     },
-    error: () => {
-       user.role = this.prevRole as User['role'];
+    error: () => {      
+       user.role = oldRole;
     }
   });
 }

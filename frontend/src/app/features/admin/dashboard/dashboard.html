@@ -168,7 +168,7 @@
     <div class="col-12 sm:col-12 md:col-6 lg:col-4 flex-grow-1">
         <p-card class="shadow-md student-section-card">
             <div>
-                <h2 class="text-lg text-400">Users</h2>
+                <h2 class="text-lg text-400">Students</h2>
             </div>
             <div class="students-section flex p-4">
                 <div class="chips-badge-section flex flex-grow-1 flex-wrap w-full">
@@ -185,6 +185,8 @@
                             </p-chip> 
                             <p-badge [value]="student.user.status ? 'Active': 'Inactive'" [severity]="student.user.status ? 'info' : 'warn'" />
                         </div>
+                    } @empty {
+                        no data
                     }
                 </div>
                 <div class="view-all-btn">

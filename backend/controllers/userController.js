@@ -60,6 +60,9 @@ exports.updateUserRole = async (req, res) => {
   }
 
   try {
+    const student = await Student.findOne({ user: id });
+    if (student) return res.status(400).json({ message: "You can't change role of existing student" });
+
     const user = await User.findByIdAndUpdate(id, { role }, { new: true }); // If you don’t use new: true, will give without updated user
     if (!user) return res.status(404).json({ message: 'User not found' });
 

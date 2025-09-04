@@ -8,8 +8,16 @@ export interface RoleMenuItem extends MenuItem {
   public?: boolean;
   items?: RoleMenuItem[]
 }
+
+export const dashboardLabels: Record<string, string> = {
+  eDashboard: 'Editor Dashboard',
+  tDashboard: 'Teacher Dashboard',
+  sDashboard: 'Student Dashboard'
+};
+
 export const sidebarMenuItems: RoleMenuItem[] = [
   {
+    id: 'home',
     label: 'Home',
     icon: 'pi pi-home',
     routerLink: '/',
@@ -22,6 +30,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
 
   // Admin menu
   {
+    id: 'aDashboard',
     label: 'Dashboard',
     icon: 'pi pi-microsoft',
     routerLink: '/admin/dashboard',
@@ -32,6 +41,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
   },
 
   {
+    id: 'users',
     label: 'Users',
     icon: 'pi pi-users',
     roles: ['admin'],
@@ -39,24 +49,11 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     public: false,
     showWhenLoggedIn: true,
     items: [
-      { label: 'Register User', icon: 'pi pi-user-plus', routerLink: '/admin/user-add-edit',visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] },
-      { label: 'List Users', icon: 'pi pi-list', routerLink: '/admin/user-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] }
-    ]
+      { id: 'create-user', label: 'Create', icon: 'pi pi-user-plus', routerLink: '/admin/user-add-edit',visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] },
+      { id: 'list-users', label: 'List', icon: 'pi pi-list', routerLink: '/admin/user-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin'] }
+    ]    
   },
-  {
-    label: 'Students',
-    icon: 'pi pi-graduation-cap',
-    visible: false,
-    public: false,
-    showWhenLoggedIn: true,
-    roles: ['admin', 'editor', 'teacher'],
-    items: [
-      { label: 'Create Student', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
-      { label: 'List Students', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
-      { label: 'New Register Students', icon: 'pi pi-list', routerLink: '/common/student-new-register-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
-    ]
-  },
-
+  
   // Editor menu
   {
     id: 'eDashboard',
@@ -79,8 +76,34 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: ['admin', 'teacher'],
   },
+  {
+    id: 'students',
+    label: 'Students',
+    icon: 'pi pi-graduation-cap',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['admin', 'editor', 'teacher'],
+    items: [
+      { id: 'create-student', label: 'Create', icon: 'pi pi-plus', routerLink: '/common/student-add-edit', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
+      { id: 'list-students', label: 'List', icon: 'pi pi-list', routerLink: '/common/student-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
+      { id: 'new-registered', label: 'New Registered', icon: 'pi pi-list', routerLink: '/common/student-new-register-list', visible:false, public:false, showWhenLoggedIn: true, roles: ['admin', 'editor', 'teacher'] },
+    ]
+  },
+  // Students Dashboard
+  {
+    id: 'sDashboard',
+    label: 'Dashboard',
+    icon: 'pi pi-microsoft',
+    routerLink: '/student/dashboard',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['admin', 'student'],
+  },
   
   {
+    id: 'about',
     label: 'About',
     icon: 'pi pi-info-circle',
     routerLink: '/about',
@@ -90,6 +113,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: []
   },
   {
+    id: 'contact',
     label: 'Contact',
     icon: 'pi pi-envelope',
     routerLink: '/contact',
@@ -99,6 +123,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: []
   },
   {
+    id: 'login',
     label: 'Login',
     icon: 'pi pi-sign-in',
     routerLink: '/login',
@@ -109,6 +134,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: []
   },
   {
+    id: 'register',
     label: 'Register',
     icon: 'pi pi-user-plus',
     routerLink: '/login',
@@ -119,8 +145,8 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     roles: []
   },
   {
+    id: 'logout', 
     label: 'Logout',
-    id: 'logout',
     icon: 'pi pi-sign-out',
     visible: false,
     public: false,
