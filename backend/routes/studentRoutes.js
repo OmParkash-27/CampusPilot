@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { addStudentDetails, createNewStudent, getAllStudents, getStudent, updateStudent, getNewRegisteredStudents, deleteStudent} = require('../controllers/studentController');
+const { addStudentDetails, createNewStudent, getAllStudents, getStudent, updateStudent, getNewRegisteredStudents, deleteStudent, uploadDocuments} = require('../controllers/studentController');
 const verifyToken = require('../middleware/authMiddleware');
 const { isAdmin, isTeacher, isEditor, isTeacherORisEditor } = require('../middleware/roleMiddleware');
 const upload = require('../middleware/uploadMiddleware');
@@ -28,6 +28,9 @@ router.get('/new-registered', verifyToken, getNewRegisteredStudents)
 router.get('/:id', verifyToken, getStudent);
 
 router.put('/:id', verifyToken, isEditor, upload.fields([ { name: 'photos', maxCount: 10 }, { name: 'profilePic', maxCount: 1 }]), updateStudent);
+
+//upload documents by students
+router.put('/', verifyToken, upload.fields([ { name: 'photos', maxCount: 10 }]), uploadDocuments);
 
 // Only admin can delete
 router.delete('/:id', verifyToken, isAdmin, deleteStudent);

@@ -35,9 +35,14 @@
             <p>Menu items are based on user Role.</p>
         </p-card>
 
-        <p-card header="Assignments" [style]="{width: '100%'}">
+        <p-card header="Documents" [style]="{width: '100%'}">
             <i class="pi pi-file feature-icon"></i>
             <p>Upload, Submit, and View Documents easily.</p>
+        </p-card>
+        
+        <p-card header="Responsiveness" [style]="{width: '100%'}">
+            <i class="pi pi-mobile feature-icon"></i>
+            <p>Campus Pilot is responsive for mobiles, tablets & laptops.</p>
         </p-card>
 
     </div>
@@ -63,7 +68,7 @@
     <h2 class="section-title">Campus Life</h2>
     
     <div class="galleria-wrapper">
-        <p-galleria [value]="galleryImages" [autoPlay]="true" [circular]="true" [showThumbnails]="true" [showThumbnailNavigators]="true" [thumbnailsPosition]="'bottom'" [responsiveOptions]="responsiveOptions" [numVisible]="5" >
+        <p-galleria [value]="galleryImages" [autoPlay]="false" [circular]="true" [showThumbnails]="true" [showThumbnailNavigators]="true" [thumbnailsPosition]="'bottom'" [responsiveOptions]="responsiveOptions" [numVisible]="5" >
             <ng-template #item let-item>
                 <img [src]="item.itemImageSrc"/>
             </ng-template>

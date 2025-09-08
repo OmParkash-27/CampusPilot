@@ -1,0 +1,32 @@
+::ng-deep .p-card {
+    .p-galleria {
+        max-width: 70% !important;
+        justify-self: center;
+        .p-galleria-thumbnail-items {
+            gap: 0.5rem !important;
+            .p-galleria-thumbnail-item {
+                .grid {
+                    margin-right: 1rem !important;
+                    img {
+                        height: 60px;
+                        object-fit: cover;
+                        width: auto;
+                        max-width: 100%;
+                    }
+                }
+            }
+        }
+    }
+    .empty-img {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        img{
+            width: 100%;
+            height: auto;       
+            max-width: 300px;    
+            object-fit: contain; 
+            display: block
+        }
+    }
+}

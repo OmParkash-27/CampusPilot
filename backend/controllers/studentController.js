@@ -245,6 +245,23 @@ exports.updateStudent = async (req, res) => {
   }
 };
 
+//Upload documents
+exports.uploadDocuments = async (req, res) => {
+  const { id } = req.user;
+  const newPhotos = extractPhotos(req.files);
+  try {
+    const student = await Student.findOne({user: id});
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+    if(newPhotos.length) student.photos.push(...newPhotos);
+    const updatedStudent = await student.save();
+    res.json({ message: "Documents uploaded successfully", updatedStudent });
+  } catch(err) {
+    console.log("error uploading documents--", err);
+  }
+}
+
 // Delete student
 exports.deleteStudent = async (req, res) => {
   try {

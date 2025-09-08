@@ -28,7 +28,7 @@ export class Dashboard implements OnInit {
   current_year = new Date().getFullYear();
   private authService = inject(AuthService);
   private dashboardService = inject(DashboardService);
-  user = this.authService.current_user; // aapke AuthService se
+  user = this.authService.current_user; 
   API_URL = environment.apiUrl;
   usersDialongVisible = false;
 

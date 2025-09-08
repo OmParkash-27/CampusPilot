@@ -82,4 +82,17 @@ const getCommonDashboardStats = async(req, res) => {
  }
 }
 
-module.exports = { getAdminDashboardStats, getCommonDashboardStats };
+const getStudentDashboardStats = async (req, res) => {
+  const { id } = req.user;
+  
+  try {
+    const student = await Student.findOne({ user: id }).populate('user', 'name email profilePic');
+    if(!student) return res.status(404).json({ message: "Student not found" });
+    res.status(200).json(student);
+  } catch (error) {
+    console.log("getting error student dashboard ", error.message);
+    res.status(500).json({ message: 'Server error'});
+  }
+}
+
+module.exports = { getAdminDashboardStats, getCommonDashboardStats, getStudentDashboardStats };
