@@ -101,6 +101,16 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: ['admin', 'student'],
   },
+  {
+    id: 'uploadFiles',
+    label: 'Upload Files',
+    icon: 'pi pi-file',
+    routerLink: '/student/upload-files',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['student'],
+  },
   
   {
     id: 'about',

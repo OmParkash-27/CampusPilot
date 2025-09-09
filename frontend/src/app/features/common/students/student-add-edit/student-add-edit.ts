@@ -231,7 +231,6 @@ export class AddEditStudent implements OnInit {
       const currentPhotos = this.studentForm.get('photos')?.value || [];
       const updatedPhotos = currentPhotos.filter((photo: File) => photo !== event.file);
       this.studentForm.patchValue({ photos: updatedPhotos });
-      console.log("after remove file", updatedPhotos);
     }
   }
 

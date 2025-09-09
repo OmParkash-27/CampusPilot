@@ -6,5 +6,10 @@ export const STUDENT_ROUTES: Routes = [
     path: 'dashboard',
     loadComponent: () =>
       import('./dashboard/dashboard').then(m => m.SDashboard)
+  },
+  {
+    path: 'upload-files',
+    loadComponent: () =>
+      import('./upload-student-files/upload-student-files').then(m => m.UploadStudentFiles)
   }
 ];

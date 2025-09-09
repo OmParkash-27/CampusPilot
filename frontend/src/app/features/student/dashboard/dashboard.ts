@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, model, OnInit } from '@angular/core';
+import { Component, inject, model, OnInit, signal, WritableSignal } from '@angular/core';
 import { AvatarModule } from 'primeng/avatar';
 import { CardModule } from 'primeng/card';
 import { ImageModule } from 'primeng/image';
@@ -8,6 +8,7 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 import { environment } from '../../../../environments/environment';
 import { FormsModule } from '@angular/forms';
 import { DashboardService } from './dashboard.service';
+import { Student } from '../../../core/models/Student';
 
 @Component({
   selector: 'app-Sdashboard',
@@ -16,19 +17,22 @@ import { DashboardService } from './dashboard.service';
   styleUrl: './dashboard.scss'
 })
 export class SDashboard implements OnInit {
-  authService = inject(AuthService);
   dashboardService = inject(DashboardService);
-  user = this.authService.current_user; 
+  user: WritableSignal<Student | null> = signal<Student | null>(null);
   API_URL = environment.apiUrl;
   images = model<any[]>([]);
 
   responsiveOptions: any[] = [
         {
             breakpoint: '1300px',
-            numVisible: 4
+            numVisible: 3
         },
         {
-            breakpoint: '998px',
+            breakpoint: '1080px',
+            numVisible: 2
+        },
+        {
+            breakpoint: '992px',
             numVisible: 2
         },
         {
@@ -39,7 +43,10 @@ export class SDashboard implements OnInit {
 
   ngOnInit(): void {
       this.dashboardService.getDashboardData().subscribe({
-        next: (res) => this.images.set(res.photos)
+        next: (res) => {
+          this.images.set(res.photos);
+          this.user.set(res);
+        }
       })
   }
 }

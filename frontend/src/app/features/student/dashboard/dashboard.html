@@ -1,49 +1,83 @@
 <div class="grid nested-grid grid-nogutter justify-content-start bg-gray-100 p-3 h-full min-h-full overflow-auto gap-3">
     <!-- Document section -->
-    <div class="col-12 sm:col-12 md:col-12 lg:col-7 xl:col-7 lg:h-full">
-        <p-card class="border-round-lg min-h-full max-h-full overflow-auto">
+    <div class="col-12 sm:col-12 md:col-12 lg:col-6 xl:col-6 h-full">
+        <p-card class="border-round-lg relative min-h-full">
             <h2 class="text-lg text-400 mb-6">Documents</h2>
-            <p-galleria [value]="images()" [showIndicators]="true" [showThumbnails]="true"
-                [showIndicatorsOnItem]="true" indicatorsPosition="left"
-                [responsiveOptions]="responsiveOptions">
-                <ng-template pTemplate="item" let-item>
-                    <img [src]="API_URL + '/img/' + item" style="width: 100%; display: block;" />
-                </ng-template>
-                <ng-template pTemplate="indicator" let-index>
-                    <span style="color: #ffffff; cursor: pointer">
-                        {{index + 1}}
-                    </span>
-                </ng-template>
-                <ng-template pTemplate="thumbnail" let-item>
-                    <div class="grid gap-4 justify-center">
+            <div class="galleria-container">
+                <p-galleria [value]="images()" [showIndicators]="true" [showThumbnails]="true"
+                    [showIndicatorsOnItem]="true" indicatorsPosition="left"
+                    [responsiveOptions]="responsiveOptions">
+                    <ng-template pTemplate="item" let-item>
                         <img [src]="API_URL + '/img/' + item" />
-                    </div>
-                </ng-template>
-            </p-galleria>
-            <div class="empty-img">
+                    </ng-template>
+                    <ng-template pTemplate="indicator" let-index>
+                        <span style="color: #ffffff; cursor: pointer">
+                            {{index + 1}}
+                        </span>
+                    </ng-template>
+                    <ng-template pTemplate="thumbnail" let-item>
+                        <div class="grid gap-4 justify-center">
+                            <img [src]="API_URL + '/img/' + item" />
+                        </div>
+                    </ng-template>
+                </p-galleria>
                 @if(!images().length) {
-                    <img src="images/empty.jpg" alt="no img" >
+                    <div class="empty-img">
+                        <img src="images/empty.jpg" alt="no img" >
+                    </div>
                 }
             </div>
         </p-card>
     </div>
     <!-- Profile section -->
-    <div class="col-12 sm:col-12 md:col-12 lg:col-4 xl:col-4 flex-grow-1 h-full">
-        <p-card class="shadow-md border-round-lg min-h-full">
-            <h2 class="text-lg text-400 mb-6">Profile</h2>
-            <div class="flex flex-column align-items-center gap-5">
+    <div class="col-12 sm:col-12 md:col-12 lg:col-5 xl:col-5 flex-grow-1 h-full">
+        <p-card class="shadow-md border-round-lg min-h-full max-h-full overflow-auto">
+            <h2 class="text-lg text-400">Profile</h2>
+            <div class="flex flex-column align-items-center gap-5 mt-6">
                 <div class="flex flex-column align-items-center gap-3 user-profile">
-                    @if(!!user() && user()?.profilePic !== null) {
-                    <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.profilePic" shape="circle"
-                        (onImageError)="user()!.profilePic=null"></p-avatar>
+                    @if(!!user() && user()?.user?.profilePic !== null) {
+                    <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.user?.profilePic" shape="circle"
+                        (onImageError)="user()!.user.profilePic=null"></p-avatar>
                     } @else {
                     <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
                     }
                     <span class="text-3xl bg-white -mt-6 w-8rem text-center">{{
-                        user()?.name
+                        user()?.user?.name
                         }}</span>
-                    <p>{{ user()?.email }}</p>
-                    <p>{{ user()?.role }}</p>
+                    <p>{{ user()?.user?.email }}</p>
+                   
+                </div>
+                <div class="details-section flex align-items-start flex-row gap-5">
+                    <!-- <div class="graduate-section flex justify-content-center align-items-center flex-column gap-2 w-4">
+                        <h2 class="text-lg text-400">Graduate</h2>
+                        <span class="text-center"><b>Course </b> {{user()!.courses[0].course}}</span>
+                        <span class="text-center"> <b>Batch Year</b> {{user()!.courses[0].batchYear}}</span>
+                        <span class="text-center"> <b>Status</b> {{user()!.courses[0].status}}</span>
+                    </div> -->
+                    <div class="academic-section flex justify-content-center align-items-center flex-column gap-2 w-4">
+                        <h2 class="text-lg text-400">Academic</h2>
+                        <span class="text-center"> <b>Roll Number</b> {{user()?.rollNo}}</span>
+                        <span class="text-center"> <b>Enrollment Number</b> {{user()?.enrollmentNo}}</span>
+                        <span class="text-center"><b>Course </b> {{user()?.courses?.[0]?.course}}</span>
+                        <span class="text-center"> <b>Batch Year</b> {{user()?.courses?.[0]?.batchYear}}</span>
+                        <span class="text-center"> <b>Status</b> {{user()?.courses?.[0]?.status}}</span>
+                    </div>
+                    <div class="personal-section flex justify-content-center align-items-center flex-column gap-2 w-4">
+                        <h2 class="text-lg text-400">Personal</h2>
+                         <span class="text-center"><b>Date of Birth</b> {{user()?.dob | date}}</span>
+                        <span class="text-center"><b>Gender</b> {{user()?.gender}}</span>
+                        <span class="text-center"><b>Phone</b> {{user()?.phone}}</span>
+                        <span class="text-center"> <b>Gaurdian</b> {{user()?.guardianName}}</span>
+                        <span class="text-center"> <b>Gaurdian Phone</b> {{user()?.guardianContact}}</span>
+                    </div>
+                    <div class="personal-section flex justify-content-center align-items-center flex-column gap-2 w-4">
+                        <h2 class="text-lg text-400">Address</h2>
+                        
+                        <span class="text-center"> <b>Street</b> {{user()?.address?.street}}</span>
+                        <span class="text-center"> <b>City</b> {{user()?.address?.city}}</span>
+                        <span class="text-center"> <b>State</b> {{user()?.address?.state}}</span>
+                        <span class="text-center"> <b>Zip Code</b> {{user()?.address?.zip}}</span>
+                    </div>
                 </div>
             </div>
         </p-card>
