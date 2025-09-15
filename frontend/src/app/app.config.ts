@@ -8,12 +8,12 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
 import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ConfirmationService } from 'primeng/api';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { AuthService } from './core/services/auth/auth.service';
 import { LoadingInterceptor } from './core/interceptors/loading-interceptor';
 import { MessageInterceptor } from './core/interceptors/message-interceptor';
 import { MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +21,7 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([MessageInterceptor])
     ),
     MessageService,
+    ConfirmationService,
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
@@ -42,8 +43,6 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: LoadingInterceptor,
       multi: true,
-    },
-    ConfirmationService,
-    
+    }    
   ]
 };

@@ -14,12 +14,13 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { environment } from '../../../../../environments/environment';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-
+import { ConfirmPopupModule } from 'primeng/confirmpopup';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule, ConfirmPopupModule],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
@@ -39,7 +40,7 @@ export class UserList implements OnInit {
   private prevRole: User['role'] | null = null;
   loggedUser: User | null = null;
   
-  constructor(public router: Router, private userService: UserService) {
+  constructor(public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
     this.loggedUser = this.userService.currentUser;
   }
   
@@ -119,9 +120,23 @@ filterUsers() {
 }
 
 
-  deleteUser(userId: string) {
-    if (confirm('Are you sure you want to delete this user?')) {
-      this.userService.delete(userId).subscribe(() => this.loadUsers());
-    }
+  deleteUser(userId: string, event: any) {
+    this.confirmService.confirm({
+            key:'deletePopup',
+            target: event.currentTarget as EventTarget,
+            message: 'Are you sure you want to proceed?',
+            icon: 'pi pi-exclamation-triangle',
+            rejectButtonProps: {
+                label: 'Cancel',
+                severity: 'secondary',
+                outlined: true
+            },
+            acceptButtonProps: {
+                label: 'Save'
+            },
+            accept: () => {
+              this.userService.delete(userId).subscribe(() => this.loadUsers());
+            }
+    })
   }
 }

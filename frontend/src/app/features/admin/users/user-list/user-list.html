@@ -1,6 +1,6 @@
 <div class="list-card">
   <h2>All Users</h2>
-
+  <p-confirmpopup key="deletePopup"> </p-confirmpopup>
   <p-table [value]="filteredUsers" [paginator]="true" [rows]="10" [loading]="loading()">
     <ng-template #caption>
         <div class="flex">
@@ -67,7 +67,7 @@
         <td>
             <div class="action-icons">
                 <i class="pi pi-pencil edit-icon" [title]="loggedUser?.email !=user.email ? 'edit' : 'cant edit'" (click)="loggedUser?.email !=user.email ? navigate(user._id) : null"></i>
-                <i class="pi pi-trash delete-icon" [title]="loggedUser?.email !=user.email ? 'delete' : 'cant delete'" (click)="loggedUser?.email != user.email ? deleteUser(user?._id) : null"></i>
+                <i class="pi pi-trash delete-icon" [title]="loggedUser?.email !=user.email ? 'delete' : 'cant delete'" (click)="loggedUser?.email != user.email ? deleteUser(user?._id, $event) : null"></i>
             </div>
         </td>
       </tr>

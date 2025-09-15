@@ -113,7 +113,7 @@ export class Login {
 
       const backendMsg = err?.error?.message?.toLowerCase() || '';
 
-      if (backendMsg.includes('user already exists') || backendMsg.includes('user already exist')) {
+      if (backendMsg.includes('user already exists')) {
         this.registrationError = 'This email is already registered. Please log in or use a different email.';
       } else if (backendMsg.includes('registration failed')) {
         this.registrationError = 'Registration failed due to a server error. Please try again later.';

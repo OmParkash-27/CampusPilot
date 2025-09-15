@@ -58,6 +58,7 @@ export class MainLayoutService {
             visible: true,
             command: () => {
               this.confirmationService.confirm({
+                key: 'logoutDialog',
                 message: 'Are you sure you want to log out?',
                 header: 'Logout Confirmation',
                 icon: 'pi pi-exclamation-triangle',

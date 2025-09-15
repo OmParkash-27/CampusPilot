@@ -17,10 +17,12 @@ import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { ConfirmPopup } from "primeng/confirmpopup";
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-student-list',
-  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule, ConfirmPopup],
   templateUrl: './student-list.html',
   styleUrl: './student-list.scss'
 })
@@ -48,7 +50,7 @@ export class StudentList {
   searchTerm: string = '';
   filteredStudents: Student[] = [];
   
-  constructor(public router: Router, private studentService: StudentService, private authService: AuthService) {
+  constructor(public router: Router, private studentService: StudentService, private authService: AuthService, private confirmService: ConfirmationService) {
     const user = this.authService.current_user();
     this.loggedUserRole = user?.role;
   }
@@ -122,19 +124,30 @@ filterStudents() {
     this.router.navigate(['common/student-add-edit/edit',id]);
   }
 
-  deleteStudent(id: string) {
-    if (!confirm('Are you sure you want to delete this student?')) {
-      return;
-    }
-
-    this.studentService.deleteStudent(id).subscribe({
-      next: () => {
-        // Remove deleted student from local state
-        this.students.set(this.students().filter(s => s._id !== id));
-      },
-      error: (err) => {
-        console.error('Failed to delete student', err);
-      }
-    });
+  deleteStudent(id: string, event: any) {
+    this.confirmService.confirm({
+                key:'deleteStudent',
+                target: event.currentTarget as EventTarget,
+                message: 'Are you sure you want to proceed?',
+                icon: 'pi pi-exclamation-triangle',
+                rejectButtonProps: {
+                    label: 'Cancel',
+                    severity: 'secondary',
+                    outlined: true
+                },
+                acceptButtonProps: {
+                    label: 'Save'
+                },
+                accept: () => {
+                  this.studentService.deleteStudent(id).subscribe({
+                        next: () => {
+                          this.fetchStudents();
+                        },
+                        error: (err) => {
+                          console.error('Failed to delete student', err);
+                        }
+                      });
+                }
+        })
   }
 }

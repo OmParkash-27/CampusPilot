@@ -1,4 +1,5 @@
 <div class="list-card">
+  <p-confirmpopup key="deleteStudent"></p-confirmpopup>
   <h2>All Students</h2>
   <p-table [value]="filteredStudents" [paginator]="true" [rows]="10" [loading]="loading()">
     <ng-template #caption>
@@ -95,7 +96,7 @@
             @if(loggedUserRole === 'admin') {
               <i class="pi pi-trash delete-icon" 
                 title="Delete Student" 
-                (click)="deleteStudent(student._id)">
+                (click)="deleteStudent(student._id, $event)">
               </i>
             }
           </div>
