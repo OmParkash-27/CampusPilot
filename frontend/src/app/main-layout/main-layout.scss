@@ -23,6 +23,7 @@
   display: flex !important;
   flex-direction: row !important;
   width: 100%;
+  overflow-y: auto !important;
   .p-menubar-item {
             display: block;
             width: 100%;
@@ -50,6 +51,9 @@
             }
           }
 }
+::ng-deep .p-menubar-root-list::-webkit-scrollbar {
+        width: 0;
+      }
 
 ::ng-deep .p-menubar-root-list>.p-menuitem {
   display: inline-flex !important;

@@ -22,7 +22,7 @@
       <!-- Sidebar for large screens -->
        @if(!isMobile()) {
          <div class="layout-sidebar" >
-           <p-menubar [model]="itemsSignal()" autoDisplay="true" ></p-menubar>
+           <p-menubar [model]="itemsSignal()" [autoDisplay]="false" ></p-menubar>
          </div>
        }
 
