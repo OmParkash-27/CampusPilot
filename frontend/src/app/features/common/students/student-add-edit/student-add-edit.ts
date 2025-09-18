@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, signal, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { User } from '../../../../core/models/User';
@@ -37,11 +37,21 @@ export class AddEditStudent implements OnInit {
   API_URL = environment.apiUrl;
   studentForm!: FormGroup;
   isEditMode = false;
-  isPartialAdd = false;
-  previewUrl:string | undefined = ''; // profilePic preview
+  isPartialAdd = signal(false);
+  previewUrl = signal<string | null>(null); // profilePic preview
   photoPreviews: string[] = []; // multiple photos preview
   minDateBatch: Date = new Date(1990, 0, 1);
   maxDateBatch: Date = new Date();
+
+  formEffect = effect(() => {
+      if (this.isPartialAdd()) {
+        this.studentForm.get('name')?.disable({ emitEvent: false });
+        this.studentForm.get('email')?.disable({ emitEvent: false });
+      } else {
+        this.studentForm.get('name')?.enable({ emitEvent: false });
+        this.studentForm.get('email')?.enable({ emitEvent: false });
+      }
+  });
 
   coursesList = [
     { label: 'MCA', value: 'MCA' },
@@ -76,41 +86,41 @@ export class AddEditStudent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  this.studentForm = this.fb.group({
-    userId: [''],
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    profilePic: [null],
-    photos: [[]],
-    rollNo: ['', Validators.required],
-    enrollmentNo: [''],
-    dob: [null],
-    gender: [''],
-    phone: [''],
-    address: this.fb.group({
-      street: [''],
-      city: [''],
-      state: [''],
-      zip: [''],
-    }),
-    guardianName: [''],
-    guardianContact: [''],
-    courses: this.fb.array([]),
-  });
+    this.studentForm = this.fb.group({
+      userId: [''],
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      profilePic: [null],
+      photos: [[]],
+      rollNo: ['', Validators.required],
+      enrollmentNo: [''],
+      dob: [null],
+      gender: [''],
+      phone: [''],
+      address: this.fb.group({
+        street: [''],
+        city: [''],
+        state: [''],
+        zip: [''],
+      }),
+      guardianName: [''],
+      guardianContact: [''],
+      courses: this.fb.array([]),
+    });
 
-  const userId = this.route.snapshot.paramMap.get('userId');
-  const studentId = this.route.snapshot.paramMap.get('studentId');
+    const userId = this.route.snapshot.paramMap.get('userId');
+    const studentId = this.route.snapshot.paramMap.get('studentId');
 
-  if (studentId) {
-    this.isEditMode = true;
-    this.loadStudent(studentId);
-  } else if (userId) {
-    this.isPartialAdd = true;
-    this.loadUser(userId);
-  } else {
-    this.addCourse(); // kam se kam ek course blank
+    if (studentId) {
+      this.isEditMode = true;
+      this.loadStudent(studentId);
+    } else if (userId) {
+      this.isPartialAdd.set(true);
+      this.loadUser(userId);
+    } else {
+      this.addCourse(); // kam se kam ek course blank
+    }
   }
-}
 
   private loadUser(userId: string) {
     this.userService.getUserById(userId).subscribe(user => {
@@ -120,7 +130,7 @@ export class AddEditStudent implements OnInit {
       email: this.userData?.email
       })
       if (this.userData?.profilePic) {
-        this.previewUrl = this.userData.profilePic;
+        this.previewUrl.set(this.userData.profilePic);
       }
     });
   }
@@ -155,7 +165,7 @@ export class AddEditStudent implements OnInit {
     }
 
     if (this.studentData.user?.profilePic) {
-      this.previewUrl = this.studentData?.user?.profilePic;
+      this.previewUrl.set(this.studentData?.user?.profilePic);
     }
     if (this.studentData?.photos?.length) {
       this.photoPreviews = this.studentData.photos;
@@ -197,7 +207,7 @@ export class AddEditStudent implements OnInit {
     } 
     if (event.files && event.files.length) {
       this.studentForm.patchValue({ profilePic: event.files[0] });
-      this.previewUrl = '';
+      this.previewUrl.set(null);
     }
   }
 
@@ -283,7 +293,7 @@ export class AddEditStudent implements OnInit {
         this.router.navigate(['/common/student-list']);
       });
     } else {
-      if(this.isPartialAdd) formData.append('userId', this.userData?._id!);
+      if(this.isPartialAdd()) formData.append('userId', this.userData?._id!);
       this.studentService.createStudent(formData).subscribe(()=>{
         this.router.navigate(['/common/student-list']);
       });

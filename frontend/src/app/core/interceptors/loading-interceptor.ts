@@ -1,37 +1,25 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-} from '@angular/common/http';
-import { Observable, timer } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { LoadingService } from '../services/loading/loading-service';
+import { finalize } from 'rxjs/operators';
+import { timer } from 'rxjs';
 
+export const LoadingInterceptor: HttpInterceptorFn = (req, next) => {
+  const loadingService = inject(LoadingService);
+  const minShowTime = 2000;
+  const startTime = Date.now();
 
-@Injectable()
-export class LoadingInterceptor implements HttpInterceptor {
-  private minShowTime = 2000; // 2 seconds in ms
+  loadingService.show();
 
-  constructor(private loadingService: LoadingService) {}
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    this.loadingService.show();
-    const startTime = Date.now();
-
-    return next.handle(req).pipe(
-      finalize(() => {
-        const elapsed = Date.now() - startTime;
-        const remaining = this.minShowTime - elapsed;
-
-        if (remaining > 0) {
-          // Wait remaining time before hiding spinner
-          timer(remaining).subscribe(() => this.loadingService.hide());
-        } else {
-          this.loadingService.hide();
-        }
-      })
-    );
-  }
-}
+  return next(req).pipe(
+    finalize(() => {
+      const elapsed = Date.now() - startTime;
+      const remaining = minShowTime - elapsed;
+      if (remaining > 0) {
+        timer(remaining).subscribe(() => loadingService.hide());
+      } else {
+        loadingService.hide();
+      }
+    })
+  );
+};

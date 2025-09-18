@@ -7,7 +7,7 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeuix/themes/aura';
-import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule, provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthService } from './core/services/auth/auth.service';
 import { LoadingInterceptor } from './core/interceptors/loading-interceptor';
 import { MessageInterceptor } from './core/interceptors/message-interceptor';
@@ -18,14 +18,14 @@ import { ConfirmationService } from 'primeng/api';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideHttpClient(
-      withInterceptors([MessageInterceptor])
+      withInterceptors([MessageInterceptor, LoadingInterceptor]),
     ),
+
     MessageService,
     ConfirmationService,
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
     // primeNg
     provideAnimationsAsync(),
         providePrimeNG({
@@ -39,10 +39,10 @@ export const appConfig: ApplicationConfig = {
       deps: [AuthService],
       multi: true,
     },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: LoadingInterceptor,
-      multi: true,
-    }    
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: LoadingInterceptor,
+    //   multi: true,
+    // }    
   ]
 };

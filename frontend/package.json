@@ -29,7 +29,7 @@
     "@angular/platform-server": "^20.1.0",
     "@angular/router": "^20.1.0",
     "@angular/ssr": "^20.1.4",
-    "@primeng/themes": "^20.0.1",
+    "@primeng/themes": "^20.1.2",
     "chart.js": "^4.5.0",
     "express": "^5.1.0",
     "primeflex": "^4.0.0",

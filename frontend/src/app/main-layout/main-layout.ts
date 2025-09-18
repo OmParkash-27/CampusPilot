@@ -3,7 +3,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { RoleMenuItem } from './main.const';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainLayoutService } from './main-layout.service';
@@ -29,9 +29,14 @@ export class MainLayout implements AfterViewInit, OnDestroy {
   API_URL = environment.apiUrl;
   
   constructor(
-    private mainLayoutService: MainLayoutService
+    private mainLayoutService: MainLayoutService, private router: Router
   ) { 
     this.itemsSignal = this.mainLayoutService.getMenu();
+    this.router.events.subscribe(event => {
+    if (event instanceof NavigationEnd) {
+      this.closeDrawer();
+    }
+  });
    }
 
   ngAfterViewInit() {
