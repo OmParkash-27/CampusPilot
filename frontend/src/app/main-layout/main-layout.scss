@@ -141,3 +141,39 @@
     }
   }
 }
+
+
+.speed-dial-wrapper {
+  position: fixed;
+  top: 50%;
+  right: -60px; // hidden outside screen
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: right 0.3s ease-in-out;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.2);
+  // padding: 0.5rem;
+  border-radius: 50px 0 0 50px;
+}
+
+.speed-dial-wrapper.opened {
+  right: 10px; // visible
+}
+
+.speed-dial-toggle {
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.speed-dial-btn {
+  background: #0d6efd !important;
+  border: none !important;
+}
