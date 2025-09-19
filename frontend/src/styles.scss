@@ -1,7 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 @import "primeicons/primeicons.css";
-@import "primeflex/primeflex.css";                            
+@import "primeflex/primeflex.css";       
 
+:root {
+  --label-color: #212121;
+  --card-heading-color: #212121;
+}
+
+:root.dark-theme {
+  --label-color: #212121;
+  --card-heading-color: #212121;
+}
+
+label {
+  color: var(--label-color);
+}
 
 *{
     margin: 0;

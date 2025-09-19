@@ -41,19 +41,13 @@
                     } @else {
                     <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
                     }
-                    <span class="text-3xl bg-white -mt-6 w-8rem text-center">{{
+                    <span class="text-3xl surface-0 -mt-6 w-8rem text-center">{{
                         user()?.user?.name
                         }}</span>
                     <p>{{ user()?.user?.email }}</p>
                    
                 </div>
                 <div class="details-section flex align-items-start flex-row gap-5">
-                    <!-- <div class="graduate-section flex justify-content-center align-items-center flex-column gap-2 w-4">
-                        <h2 class="text-lg text-400">Graduate</h2>
-                        <span class="text-center"><b>Course </b> {{user()!.courses[0].course}}</span>
-                        <span class="text-center"> <b>Batch Year</b> {{user()!.courses[0].batchYear}}</span>
-                        <span class="text-center"> <b>Status</b> {{user()!.courses[0].status}}</span>
-                    </div> -->
                     <div class="academic-section flex justify-content-center align-items-center flex-column gap-2 w-4">
                         <h2 class="text-lg text-400">Academic</h2>
                         <span class="text-center"> <b>Roll Number</b> {{user()?.rollNo}}</span>
