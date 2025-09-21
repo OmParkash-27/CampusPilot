@@ -1,17 +1,17 @@
-import { Injectable, effect, signal, WritableSignal } from '@angular/core';
-import { ConfirmationService } from 'primeng/api';
+import { Injectable, effect, signal, WritableSignal, computed } from '@angular/core';
+import { ConfirmationService, MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth/auth.service';
-import { dashboardLabels, RoleMenuItem, sidebarMenuItems } from './main.const';
+import { dashboardLabels, RoleMenuItem, sidebarMenuItems, speedDialItems } from './main.const';
 import { User } from '../core/models/User';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainLayoutService {
-  // Writable signal so we can update menu items dynamically
   private menuSignal: WritableSignal<RoleMenuItem[]> = signal<RoleMenuItem[]>([]);
   user: WritableSignal<User|null> = signal<User|null> (null);
+  allSpeedDialItems: WritableSignal<MenuItem[]> = signal(speedDialItems);
 
   constructor(
     private authService: AuthService,
@@ -19,6 +19,8 @@ export class MainLayoutService {
     private confirmationService: ConfirmationService
   ) {
     this.setupMenuWatcher();
+    this.initSpeedDialItems();
+    this.applySavedTheme();
   }
 
   private setupMenuWatcher() {
@@ -26,6 +28,7 @@ export class MainLayoutService {
       this.user.set(this.authService.current_user());
       const current_user = this.user();
 
+      //Menu Filter
       const filteredMenu = sidebarMenuItems.map(item => {
         const visible = !!(
           current_user
@@ -77,13 +80,55 @@ export class MainLayoutService {
 
         return updatedItem;
       }).filter(item => item.visible);
-
       this.menuSignal.set(filteredMenu);
     });
   }
 
+  visibleSpeedDialItems = computed(() => {
+    const user = this.authService.current_user();
+    return this.allSpeedDialItems().filter(item =>
+      user ? true : item.visible
+    );
+  });
+
+  getSpeedDialContent() {
+    return this.visibleSpeedDialItems;
+  }
+
   getMenu() {
     return this.menuSignal.asReadonly();
+  }
+
+  private initSpeedDialItems() {
+    const itemsWithCommands = speedDialItems.map(item => {
+      switch (item.id) {
+        case 'light':
+          return { ...item, command: () => this.setTheme('light') };
+        case 'dark':
+          return { ...item, command: () => this.setTheme('dark') };
+        case 'logout':
+          return { ...item, command: () => this.logout() };
+        default:
+          return item;
+      }
+    });
+
+    this.allSpeedDialItems.set(itemsWithCommands);
+  }
+
+  private applySavedTheme() {
+    const savedMode = localStorage.getItem('themeMode') as 'light' | 'dark' | null;
+    this.setTheme(savedMode ?? 'light');
+  }
+
+  private setTheme(mode: 'light' | 'dark') {
+    if (mode === 'dark') {
+      document.documentElement.classList.add('my-dark');
+      localStorage.setItem('themeMode', 'dark');
+    } else {
+      document.documentElement.classList.remove('my-dark');
+      localStorage.setItem('themeMode', 'light');
+    }
   }
 
   private logout() {
@@ -95,4 +140,5 @@ export class MainLayoutService {
       error: err => console.error('Logout failed:', err)
     });
   }
+
 }

@@ -1,6 +1,6 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { catchError, Observable, of, tap } from 'rxjs';
+import { catchError, firstValueFrom, Observable, of, tap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Request_For, API } from './auth.const';
 import { User } from '../../models/User';
@@ -25,21 +25,18 @@ export class AuthService {
     return this.http.get<User>(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.PROFILE}`, { withCredentials: true });
   }
 
-  // load user by angular app_initilizer and convert observable(coming from getProfile) in promise, bcos app_initilizer only know promise
-  loadCurrentUser() {
-    return this.getProfile().pipe(
-      tap(user => this.current_user.set(user)),
-      catchError((error) => {
-        if (error.status === 401) {
-          // unauthorized means user not logged in
+  // load user by angular app_initilizer and convert observable(coming from getProfile) in promise using firstValueFrom, bcos app_initilizer only know promise
+  async loadCurrentUser() {
+    const user = await firstValueFrom(
+      this.getProfile().pipe(
+        tap(user => this.current_user.set(user)),
+        catchError((error) => {
           this.current_user.set(null);
-          return of(null); 
-        } else {
-          console.error('Profile load error:', error);
           return of(null);
-        }
-      })
-    ).toPromise();
+        })
+      )
+    );
+    return user;
   }
 
   logout(): Observable<any> {

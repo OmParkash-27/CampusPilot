@@ -165,3 +165,10 @@ export const sidebarMenuItems: RoleMenuItem[] = [
   }
   
 ];
+
+export const speedDialItems: MenuItem[] = [
+    { id: 'settings', label: 'Settings', icon: 'pi pi-cog', visible: false },
+    { id: 'logout', label: 'Logout', icon: 'pi pi-sign-out', visible: false },
+    { id: 'light', label: 'Light', icon: 'pi pi-sun', visible: true },
+    { id: 'dark', label: 'Dark', icon: 'pi pi-moon', visible: true },
+];

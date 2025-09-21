@@ -11,8 +11,8 @@ import { ChipModule } from 'primeng/chip';
 import { environment } from '../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
-import { MenuItem } from 'primeng/api';
 import { SpeedDialModule } from 'primeng/speeddial';
+import { MenuItem } from 'primeng/api';
 
 @Component({
   selector: 'app-main-layout',
@@ -32,7 +32,8 @@ export class MainLayout implements AfterViewInit, OnDestroy {
   itemsSignal!: Signal<RoleMenuItem[]>;
   API_URL = environment.apiUrl;
   
-  isDark = signal(false);
+  speedDialOpen = false;
+  speedDial: Signal<MenuItem[]>;
 
   constructor(
     private mainLayoutService: MainLayoutService, private router: Router
@@ -43,15 +44,8 @@ export class MainLayout implements AfterViewInit, OnDestroy {
           this.closeDrawer();
         }
       });
-  }
-
-  ngOnInit() {
-    const savedMode = localStorage.getItem('themeMode');
-    if (savedMode === 'dark') {
-      this.isDark.set(true);
-      document.documentElement.classList.add('my-dark');
+      this.speedDial = this.mainLayoutService.getSpeedDialContent();
     }
-  }
 
   ngAfterViewInit() {
     // Set initial width safely after view is ready
@@ -67,18 +61,6 @@ export class MainLayout implements AfterViewInit, OnDestroy {
     window.removeEventListener('resize', this.resizeHandler);
   }
 
-  onThemeChange(value: boolean) {
-    this.isDark.set(value);
-    if (value) {
-      document.documentElement.classList.add('my-dark');
-      localStorage.setItem('themeMode', 'dark');
-    } else {
-      document.documentElement.classList.remove('my-dark');
-      localStorage.setItem('themeMode', 'light');
-    }
-  }
-
-
   toggleDrawer() {
     this.drawerVisible.update((v) => !v);
   }
@@ -89,20 +71,8 @@ export class MainLayout implements AfterViewInit, OnDestroy {
     }
   } 
 
-  speedDialOpen = false;
-
-  speedDialItems: MenuItem[] = [
-    { label: 'Settings', icon: 'pi pi-cog', command: () => this.onSettings() },
-    { label: 'Logout', icon: 'pi pi-sign-out', command: () => this.onLogout() },
-    { label: 'Light', icon: 'pi pi-sun', command: () => this.onThemeChange(false) },
-    { label: 'Dark', icon: 'pi pi-moon', command: () => this.onThemeChange(true) },
-  ];
-
   toggleSpeedDial() {
     this.speedDialOpen = !this.speedDialOpen;
   }
 
-  onProfile() { console.log('Profile clicked'); }
-  onSettings() { console.log('Settings clicked'); }
-  onLogout() { console.log('Logout clicked'); }
 }
