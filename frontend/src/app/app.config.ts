@@ -13,10 +13,6 @@ import { LoadingInterceptor } from './core/interceptors/loading-interceptor';
 import { MessageInterceptor } from './core/interceptors/message-interceptor';
 import { MessageService } from 'primeng/api';
 import { ConfirmationService } from 'primeng/api';
-import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
-import { getAuth, provideAuth } from '@angular/fire/auth';
-import { getStorage, provideStorage } from '@angular/fire/storage';
-
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -44,7 +40,6 @@ export const appConfig: ApplicationConfig = {
       useFactory: (authService: AuthService) => () => authService.loadCurrentUser(),
       deps: [AuthService],
       multi: true,
-    }, provideFirebaseApp(() => initializeApp({ projectId: "campuspilot-a06d3", appId: "1:541080188559:web:caedb9de2f5bbbc5f722fa", storageBucket: "campuspilot-a06d3.firebasestorage.app", apiKey: "AIzaSyDGNmFZd_0rPFheZ67ch_aMrSuBp7_AO10", authDomain: "campuspilot-a06d3.firebaseapp.com", messagingSenderId: "541080188559", measurementId: "G-EWBMCRCTR4" })), provideAuth(() => getAuth()), provideStorage(() => getStorage()),
-   
+    }
   ]
 };
