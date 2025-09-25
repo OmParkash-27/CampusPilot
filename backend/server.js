@@ -13,6 +13,7 @@ const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const verifyToken = require('./middleware/authMiddleware');
+const admin = require('firebase-admin');
 
 // Load environment variables
 const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -21,10 +22,10 @@ dotenv.config({ path: envFile });
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
+// for cors Middleware
 const allowedOrigin =
   process.env.NODE_ENV === 'production'
-    ? process.env.CLIENT_URL // e.g. https://myapp.com
+    ? process.env.CLIENT_URL 
     : 'http://localhost:4200'; // dev Angular URL
 
 app.use(
@@ -33,6 +34,16 @@ app.use(
     credentials: true, // allow cookies
   })
 );
+
+//firebase storage
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+});
+
+const bucket = admin.storage().bucket();
 
 //public folder
 app.use('/api', express.static(path.join(__dirname, './public')));
