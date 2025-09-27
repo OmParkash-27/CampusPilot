@@ -87,7 +87,7 @@
     <div class="form-group">
       <label>Profile Picture</label>
       <div *ngIf="previewUrl()" class="mb-2">
-        <img [src]="this.API_URL + '/img/' + previewUrl()" alt="Profile Picture" width="120" style="border-radius: 8px;" />
+        <img [src]="previewUrl()" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
       <p-fileUpload [disabled]="isPartialAdd()" name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true" ></p-fileUpload>
     </div>
@@ -125,7 +125,7 @@
       <label>Student's Docs Photos</label>
       <div class="photos-preview flex flex-row flex-wrap">
         <div *ngFor="let p of photoPreviews; let i=index" class="photo-item">
-          <img [src]="API_URL + '/img/' + p" width="100" style="border-radius:6px; max-height: 90px; object-fit: cover;" />
+          <img [src]="p" width="100" style="border-radius:6px; max-height: 90px; object-fit: cover;" />
           <button type="button" pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm mr-2" (click)="onOldPhotoRemove(p, i)"></button>
         </div>
       </div>

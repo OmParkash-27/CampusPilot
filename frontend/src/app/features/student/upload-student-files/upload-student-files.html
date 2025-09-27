@@ -2,7 +2,7 @@
     <div class="flex justify-content-center lg:w-9" style="width: 80%;">
             <div *ngIf="photos() && photos().length > 0" class="grid grid-cols-12 gap-4 justify-content-center" style="background: linear-gradient(353deg, black, #00000000); padding: 1rem;">
                 <div *ngFor="let image of photos(); let index = index" class="col-span-4 flex justify-content-center align-items-center" key="index" style="background: linear-gradient(353deg, black, #00000000);">
-                    <img [src]="API_URL + '/img/' + image" [alt]="image.alt" style="cursor: pointer; max-height: 60px; object-fit: contain;"
+                    <img [src]="image" [alt]="image.alt" style="cursor: pointer; max-height: 60px; object-fit: contain;"
                         (click)="imageClick(index)" width="100" />
                 </div>
             </div>
@@ -10,7 +10,7 @@
                 [responsiveOptions]="responsiveOptions" [containerStyle]="{ 'max-width': '850px' }" [numVisible]="7"
                 [circular]="true" [fullScreen]="true" [showItemNavigators]="true" [showThumbnails]="false">
                 <ng-template #item let-item>
-                    <img [src]="API_URL + '/img/' + item" style="width: 100%; display: block;" />
+                    <img [src]="item" style="width: 100%; display: block;" />
                 </ng-template>
             </p-galleria>
     </div>

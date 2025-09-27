@@ -1,31 +1,8 @@
 const mongoose = require('mongoose');
 const User = require('../models/User');
 const Student = require("../models/Student");
-
-const deleteFiles = require('../utils/deleteUploadedFiles');
 const bcrypt = require('bcryptjs');
-
-
-//add user by admin
-exports.addUser = async (req, res) => {
-  const { name, email, role, status } = req.body;
-    const profilePic = req.file ? req.file.filename : null;
-    try {
-      const userExists = await User.findOne({ email });
-      if (userExists) {
-            await deleteFiles(profilePic); // cleanup uploaded pic
-            return res.status(400).json({ message: 'Email already exists' });
-          }
-      const pass = Array.from(name).length > 6 ? name : '123456';
-      const hashedPassword = await bcrypt.hash(pass, 10);
-      const newUser = await User.create({ name, email, password: hashedPassword, profilePic, status, role });
-
-      res.status(201).json({ message: 'User registered successfully', user: newUser });
-    } catch (err) {
-      await deleteFiles(profilePic);
-      res.status(500).json({ message: 'Add user failed', error: err.message });
-    }
-}
+const { uploadProfilePic, deleteFromCloudinary } = require('../utils/cloudinaryHelper');
 
 //get a user
 exports.getUser = async (req, res) => {
@@ -98,11 +75,46 @@ exports.updateUserStatus = async (req, res) => {
   }
 };
 
-//update user
+//add user
+exports.addUser = async (req, res) => {
+  const { name, email, role, status } = req.body;
+  let profilePicUrl = null;
+
+  try {
+    if (req.file) {
+      profilePicUrl = await uploadProfilePic(req.file);
+    }
+
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      if (profilePicUrl) await deleteFromCloudinary(profilePicUrl);
+      return res.status(400).json({ message: 'Email already exists' });
+    }
+
+    const pass = Array.from(name).length > 6 ? name : '123456';
+    const hashedPassword = await bcrypt.hash(pass, 10);
+
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      profilePic: profilePicUrl,
+      status,
+      role
+    });
+
+    res.status(201).json({ message: 'User registered successfully', user: newUser });
+  } catch (err) {
+    if (profilePicUrl) await deleteFromCloudinary(profilePicUrl);
+    res.status(500).json({ message: 'Add user failed', error: err.message });
+  }
+};
+
+// Update user
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
   const { name, email, role, status } = req.body;
-  const newProfilePic = req.file?.filename;
+  let newProfilePicUrl = null;
 
   const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
   if (role && !allowedRoles.includes(role)) {
@@ -113,31 +125,32 @@ exports.updateUser = async (req, res) => {
     const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // Remove old profile pic if new one is uploaded
-    
-    // old profilePic
-    var old_Profile_Pic = user.profilePic;
+    if (req.file) {
+      newProfilePicUrl = await uploadProfilePic(req.file);
+    }
 
-    // Update user fields
+    const oldProfilePic = user.profilePic;
+
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
     user.status = status || user.status;
-    if (newProfilePic) user.profilePic = newProfilePic;
+    if (newProfilePicUrl) user.profilePic = newProfilePicUrl;
 
     await user.save();
-    if (newProfilePic && old_Profile_Pic && (newProfilePic !== old_Profile_Pic)) {
-      await deleteFiles(old_Profile_Pic);       
-    }
-    res.status(200).json({ message: 'User updated successfully', user });
 
+    if (newProfilePicUrl && oldProfilePic && oldProfilePic !== newProfilePicUrl) {
+      await deleteFromCloudinary(oldProfilePic);
+    }
+
+    res.status(200).json({ message: 'User updated successfully', user });
   } catch (err) {
-    await deleteFiles(newProfilePic);
+    if (newProfilePicUrl) await deleteFromCloudinary(newProfilePicUrl);
     res.status(500).json({ message: 'Update failed', error: err.message });
   }
 };
 
-//delete user
+// Delete user
 exports.deleteUser = async (req, res) => {
   const { id } = req.params;
   const session = await mongoose.startSession();
@@ -151,6 +164,8 @@ exports.deleteUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
+    const profilePic = user.profilePic;
+
     await User.deleteOne({ _id: id }, { session });
 
     if (user.role === "student") {
@@ -159,6 +174,8 @@ exports.deleteUser = async (req, res) => {
 
     await session.commitTransaction();
     session.endSession();
+
+    if (profilePic) await deleteFromCloudinary(profilePic);
 
     res.status(200).json({ message: "Deleted successfully" });
   } catch (error) {

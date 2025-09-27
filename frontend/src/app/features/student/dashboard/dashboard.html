@@ -8,7 +8,7 @@
                     [showIndicatorsOnItem]="true" indicatorsPosition="left"
                     [responsiveOptions]="responsiveOptions">
                     <ng-template pTemplate="item" let-item>
-                        <img [src]="API_URL + '/img/' + item" />
+                        <img [src]="item" />
                     </ng-template>
                     <ng-template pTemplate="indicator" let-index>
                         <span style="color: #ffffff; cursor: pointer">
@@ -17,7 +17,7 @@
                     </ng-template>
                     <ng-template pTemplate="thumbnail" let-item>
                         <div class="grid gap-4 justify-center">
-                            <img [src]="API_URL + '/img/' + item" />
+                            <img [src]="item" />
                         </div>
                     </ng-template>
                 </p-galleria>
@@ -36,7 +36,7 @@
             <div class="flex flex-column align-items-center gap-5 mt-6">
                 <div class="flex flex-column align-items-center gap-3 user-profile">
                     @if(!!user() && user()?.user?.profilePic !== null) {
-                    <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.user?.profilePic" shape="circle"
+                    <p-avatar class="w-10rem h-10rem" [image]="user()?.user?.profilePic ?? undefined" shape="circle"
                         (onImageError)="user()!.user.profilePic=null"></p-avatar>
                     } @else {
                     <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>

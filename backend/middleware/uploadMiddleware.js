@@ -1,14 +1,7 @@
 const multer = require('multer');
 
-// Configure multer for user files upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
+// Use memory storage to upload directly to Cloudinary
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage });
 

@@ -44,7 +44,7 @@
         <!-- Profile -->
         <td>
           <img
-            [src]="API_URL + '/img/' + student?.user?.profilePic"
+            [src]="student?.user?.profilePic"
             alt="profile pic"
             class="w-7rem border-round max-h-5rem"
           />
@@ -121,10 +121,10 @@
 <p-dialog header="Student Photos" [(visible)]="showPhotosDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
   <p-galleria *ngIf="selectedPhotos?.length" [value]="selectedPhotos" [showItemNavigators]="true" [showThumbnails]="true" [circular]="true">
     <ng-template pTemplate="item" let-photo>
-      <img [src]="API_URL + '/img/' + photo" class="w-full border-round" />
+      <img [src]="photo" class="w-full border-round" />
     </ng-template>
     <ng-template pTemplate="thumbnail" let-photo>
-      <img [src]="API_URL + '/img/' + photo" class="w-5rem border-round" />
+      <img [src]="photo" class="w-5rem border-round" />
     </ng-template>
   </p-galleria>
   <p *ngIf="!selectedPhotos?.length">No photos uploaded</p>

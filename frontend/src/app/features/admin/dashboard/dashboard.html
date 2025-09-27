@@ -64,7 +64,7 @@
             <div class="flex flex-column align-items-center gap-5">
                 <div class="flex flex-column absolute align-items-center gap-3 user-profile">
                     @if(!!user() && user()?.profilePic !== null) {
-                        <p-avatar class="w-10rem h-10rem" [image]="API_URL + '/img/' + user()?.profilePic" shape="circle" (onImageError)="user()!.profilePic=null" ></p-avatar>
+                        <p-avatar class="w-10rem h-10rem" [image]="user()?.profilePic ?? undefined" shape="circle" (onImageError)="user()!.profilePic=null" ></p-avatar>
                     } @else {
                         <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
                     }
@@ -78,7 +78,7 @@
                         @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
                             @if(idx < 2) {
                                 @if(cUser?.user?.profilePic !== null) {
-                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [image]="API_URL + '/img/' + cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />
+                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [image]="cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />
                                 } @else {
                                     <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />                                
                                 }
@@ -138,7 +138,7 @@
                 <div class="chips flex flex-wrap gap-5">
                     @for(user of latestUsers; track user?._id) {
                         <p-chip *ngIf="user?.profilePic !== null"
-                                    [image]="API_URL + '/img/' + user?.profilePic"
+                                    [image]="user?.profilePic ?? undefined"
                                     label="{{ user?.name }}" (onImageError)="user.profilePic=null">
                         </p-chip>
     
@@ -175,7 +175,7 @@
                     @for(student of latestStudents; track student?._id) {
                         <div class="chips-badge w-full flex align-items-center justify-content-around gap-1">
                             <p-chip *ngIf="student.user?.profilePic !== null"
-                                        [image]="API_URL + '/img/' + student.user.profilePic"
+                                        [image]="student.user.profilePic ?? undefined"
                                         label="{{ student.user.name }}" (onImageError)="student.user.profilePic=null">
                             </p-chip>
         
@@ -202,7 +202,7 @@
             @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
                 <div class="flex flex-row align-items-center gap-3">
                     @if(cUser?.user?.profilePic !== null) {
-                        <p-avatar [image]="API_URL + '/img/' + cUser?.user?.profilePic" size="large" shape="circle" (onImageError)="cUser?.user!.profilePic=null"  />
+                        <p-avatar [image]="cUser?.user?.profilePic" size="large" shape="circle" (onImageError)="cUser?.user!.profilePic=null"  />
                     } @else {
                         <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />                                
                     }
