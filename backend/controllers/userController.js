@@ -87,7 +87,7 @@ exports.addUser = async (req, res) => {
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      if (profilePicUrl) await deleteFromCloudinary(profilePicUrl);
+      if (profilePicUrl) await deleteFromCloudinary([profilePicUrl]);
       return res.status(400).json({ message: 'Email already exists' });
     }
 
@@ -105,7 +105,7 @@ exports.addUser = async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
   } catch (err) {
-    if (profilePicUrl) await deleteFromCloudinary(profilePicUrl);
+    if (profilePicUrl) await deleteFromCloudinary([profilePicUrl]);
     res.status(500).json({ message: 'Add user failed', error: err.message });
   }
 };
@@ -140,12 +140,12 @@ exports.updateUser = async (req, res) => {
     await user.save();
 
     if (newProfilePicUrl && oldProfilePic && oldProfilePic !== newProfilePicUrl) {
-      await deleteFromCloudinary(oldProfilePic);
+      await deleteFromCloudinary([oldProfilePic]);
     }
 
     res.status(200).json({ message: 'User updated successfully', user });
   } catch (err) {
-    if (newProfilePicUrl) await deleteFromCloudinary(newProfilePicUrl);
+    if (newProfilePicUrl) await deleteFromCloudinary([newProfilePicUrl]);
     res.status(500).json({ message: 'Update failed', error: err.message });
   }
 };
@@ -175,7 +175,7 @@ exports.deleteUser = async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    if (profilePic) await deleteFromCloudinary(profilePic);
+    if (profilePic) await deleteFromCloudinary([profilePic]);
 
     res.status(200).json({ message: "Deleted successfully" });
   } catch (error) {
