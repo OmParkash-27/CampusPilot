@@ -1,4 +1,3 @@
-const deleteFiles = require("./deleteUploadedFiles");
 
 /**
  * Parse and validate Date
@@ -47,27 +46,10 @@ function extractProfilePic(files) {
   return files && files.profilePic ? files.profilePic[0].filename : null;
 }
 
-/**
- * Cleanup uploaded files (in case of error)
- */
-async function cleanupUploads(files) {
-  try {
-    if (files?.profilePic) {
-      await deleteFiles(files.profilePic.map(f => f.filename));
-    }
-    if (files?.photos) {
-      await deleteFiles(files.photos.map(f => f.filename));
-    }
-  } catch (err) {
-    console.error("Error cleaning up uploaded files:", err);
-  }
-}
-
 module.exports = {
   parseDate,
   parseCourses,
   parseAddress,
   extractPhotos,
-  extractProfilePic,
-  cleanupUploads
+  extractProfilePic
 };

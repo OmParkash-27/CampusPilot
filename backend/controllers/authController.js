@@ -1,10 +1,7 @@
-  // backend/controllers/authController.js
-
   const User = require('../models/User');
   const jwt = require('jsonwebtoken');
   const bcrypt = require('bcryptjs');
-  const deleteFiles = require('../utils/deleteUploadedFiles');
-
+  const {deleteFromCloudinary, uploadProfilePic} = require('../utils/cloudinaryHelper');
   // Generate JWT Token
   const generateToken = (user) => {
     return jwt.sign(
@@ -17,15 +14,14 @@
   // Register a new user
   exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
-    const profilePic = req.file ? req.file.filename : null;
+    let profilePicUrl = await uploadProfilePic(req.file);
     try {
       const userExists = await User.findOne({ email });
       if (userExists) {
-            await deleteFiles(profilePic); // cleanup uploaded pic
-            return res.status(400).json({ message: 'User already exists' });
-          }
+        return res.status(400).json({ message: 'User already exists' });
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await User.create({ name, email, password: hashedPassword, profilePic });
+      const newUser = await User.create({ name, email, password: hashedPassword, profilePic: profilePicUrl });
       const token = generateToken(newUser);
 
       // Send token via cookie
@@ -35,10 +31,9 @@
         sameSite: 'none',
         maxAge: 24 * 60 * 60 * 1000
       });
-
       res.status(201).json({ message: 'User registered successfully' });
     } catch (err) {
-      await deleteFiles(profilePic);
+      if(profilePicUrl) await deleteFromCloudinary(profilePicUrl);
       res.status(500).json({ message: 'Registration failed', error: err.message });
     }
   };

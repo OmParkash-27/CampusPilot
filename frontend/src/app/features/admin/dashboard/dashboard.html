@@ -78,9 +78,9 @@
                         @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
                             @if(idx < 2) {
                                 @if(cUser?.user?.profilePic !== null) {
-                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [image]="cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />
+                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''" [image]="cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
                                 } @else {
-                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length < 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length < 2 ? showAllUsers() : null" />                                
+                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />                                
                                 }
                             } @if(idx === 2) {
                                 <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)" (click)="showAllUsers()"  shape="circle" size="large" />

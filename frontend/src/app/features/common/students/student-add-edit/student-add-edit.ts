@@ -133,6 +133,7 @@ export class AddEditStudent implements OnInit {
         this.previewUrl.set(this.userData.profilePic);
       }
     });
+    this.addCourse();
   }
 
   private loadStudent(studentId: string) {
