@@ -37,7 +37,6 @@ const getAdminDashboardStats = async (req, res) => {
       uCreatedStudent
     });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -77,7 +76,6 @@ const getCommonDashboardStats = async(req, res) => {
       lastUpdated
     })
  } catch(error) {
-    console.error(error);
     res.status(500).json({message: "server error"});
  }
 }
@@ -90,7 +88,6 @@ const getStudentDashboardStats = async (req, res) => {
     if(!student) return res.status(404).json({ message: "Student not found" });
     res.status(200).json(student);
   } catch (error) {
-    console.log("getting error student dashboard ", error.message);
     res.status(500).json({ message: 'Server error'});
   }
 }

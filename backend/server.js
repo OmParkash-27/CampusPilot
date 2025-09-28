@@ -13,6 +13,9 @@ const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const verifyToken = require('./middleware/authMiddleware');
+const logger = require('./utils/logger');
+const logMiddleware = require('./middleware/logMiddleware');
+const errorHandler = require("./middleware/errorHandler");
 
 // Load environment variables
 const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
@@ -34,6 +37,9 @@ app.use(
   })
 );
 
+//logs
+app.use(logMiddleware);
+
 //public folder
 app.use('/api', express.static(path.join(__dirname, './public')));
 
@@ -49,6 +55,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/students', verifyToken, studentRoutes); // protected
 app.use('/api/users', verifyToken, userRoutes);
 app.use('/api/dashboard', verifyToken, dashboardRoutes);
+
+//error msg show on logs 
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
