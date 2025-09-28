@@ -9,6 +9,7 @@ const {
 } = require('../utils/studentHelper');
 
 const { uploadProfilePic, uploadPhotos, deleteFromCloudinary } = require('../utils/cloudinaryHelper');
+const logger = require("../utils/logger");
 
 // Get student by ID
 exports.getStudent = async (req, res) => {
@@ -114,7 +115,6 @@ exports.addStudentDetails = async (req, res) => {
     if (photos.length) {
       await deleteFromCloudinary(photos);
     }
-    console.error("Error adding student details:", error);
     res.status(500).json({
       message: "Error adding student details",
       error: error.message,
@@ -290,7 +290,6 @@ exports.uploadDocuments = async (req, res) => {
       student: updatedStudent,
     });
   } catch (err) {
-    console.error("Error uploading documents:", err);
     res.status(500).json({ message: "Error uploading documents", error: err.message });
   }
 };
@@ -311,15 +310,16 @@ exports.deleteStudent = async (req, res) => {
       try {
         await deleteFromCloudinary(photosToDelete);
       } catch (err) {
-        console.warn('Warning: some Cloudinary photo deletions failed', err);
-      }
+        logger.warn('Some Cloudinary photo deletions failed', {
+                error: err.message,
+                stack: err.stack
+            });      }
     }
 
     await Student.deleteOne({ _id: student._id });
 
     return res.status(200).json({ message: 'Student deleted successfully' });
   } catch (error) {
-    console.error('Delete student error:', error);
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
