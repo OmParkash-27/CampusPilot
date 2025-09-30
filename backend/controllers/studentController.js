@@ -49,6 +49,8 @@ exports.getNewRegisteredStudents = async (req, res) => {
 
 // Add student details
 exports.addStudentDetails = async (req, res) => {
+  let profilePic = null;
+  let photos = [];
   try {
     const {
       userId,
@@ -79,13 +81,11 @@ exports.addStudentDetails = async (req, res) => {
         .json({ message: "Student details already exist" });
 
     // Upload profile pic
-    let profilePic = null;
     if (req.files?.profilePic && req.files.profilePic[0]) {
       profilePic = await uploadProfilePic(req.files.profilePic[0]);
     }
 
     // Upload photos
-    let photos = [];
     if (req.files?.photos && req.files.photos.length) {
       photos = await uploadPhotos(req.files.photos);
     }
@@ -126,7 +126,8 @@ exports.addStudentDetails = async (req, res) => {
 exports.createNewStudent = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
-
+  let profilePic = null;
+  let photos = [];
   try {
     const {
       name, email, rollNo, enrollmentNo, courses, dob, gender,
@@ -138,8 +139,8 @@ exports.createNewStudent = async (req, res) => {
     const profilePicFile = req.files?.profilePic?.[0];
     const photosFiles = req.files?.photos;
 
-    const profilePic = profilePicFile ? await uploadProfilePic(profilePicFile) : null;
-    const photos = photosFiles ? await uploadPhotos(photosFiles) : [];
+    profilePic = profilePicFile ? await uploadProfilePic(profilePicFile) : null;
+    photos = photosFiles ? await uploadPhotos(photosFiles) : [];
 
     const user = new User({
       name,
@@ -267,7 +268,7 @@ exports.updateStudent = async (req, res) => {
 // Upload documents
 exports.uploadDocuments = async (req, res) => {
   const { id } = req.user;
-
+  let uploaded = [];
   try {
     const student = await Student.findOne({ user: id });
     if (!student) {
@@ -278,7 +279,6 @@ exports.uploadDocuments = async (req, res) => {
     const files = req.files?.photos || [];
 
     // upload new photos to cloudinary
-    let uploaded = [];
     if (files.length) {
       uploaded = await uploadPhotos(files); // your helper function
       student.photos.push(...uploaded);
@@ -290,6 +290,7 @@ exports.uploadDocuments = async (req, res) => {
       student: updatedStudent,
     });
   } catch (err) {
+    if(uploaded.length) await deleteFromCloudinary(uploaded);
     res.status(500).json({ message: "Error uploading documents", error: err.message });
   }
 };

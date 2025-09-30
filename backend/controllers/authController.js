@@ -2,15 +2,8 @@
   const jwt = require('jsonwebtoken');
   const bcrypt = require('bcryptjs');
   const {deleteFromCloudinary, uploadProfilePic} = require('../utils/cloudinaryHelper');
-  // Generate JWT Token
-  const generateToken = (user) => {
-    return jwt.sign(
-      { id: user._id, name: user.name, role: user.role, email:user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-  };
-
+  const { generateAccessToken, generateRefreshToken} = require('../utils/tokenHelper');
+  
   // Register a new user
   exports.registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -22,16 +15,8 @@
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = await User.create({ name, email, password: hashedPassword, profilePic: profilePicUrl });
-      const token = generateToken(newUser);
-
-      // Send token via cookie
-      res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000
-      });
-      res.status(201).json({ message: 'User registered successfully' });
+      
+      res.status(201).json({ message: 'Successfull ! You can login after admin approval' });
     } catch (err) {
       if(profilePicUrl) await deleteFromCloudinary([profilePicUrl]);
       res.status(500).json({ message: 'Registration failed', error: err.message });
@@ -53,14 +38,21 @@
         return res.status(403).json({ message: "Account is inactive. Contact to admin." });
       }
 
-      const token = generateToken(user);
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
 
-      // Set cookie
-      res.cookie('token', token, {
+      // Send token via cookie
+      res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000
+        maxAge: 1.5 * 60 * 1000
+      });
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'none',
+        maxAge: 2 * 60 * 1000
       });
 
       res.status(200).json({ message: 'Login successful' });
@@ -71,7 +63,8 @@
 
   // Logout user
   exports.logoutUser = (req, res) => {
-    res.clearCookie('token');
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
     res.status(200).json({ message: 'Logged out successfully' });
   };
 
