@@ -63,10 +63,11 @@
             <h2 class="text-lg text-400 mb-6">Profile</h2>
             <div class="flex flex-column align-items-center gap-5">
                 <div class="flex flex-column absolute align-items-center gap-3 user-profile">
-                    @if(!!user() && user()?.profilePic !== null) {
-                        <p-avatar class="w-10rem h-10rem" [image]="user()?.profilePic ?? undefined" shape="circle" (onImageError)="user()!.profilePic=null" ></p-avatar>
+                    @if(user()?.profilePic) {
+                    <p-avatar class="w-10rem h-10rem" [image]="user()?.profilePic!" shape="circle">
+                    </p-avatar>
                     } @else {
-                        <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
+                    <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
                     }
                     <span class="text-3xl surface-0 -mt-6 w-8rem text-center">{{ user()?.name }}</span>
                     <p>{{user()?.email}}</p>
@@ -76,17 +77,22 @@
                     <p>You Created Students</p>
                     <p-avatar-group>
                         @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
-                            @if(idx < 2) {
-                                @if(cUser?.user?.profilePic !== null) {
-                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''" [image]="cUser?.user?.profilePic" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
-                                } @else {
-                                    <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''" [icon]="'pi pi-user'" size="large" shape="circle" (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />                                
-                                }
-                            } @if(idx === 2) {
-                                <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)" (click)="showAllUsers()"  shape="circle" size="large" />
-                            }
+                        @if(idx
+                        < 2) { @if(cUser?.user?.profilePic !==null) { <p-avatar
+                            [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
+                            [image]="cUser?.user?.profilePic" size="large" shape="circle"
+                            (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
+                        } @else {
+                        <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
+                            [icon]="'pi pi-user'" size="large" shape="circle"
+                            (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
+                        }
+                        } @if(idx === 2) {
+                        <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)"
+                            (click)="showAllUsers()" shape="circle" size="large" />
+                        }
                         } @empty {
-                            no data
+                        no data
                         }
                     </p-avatar-group>
                 </div>
@@ -99,20 +105,22 @@
 <!-- Section 2 -->
 
 <div class="grid grid-nogutter nested-grid bg-gray-100 justify-content-start gap-3 p-3 pt-0">
-    <div class="col-12 sm:col-12 md:col-3 lg:col-3 meter-group flex-grow-1" >
+    <div class="col-12 sm:col-12 md:col-3 lg:col-3 meter-group flex-grow-1">
         <!-- Avatar + MeterGroup -->
         <p-card class="shadow-md min-h-full relative">
-        <h2 class="text-lg text-400 mb-6">{{current_year}} Courses Students</h2>
-        <p-metergroup [value]="meterGroupValues" orientation="vertical" labelOrientation="horizontal" [max]="40" class="align-items-center flex-column-reverse "></p-metergroup>
+            <h2 class="text-lg text-400 mb-6">{{current_year}} Courses Students</h2>
+            <p-metergroup [value]="meterGroupValues" orientation="vertical" labelOrientation="horizontal" [max]="10"
+                class="align-items-center flex-column-reverse "></p-metergroup>
         </p-card>
     </div>
-    <div class="col-12 sm:col-12 md:col-8 lg:col-8 flex-grow-1" >
+    <div class="col-12 sm:col-12 md:col-8 lg:col-8 flex-grow-1">
         <div class="grid grid-nogutter row-gap-3">
-            <div class="col-12 sm:col-12 md:col-12 lg:col-12 " >
+            <div class="col-12 sm:col-12 md:col-12 lg:col-12 ">
                 <!-- Doughnut Chart -->
                 <p-card class="shadow-md ">
                     <h2 class="text-lg text-400 mb-6">Doughnut Chart</h2>
-                    <p-chart type="doughnut" [data]="doughnutData" class="flex justify-content-center max-h-20rem"></p-chart>
+                    <p-chart type="doughnut" [data]="doughnutData"
+                        class="flex justify-content-center max-h-20rem"></p-chart>
                 </p-card>
             </div>
             <div class="col-12 sm:col-12 md:col-12 lg:col-12 ">
@@ -122,9 +130,9 @@
                     <p-chart type="line" [data]="lineData" class="flex justify-content-center"></p-chart>
                 </p-card>
             </div>
-       </div>
+        </div>
     </div>
-</div>  
+</div>
 
 <!-- section 3 -->
 
@@ -137,19 +145,17 @@
             <div class="users-section flex justify-content-center relative p-7">
                 <div class="chips flex flex-wrap gap-5">
                     @for(user of latestUsers; track user?._id) {
-                        <p-chip *ngIf="user?.profilePic !== null"
-                                    [image]="user?.profilePic ?? undefined"
-                                    label="{{ user?.name }}" (onImageError)="user.profilePic=null">
-                        </p-chip>
-    
-                        <p-chip *ngIf="user?.profilePic === null"
-                                    icon="pi pi-user"
-                                    label="{{ user?.name }}">
-                        </p-chip> 
+                    <p-chip *ngIf="user?.profilePic !== null" [image]="user?.profilePic ?? undefined"
+                        label="{{ user?.name }}" (onImageError)="user.profilePic=null">
+                    </p-chip>
+
+                    <p-chip *ngIf="user?.profilePic === null" icon="pi pi-user" label="{{ user?.name }}">
+                    </p-chip>
                     }
                 </div>
                 <div class="view-all-btn absolute right-0">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" (onClick)="router.navigate(['admin/user-list'])" />
+                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info"
+                        (onClick)="router.navigate(['admin/user-list'])" />
                 </div>
             </div>
         </p-card>
@@ -160,10 +166,10 @@
 <div class="grid grid-nogutter nested-grid bg-gray-100 gap-3 p-3 pt-0">
     <div class="col-12 sm:col-12 md:col-5 lg:col-7">
         <!-- Polar Chart -->
-            <p-card class="shadow-md flex flex-col align-items-center">
-                <h2 class="text-lg font-bold mb-6">Polar Area</h2>
-                <p-chart type="polarArea" [data]="polarData"></p-chart>
-            </p-card>
+        <p-card class="shadow-md flex flex-col align-items-center">
+            <h2 class="text-lg font-bold mb-6">Polar Area</h2>
+            <p-chart type="polarArea" [data]="polarData"></p-chart>
+        </p-card>
     </div>
     <div class="col-12 sm:col-12 md:col-6 lg:col-4 flex-grow-1">
         <p-card class="shadow-md student-section-card">
@@ -173,43 +179,45 @@
             <div class="students-section flex p-4">
                 <div class="chips-badge-section flex flex-grow-1 flex-wrap w-full">
                     @for(student of latestStudents; track student?._id) {
-                        <div class="chips-badge w-full flex align-items-center justify-content-around gap-1">
-                            <p-chip *ngIf="student.user?.profilePic !== null"
-                                        [image]="student.user.profilePic ?? undefined"
-                                        label="{{ student.user.name }}" (onImageError)="student.user.profilePic=null">
-                            </p-chip>
-        
-                            <p-chip *ngIf="student.user.profilePic === null"
-                                        icon="pi pi-user"
-                                        label="{{ student.user.name }}">
-                            </p-chip> 
-                            <p-badge [value]="student.user.status ? 'Active': 'Inactive'" [severity]="student.user.status ? 'info' : 'warn'" />
-                        </div>
+                    <div class="chips-badge w-full flex align-items-center justify-content-around gap-1">
+                        <p-chip *ngIf="student.user?.profilePic !== null" [image]="student.user.profilePic ?? undefined"
+                            label="{{ student.user.name }}" (onImageError)="student.user.profilePic=null">
+                        </p-chip>
+
+                        <p-chip *ngIf="student.user.profilePic === null" icon="pi pi-user"
+                            label="{{ student.user.name }}">
+                        </p-chip>
+                        <p-badge [value]="student.user.status ? 'Active': 'Inactive'"
+                            [severity]="student.user.status ? 'info' : 'warn'" />
+                    </div>
                     } @empty {
-                        no data
+                    no data
                     }
                 </div>
                 <div class="view-all-btn">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info" (onClick)="router.navigate(['common/student-list'])" />
+                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info"
+                        (onClick)="router.navigate(['common/student-list'])" />
                 </div>
             </div>
         </p-card>
     </div>
 </div>
 
-<p-dialog header="You Created Students" [modal]="true" [(visible)]="usersDialongVisible" [breakpoints]="{ '1199px': '50vw', '575px': '95vw' }" [style]="{ width: '50vw' }">
-        <div class="flex flex-column align-items-start gap-3 mb-2">
-            @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
-                <div class="flex flex-row align-items-center gap-3">
-                    @if(cUser?.user?.profilePic !== null) {
-                        <p-avatar [image]="cUser?.user?.profilePic" size="large" shape="circle" (onImageError)="cUser?.user!.profilePic=null"  />
-                    } @else {
-                        <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />                                
-                    }
-                    <span>{{cUser?.user?.name}}</span>
-                    <span>{{cUser?.user?.email}}</span>
-                    <span>{{cUser?.user?.role}}</span>
-                </div>
+<p-dialog header="You Created Students" [modal]="true" [(visible)]="usersDialongVisible"
+    [breakpoints]="{ '1199px': '50vw', '575px': '95vw' }" [style]="{ width: '50vw' }">
+    <div class="flex flex-column align-items-start gap-3 mb-2">
+        @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
+        <div class="flex flex-row align-items-center gap-3">
+            @if(cUser?.user?.profilePic !== null) {
+            <p-avatar [image]="cUser?.user?.profilePic" size="large" shape="circle"
+                (onImageError)="cUser?.user!.profilePic=null" />
+            } @else {
+            <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />
             }
+            <span>{{cUser?.user?.name}}</span>
+            <span>{{cUser?.user?.email}}</span>
+            <span>{{cUser?.user?.role}}</span>
         </div>
+        }
+    </div>
 </p-dialog>

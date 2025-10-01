@@ -7,7 +7,7 @@
         <span class="app-title">CampusPilot</span>
       </div>
       <div *ngIf="!isMobile() && !!user()" class="mr-3">
-        <p-chip  *ngIf="user()?.profilePic !== null" [label]="user()?.name" [image]="API_URL + '/img/' + user()?.profilePic" label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" />
+        <p-chip  *ngIf="user()?.profilePic !== null" [label]="user()?.name" [image]="user()?.profilePic!" label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" />
         <p-chip *ngIf="user()?.profilePic === null" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
       </div>
       <button *ngIf="isMobile() && !drawerVisible()" (click)="toggleDrawer()" pButton icon="pi pi-bars"
@@ -31,7 +31,7 @@
         (onHide)="closeDrawer()">
         <ng-template pTemplate="header">
           <p-chip *ngIf="!!user() && user()?.profilePic !== null"
-            [image]="API_URL + '/img/' + user()?.profilePic"
+            [image]="user()?.profilePic!"
             label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null">
           </p-chip>
 

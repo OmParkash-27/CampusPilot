@@ -5,7 +5,7 @@ const Student = require('../models/Student');
 const getAdminDashboardStats = async (req, res) => {
   try {
     const currentYear = new Date().getFullYear();
-    const user = req.user.email;
+    const userEmail = req.user.email;
     const totalStudents = await Student.countDocuments();
     const totalUsers = await User.countDocuments();
     const totalAdmins = await User.countDocuments({ role: 'admin' });
@@ -15,7 +15,7 @@ const getAdminDashboardStats = async (req, res) => {
 
     const latestUsers = await User.find({ role: { $ne: "student" } }).sort({ createdAt: -1 }).limit(5);
     const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5).populate('user', "name email role status profilePic");
-    const uCreatedStudent = await Student.find({createdBy: user}).populate('user', 'name email role profilePic');
+    const uCreatedStudent = await Student.find({createdBy: userEmail}).populate('user', 'name email role profilePic');
     const currentYearBcaStudents = await Student.countDocuments({ "courses.course": "BCA", "courses.batchYear": currentYear });
     const currentYearMcaStudents = await Student.countDocuments({ "courses.course": "MCA", "courses.batchYear": currentYear });
     const currentYearBbaStudents = await Student.countDocuments({ "courses.course": "BBA", "courses.batchYear": currentYear });

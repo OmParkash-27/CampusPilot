@@ -4,7 +4,7 @@ export interface User {
     email: string;
     role: 'student' | 'editor' | 'teacher' | 'admin';
     status: boolean;
-    profilePic?: string | null | '';
+    profilePic?: string | null | '' | undefined;
     createdAt: string;
     updatedAt: string;
 }

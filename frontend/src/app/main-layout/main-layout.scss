@@ -70,7 +70,7 @@
   gap: 2px;
 
   .layout-header {
-    background-color: bisque;
+    background-color: var(--header-section);
     /* position: fixed; */
     min-width: calc(100% - 16px);
     z-index: 999;

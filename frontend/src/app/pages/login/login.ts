@@ -98,30 +98,7 @@ export class Login {
       formData.append('profilePic', this.registerForm.value.profilePic);
     }
 
-    this.authService.register(formData).pipe(
-        switchMap(() => this.authService.loadCurrentUser())
-      ).subscribe({
-      next: (user) => {
-        if (user?.role) {
-          this.router.navigate([`/${user.role}`]); // Navigate based on role
-        } else {
-          console.error('User role not found');
-        }
-      },
-      error: (err) => {
-      console.error(err);
-
-      const backendMsg = err?.error?.message?.toLowerCase() || '';
-
-      if (backendMsg.includes('user already exists')) {
-        this.registrationError = 'This email is already registered. Please log in or use a different email.';
-      } else if (backendMsg.includes('registration failed')) {
-        this.registrationError = 'Registration failed due to a server error. Please try again later.';
-      } else {
-        this.registrationError = 'Registration failed. Please try again.';
-      }
-    }
-    });
+    this.authService.register(formData).subscribe();
   }
 
   get fLogin() {
