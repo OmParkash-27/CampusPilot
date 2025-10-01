@@ -86,10 +86,11 @@ export class Dashboard implements OnInit {
       };
 
       this.polarData = {
-        labels: ['BCA', 'MCA', 'MBA', 'BBA'],
+        labels: ['BCA', 'BBA', 'MCA', 'MBA'],
         datasets: [
           {
-            data: [40, 25, 20, 15],
+            label: `Students  ${this.current_year} `,
+            data: [res.currentYearBcaStudents, res.currentYearBbaStudents, res.currentYearMcaStudents, res.currentYearMbaStudents],
             backgroundColor: [
               '#42A5F5',
               '#66BB6A',
