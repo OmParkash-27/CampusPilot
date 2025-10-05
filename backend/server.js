@@ -13,7 +13,6 @@ const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const verifyToken = require('./middleware/authMiddleware');
-const logger = require('./utils/logger');
 const logMiddleware = require('./middleware/logMiddleware');
 const errorHandler = require("./middleware/errorHandler");
 
@@ -25,15 +24,24 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // for cors Middleware
-const allowedOrigin =
-  process.env.NODE_ENV === 'production'
-    ? process.env.CLIENT_URL 
-    : 'http://localhost:4200'; // dev Angular URL
+const allowedOrigins = [
+  'http://localhost:4200', // Angular dev
+  'http://localhost',      // Docker/Nginx default
+  process.env.CLIENT_URL    // production
+];
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {  // !origin → Postman / curl requests ke liye allow karega.
+        callback(null, true);
+      } else {
+        callback(new Error('CORS not allowed'));
+      }
+    },
     credentials: true, // allow cookies
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   })
 );
 

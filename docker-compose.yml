@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  backend:
+    build:
+      context: ./backend
+      args:
+        NODE_ENV: docker   # change to production for deployment
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=docker  # runtime ENV
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        CONFIG: development     # change to production for deployment
+    ports:
+      - "4200:80"
+
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
