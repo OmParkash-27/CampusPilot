@@ -3,7 +3,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { NavigationEnd, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterModule, RouterOutlet } from '@angular/router';
 import { RoleMenuItem } from './main.const';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainLayoutService } from './main-layout.service';
@@ -12,6 +12,7 @@ import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { SpeedDialModule } from 'primeng/speeddial';
 import { MenuItem } from 'primeng/api';
+import { LoadingService } from '../core/services/loading/loading-service';
 
 @Component({
   selector: 'app-main-layout',
@@ -29,14 +30,21 @@ export class MainLayout {
   speedDial: Signal<MenuItem[]>;
 
   constructor(
-    private mainLayoutService: MainLayoutService, private router: Router
+    private mainLayoutService: MainLayoutService, private router: Router, private loadingService: LoadingService
   ) { 
       this.itemsSignal = this.mainLayoutService.getMenu();
       this.router.events.subscribe(event => {
-        if (event instanceof NavigationEnd) {
-          this.closeDrawer();
-        }
-      });
+         if (event instanceof NavigationStart) {
+        // Immediately close drawer and show loader
+        this.closeDrawer();
+        this.loadingService.show();
+      }
+
+      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+        // Hide loader once navigation is complete or cancelled
+        this.loadingService.hide();
+      }
+    });
       this.speedDial = this.mainLayoutService.getSpeedDialContent();
   }
   get isMobile() {
