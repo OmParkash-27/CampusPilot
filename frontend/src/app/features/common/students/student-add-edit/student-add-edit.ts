@@ -235,7 +235,6 @@ export class AddEditStudent implements OnInit {
     }
   }
 
-
   //for deselect photo
   onRemoveFile(event: any) {
     if(event.file) {

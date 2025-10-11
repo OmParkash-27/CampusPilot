@@ -8,7 +8,6 @@ import { RoleMenuItem } from './main.const';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainLayoutService } from './main-layout.service';
 import { ChipModule } from 'primeng/chip';
-import { environment } from '../../environments/environment';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { FormsModule } from '@angular/forms';
 import { SpeedDialModule } from 'primeng/speeddial';
@@ -21,17 +20,11 @@ import { MenuItem } from 'primeng/api';
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
 })
-export class MainLayout implements AfterViewInit, OnDestroy {
+export class MainLayout {
   // Signals
   drawerVisible = signal(false);
-  windowWidth = signal(window.innerWidth);
-  isMobile = computed(() => this.windowWidth() < 768);
-  private resizeHandler = () => this.windowWidth.set(window.innerWidth);
-  
   user = computed(() => this.mainLayoutService.user());
   itemsSignal!: Signal<RoleMenuItem[]>;
-  API_URL = environment.apiUrl;
-  
   speedDialOpen = false;
   speedDial: Signal<MenuItem[]>;
 
@@ -45,20 +38,9 @@ export class MainLayout implements AfterViewInit, OnDestroy {
         }
       });
       this.speedDial = this.mainLayoutService.getSpeedDialContent();
-    }
-
-  ngAfterViewInit() {
-    // Set initial width safely after view is ready
-    setTimeout(() => {
-      this.windowWidth.set(window.innerWidth);
-    });
-
-    window.addEventListener('resize', this.resizeHandler);
   }
-
-  ngOnDestroy() {
-    // Cleanup the resize event listener
-    window.removeEventListener('resize', this.resizeHandler);
+  get isMobile() {
+    return this.mainLayoutService.isMobile;
   }
 
   toggleDrawer() {

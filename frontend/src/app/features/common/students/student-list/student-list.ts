@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule, ReorderableColumn } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,6 @@ import { RouterModule, Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { environment } from '../../../../../environments/environment';
 import { StudentService } from '../student.service';
 import { AccordionModule } from 'primeng/accordion';
 import { GalleriaModule } from 'primeng/galleria';
@@ -19,22 +18,22 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmPopup } from "primeng/confirmpopup";
 import { ConfirmationService } from 'primeng/api';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { BaseService } from '../../../../core/services/shared/base.service';
+import { MainLayoutService } from '../../../../main-layout/main-layout.service';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-student-list',
-  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule, ConfirmPopup],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, 
+    InputIconModule, InputTextModule, FormsModule, RouterModule, 
+    SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, 
+    GalleriaModule, DialogModule, ConfirmPopup, MultiSelectModule, DrawerModule],
   templateUrl: './student-list.html',
   styleUrl: './student-list.scss'
 })
-export class StudentList {
-  API_URL = environment.apiUrl;
-  roles = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Student', value: 'student' },
-    { label: 'Editor', value: 'editor' },
-    { label: 'Teacher', value: 'teacher' }
-  ];
-  loading = signal<boolean>(true);
+export class StudentList extends BaseService<Student> {
+  
   students = signal<Student[]>([]);
 
   showAddressDialog = false;
@@ -47,61 +46,71 @@ export class StudentList {
   selectedCourses: any[] = [];
   loggedUserRole: string| undefined= '';
 
-  searchTerm: string = '';
-  filteredStudents: Student[] = [];
-  
-  constructor(public router: Router, private studentService: StudentService, private authService: AuthService, private confirmService: ConfirmationService) {
+  allColumns = [
+    { field: 'profilePic', header: 'Profile', sortable: false },
+    { field: 'user.name', header: 'Name', sortable: true },
+    { field: 'user.email', header: 'Email', sortable: true },
+    { field: 'phone', header: 'Phone', sortable: true },
+    { field: 'rollNo', header: 'Roll No', sortable: true },
+    { field: 'enrollmentNo', header: 'Enrollment No', sortable: true },
+    { field: 'dob', header: 'DOB', sortable: true },
+    { field: 'gender', header: 'Gender', sortable: true },
+    { field: 'guardianName', header: 'Guardian Name', sortable: false },
+    { field: 'guardianContact', header: 'Guardian Contact', sortable: false },
+    { field: 'address', header: 'Address', sortable: false },
+    { field: 'photos', header: 'Photos', sortable: false },
+    { field: 'courses', header: 'Courses', sortable: false },
+  ];
+
+  override selectedColumns = signal([...this.allColumns]);
+  // Override filter to specify fields
+  override globalFilter = [
+      'user.name', 'user.email', 'user.role', 'phone', 'courses',
+      'guardianName', 'guardianContact', 'gender', 'createdBy', 'updatedBy', 
+  ]
+
+  constructor(private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, private authService: AuthService, private confirmService: ConfirmationService) {
+    super();
     const user = this.authService.current_user();
     this.loggedUserRole = user?.role;
   }
   
   ngOnInit(): void {
-    this.fetchStudents();
+    this.fetchItems();
   }
 
-  fetchStudents(): void {
+  get visibleColumns() {
+    const cols = [...this.selectedColumns()];
+    if (this.loggedUserRole === 'admin') {
+      cols.push({ field: 'createdBy', header: 'Created By', sortable: true });
+      cols.push({ field: 'updatedBy', header: 'Updated By', sortable: true });
+    }
+    if (this.loggedUserRole === 'admin' || this.loggedUserRole === 'editor') {
+      cols.push({ field: 'actions', header: 'Actions', sortable: false });
+    }
+    return cols;
+  }
+
+  get isMobile() {
+    return this.mainLayoutService.isMobile;
+  }
+
+  toggleFilterMenu() {
+    this.filterMenuVisible.update(v => !v);
+  }
+
+  override fetchItems(): void {
     this.loading.set(true);
     this.studentService.getAllStudents().subscribe({
       next: (data: Student[]) => {
-        this.students.set(data);
-        this.filteredStudents = this.students();
+        this.items.set(data);
+        this.customrGlobalFilterItems.set(data);
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Failed to fetch students', err);
         this.loading.set(false);
       }
-    });
-  }
-
-  // Filtering logic
-filterStudents() {
-  const term = this.searchTerm.trim().toLowerCase();
-  if (!term) {
-    this.filteredStudents = this.students();
-    return;
-  }
-
-  // multiple words split
-  const keywords = term.split(/\s+/);
-
-    this.filteredStudents = this.students().filter(student => {
-      // fields to search in
-      const haystack = [
-        student?.user?.name,
-        student?.user?.email,
-        student?.user?.role,
-        student?.phone,
-        student?.guardianName,
-        student?.guardianContact,
-        student?.gender,
-        ...(student?.courses?.map((c: any) => c.course) || []),
-        ...(student?.courses?.map((c: any) => c.batchYear?.toString()) || []),
-        ...(student?.courses?.map((c: any) => c.status) || [])
-      ].join(' ').toLowerCase();
-
-      // check if *all keywords* exist
-      return keywords.every(k => haystack.includes(k));
     });
   }
 
@@ -141,7 +150,7 @@ filterStudents() {
                 accept: () => {
                   this.studentService.deleteStudent(id).subscribe({
                         next: () => {
-                          this.fetchStudents();
+                          this.fetchItems();
                         },
                         error: (err) => {
                           console.error('Failed to delete student', err);

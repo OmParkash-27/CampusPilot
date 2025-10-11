@@ -12,6 +12,8 @@ export class MainLayoutService {
   private menuSignal: WritableSignal<RoleMenuItem[]> = signal<RoleMenuItem[]>([]);
   user: WritableSignal<User|null> = signal<User|null> (null);
   allSpeedDialItems: WritableSignal<MenuItem[]> = signal(speedDialItems);
+  private windowWidth = signal(window.innerWidth);
+  isMobile = computed(() => this.windowWidth() < 768);
 
   constructor(
     private authService: AuthService,
@@ -21,6 +23,21 @@ export class MainLayoutService {
     this.setupMenuWatcher();
     this.initSpeedDialItems();
     this.applySavedTheme();
+    this.resizeScreen();
+  }
+
+  resizeScreen() {
+    const resizeHandler = () => this.windowWidth.set(window.innerWidth);
+    window.addEventListener('resize', resizeHandler);
+
+    // Clean up automatically when service is destroyed (rare in providedIn: 'root')
+    effect((onCleanup) => {
+      onCleanup(() => window.removeEventListener('resize', resizeHandler));
+    });
+  }
+
+  ngOnDestroy() {
+    window.removeEventListener('resize', () => {});
   }
 
   private setupMenuWatcher() {

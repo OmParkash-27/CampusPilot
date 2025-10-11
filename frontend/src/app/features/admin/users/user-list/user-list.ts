@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule, ReorderableColumn } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
@@ -11,76 +11,74 @@ import { SelectModule } from 'primeng/select';
 import { CheckboxModule } from 'primeng/checkbox';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { environment } from '../../../../../environments/environment';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { ConfirmationService } from 'primeng/api';
+import { BaseService } from '../../../../core/services/shared/base.service';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { MainLayoutService } from '../../../../main-layout/main-layout.service';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-user-list',
   standalone: true,
-  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule, ConfirmPopupModule],
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, 
+    InputTextModule, FormsModule, RouterModule, SelectModule, CheckboxModule, OverlayBadgeModule, BadgeModule, 
+    ConfirmPopupModule, MultiSelectModule, DrawerModule ],
   templateUrl: './user-list.html',
   styleUrls: ['./user-list.scss']
 })
-export class UserList implements OnInit {
-  API_URL = environment.apiUrl;
+export class UserList extends BaseService<User> implements OnInit  {
+ 
   users = signal<User[]>([]);
-  searchTerm: string = '';
-  filteredUsers: User[] = [];
-
-  roles = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Student', value: 'student' },
-    { label: 'Editor', value: 'editor' },
-    { label: 'Teacher', value: 'teacher' }
+  
+  allColumns = [
+    { field: 'profilePic', header: 'Profile', sortable: false },
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'email', header: 'Email', sortable: true },
+    { field: 'role', header: 'Role', sortable: true },
+    { field: 'status', header: 'Status', sortable: true },
+    { field: 'actions', header: 'Actions', sortable: false },
   ];
-  loading = signal<boolean>(true);
+
+  override selectedColumns = signal([...this.allColumns]);
+
   private prevRole: User['role'] | null = null;
   loggedUser: User | null = null;
+  // Filtering logic
+  override globalFilter = ['name', 'email', 'role', 'status'];
   
-  constructor(public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
+  constructor(private mainLayoutService: MainLayoutService, public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
+    super();
     this.loggedUser = this.userService.currentUser;
   }
   
   ngOnInit(): void {
-    this.loadUsers();
+    this.fetchItems();
   }
 
-  loadUsers() {
+  get visibleColumns() {
+    const cols = [...this.selectedColumns()];
+    return cols;
+  }
+
+  get isMobile() {
+    return this.mainLayoutService.isMobile;
+  }
+
+  toggleFilterMenu() {
+    this.filterMenuVisible.update(v => !v);
+  }
+
+  override fetchItems(): void {
     this.loading.set(true);
     this.userService.getAll().subscribe({
       next: (users) => {
-        this.users.set(users);
-        this.filteredUsers = this.users();
+        this.items.set(users);
         this.loading.set(false);
       },
       error: () => this.loading.set(false)
-    });
-  }
-
-    // Filtering logic
-filterUsers() {
-  const term = this.searchTerm.trim().toLowerCase();
-  if (!term) {
-    this.filteredUsers = this.users();
-    return;
-  }
-
-  // multiple words split
-  const keywords = term.split(/\s+/);
-
-    this.filteredUsers = this.users().filter(user => {
-      // fields to search in
-      const haystack = [
-        user?.name,
-        user?.email,
-        user?.status,
-        user?.role
-      ].join(' ').toLowerCase();
-
-      return keywords.every(k => haystack.includes(k));
     });
   }
 
@@ -117,8 +115,7 @@ filterUsers() {
        user.role = oldRole;
     }
   });
-}
-
+  }
 
   deleteUser(userId: string, event: any) {
     this.confirmService.confirm({
@@ -135,7 +132,7 @@ filterUsers() {
                 label: 'Save'
             },
             accept: () => {
-              this.userService.delete(userId).subscribe(() => this.loadUsers());
+              this.userService.delete(userId).subscribe(() => this.fetchItems());
             }
     })
   }

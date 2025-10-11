@@ -1,108 +1,92 @@
 <div class="list-card">
   <p-confirmpopup key="deleteStudent"></p-confirmpopup>
   <h2>All Students</h2>
-  <p-table [value]="filteredStudents" [paginator]="true" [rows]="10" [loading]="loading()">
+    <p-table #dt2 [value]="customrGlobalFilterItems()" [paginator]="true" [rows]="10" [loading]="loading()"
+     [globalFilterFields]="globalFilter" [reorderableColumns]="true" (onColReorder)="onColReorder($event)">
+    
     <ng-template #caption>
-        <div class="flex">
-            <p-iconfield iconPosition="left" class="ml-auto">
-                <p-inputicon>
-                    <i class="pi pi-search"></i>
-                </p-inputicon>
-                <input pInputText id="searchBox" [(ngModel)]="searchTerm" (ngModelChange)="filterStudents()" placeholder="Search 'use space for multiple'" autocomplete="off" />
-            </p-iconfield>
-        </div>
+      <div *ngIf="!isMobile()" class="flex gap-2">
+          <p-iconfield iconPosition="left" class="ml-auto">
+              <p-inputicon>
+                  <i class="pi pi-search"></i>
+              </p-inputicon>
+              <input pInputText id="searchBox" (input)="dt2.filterGlobal($event.target.value, 'contains')" placeholder="Search" autocomplete="off" />
+          </p-iconfield>
+          
+          <!-- Column Toggle  -->
+          <div class="">
+            <p-multiSelect
+              [options]="allColumns"
+              [(ngModel)]="selectedColumns"
+              optionLabel="header"
+              display="chip"
+              placeholder="Toggle Columns"
+              [showToggleAll]="true"
+            />
+          </div>
+          
+      </div>
+      <div *ngIf="isMobile()" class="flex justify-content-end">
+        <button pButton icon="pi pi-sliders-h" label="Filters" (click)="toggleFilterMenu()"></button>
+      </div>
     </ng-template>
+
     <ng-template pTemplate="header">
       <tr>
-        <th>Profile</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Phone</th>
-        <th>Roll No</th>
-        <th>Enrollment No</th>
-        <th>DOB</th>
-        <th>Gender</th>
-        <th>GuardianName</th>
-        <th>GuardianContact</th>
-        <th>Address</th>
-        <th>Photos</th>
-        <th>Courses</th>
-        @if(loggedUserRole === 'admin') {
-          <th>Created By</th>
-        }
-        @if(loggedUserRole === 'admin') {
-          <th>Updated By</th>
-        }
-        @if(loggedUserRole === 'admin'|| loggedUserRole === 'editor') {
-          <th>Actions</th>
+        @for (col of visibleColumns; track col.field) {
+          @if (col.field === 'actions') {
+            <th pReorderableColumn>{{ col.header }}</th>
+          } @else {
+            <th pSortableColumn="{{ col.field }}" pReorderableColumn>
+              @if (col.sortable) {
+                <div class="flex gap-2" >
+                  {{ col.header }}
+                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                </div>
+              } @else {
+                {{ col.header }}
+              }
+            </th>
+          }
         }
       </tr>
     </ng-template>
 
     <ng-template pTemplate="body" let-student>
-      <tr *ngIf="student">
-        <!-- Profile -->
-        <td>
-          <img
-            [src]="student?.user?.profilePic"
-            alt="profile pic"
-            class="w-7rem border-round max-h-5rem"
-          />
-        </td>
-
-        <!-- Basic Info -->
-        <td>{{ student?.user?.name }}</td>
-        <td>{{ student?.user?.email }}</td>
-        <td>{{ student?.phone }}</td>
-        <td>{{ student?.rollNo}}</td>
-        <td>{{ student?.enrollmentNo}}</td>
-        <td>{{ student?.dob | date:'dd/MM/yyyy' }}</td>
-        <td>{{ student?.gender }}</td>
-        <td>{{ student?.guardianName }}</td>
-        <td>{{ student?.guardianContact }}</td>
-
-        <!-- Address Modal -->
-        <td>
-          <button pButton type="button" icon="pi pi-eye" label="View" (click)="viewAddress(student.address)"></button>
-        </td>
-
-        <!-- Photos Modal -->
-        <td>
-          <button pButton type="button" icon="pi pi-images" label="View" (click)="viewPhotos(student.photos)"></button>
-        </td>
-
-        <!-- Courses Accordion Modal -->
-        <td>
-          <button pButton type="button" icon="pi pi-book" label="View" (click)="viewCourses(student.courses)"></button>
-        </td>
-
-        <!-- createdBy and updated By -->
-         @if(loggedUserRole === 'admin') {
-          <td>{{student?.createdBy}}</td>
-        }
-        @if(loggedUserRole === 'admin') {
-          <td>{{student?.updatedBy}}</td>
-        }
-
-        <!-- Actions -->
-        <td>
-          <div class="action-icons">
-            @if(loggedUserRole === 'admin'|| loggedUserRole === 'editor') {
-              <i class="pi pi-pencil edit-icon" 
-                title="Edit Student" 
-                (click)="navigate(student._id)">
-              </i>
+      <tr>
+        @for (col of visibleColumns; track col.field) {
+          <td>
+            @switch (col.field) {
+              @case ('profilePic') {
+                <img [src]="student?.user?.profilePic" alt="profile" class="w-7rem border-round max-h-5rem" />
+              }
+              @case ('address') {
+                <button pButton type="button" icon="pi pi-eye" label="View" (click)="viewAddress(student.address)"></button>
+              }
+              @case ('photos') {
+                <button pButton type="button" icon="pi pi-images" label="View" (click)="viewPhotos(student.photos)"></button>
+              }
+              @case ('courses') {
+                <button pButton type="button" icon="pi pi-book" label="View" (click)="viewCourses(student.courses)"></button>
+              }
+              @case ('actions') {
+                <div class="action-icons">
+                  @if (loggedUserRole === 'admin' || loggedUserRole === 'editor') {
+                    <i class="pi pi-pencil edit-icon" title="Edit" (click)="navigate(student._id)"></i>
+                  }
+                  @if (loggedUserRole === 'admin') {
+                    <i class="pi pi-trash delete-icon" title="Delete" (click)="deleteStudent(student._id, $event)"></i>
+                  }
+                </div>
+              }@default {
+                {{ resolveField(student, col.field) }}
+              }
             }
-            @if(loggedUserRole === 'admin') {
-              <i class="pi pi-trash delete-icon" 
-                title="Delete Student" 
-                (click)="deleteStudent(student._id, $event)">
-              </i>
-            }
-          </div>
-        </td>
+          </td>
+        }
       </tr>
     </ng-template>
+
     <ng-template #emptymessage>
         <tr>
             <td colspan="5">No students found</td>
@@ -110,6 +94,42 @@
     </ng-template>
   </p-table>
 </div>
+
+<!-- Mobile Filter Drawer -->
+  <p-drawer 
+    [visible]="filterMenuVisible()" 
+    position="right" 
+    [modal]="true" 
+    (onHide)="filterMenuVisible.set(false)">
+    <ng-template pTemplate="header">
+        <h3>Filters</h3>
+    </ng-template>
+
+    <div class="p-3 flex flex-column gap-3">
+        <p-iconfield iconPosition="left">
+            <p-inputicon>
+                <i class="pi pi-search"></i>
+            </p-inputicon>
+            <input 
+              pInputText 
+              id="mobileSearchBox" 
+              (input)="dt2.filterGlobal($event.target.value, 'contains')" 
+              placeholder="Search Users"
+              autocomplete="off" />
+        </p-iconfield>
+
+        <p-multiSelect
+          [options]="allColumns"
+          [(ngModel)]="selectedColumns"
+          optionLabel="header"
+          display="chip"
+          placeholder="Toggle Columns"
+          [showToggleAll]="true"
+        />
+
+        <button pButton label="Close" icon="pi pi-times" class="p-button-secondary" (click)="filterMenuVisible.set(false)"></button>
+    </div>
+  </p-drawer>
 
 <!-- Address Modal -->
 <p-dialog header="Student Address" [(visible)]="showAddressDialog" [modal]="true" [style]="{width: '400px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">

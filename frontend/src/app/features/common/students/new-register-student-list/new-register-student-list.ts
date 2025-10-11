@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { TableModule, ReorderableColumn } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
@@ -8,92 +8,71 @@ import { RouterModule, Router } from '@angular/router';
 import { SelectModule } from 'primeng/select';
 import { BadgeModule } from 'primeng/badge';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
-import { environment } from '../../../../../environments/environment';
 import { StudentService } from '../student.service';
 import { AccordionModule } from 'primeng/accordion';
 import { GalleriaModule } from 'primeng/galleria';
 import { DialogModule } from 'primeng/dialog';
-import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { User } from '../../../../core/models/User';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
+import { BaseService } from '../../../../core/services/shared/base.service';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { MainLayoutService } from '../../../../main-layout/main-layout.service';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-new-register-student',
-  imports: [CommonModule, TableModule, ButtonModule,IconFieldModule, InputIconModule, InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, GalleriaModule, DialogModule],
+  imports: [CommonModule, TableModule, ButtonModule,IconFieldModule, InputIconModule, 
+    InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, 
+    BadgeModule, AccordionModule, GalleriaModule, DialogModule, MultiSelectModule, DrawerModule],
   templateUrl: './new-register-student-list.html',
   styleUrl: './new-register-student-list.scss'
 })
-export class NewRegisterStudent {
-  API_URL = environment.apiUrl;
-  roles = [
-    { label: 'Admin', value: 'admin' },
-    { label: 'Student', value: 'student' },
-    { label: 'Editor', value: 'editor' },
-    { label: 'Teacher', value: 'teacher' }
+export class NewRegisterStudent extends BaseService<User> {
+
+  allColumns = [
+    { field: 'profilePic', header: 'Profile', sortable: false },
+    { field: 'name', header: 'Name', sortable: true },
+    { field: 'email', header: 'Email', sortable: true },
+    { field: 'actions', header: 'Action', sortable: false },
   ];
-  loading = signal<boolean>(true);
-  students = signal<User[]>([]);
 
-  selectedAddress: any = null;
+  override selectedColumns = signal([...this.allColumns]);
+  override globalFilter = ['name', 'email', 'status'];
 
-  selectedPhotos: string[] = [];
-
-  selectedCourses: any[] = [];
-  loggedUserRole: string| undefined= '';
-
-  searchTerm: string = '';
-  filteredStudents: User[] = [];
-  
-  constructor(public router: Router, private studentService: StudentService, private authService: AuthService) {
+  constructor(private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, private authService: AuthService) {
+    super();
     const user = this.authService.current_user();
-    this.loggedUserRole = user?.role;
   }
   
   ngOnInit(): void {
-    this.fetchStudents();
+    this.fetchItems();
   }
 
-  fetchStudents(): void {
+  override fetchItems(): void {
     this.loading.set(true);
     this.studentService.getNewRegisteredStudent().subscribe({
-      next: (data: User[]) => {
-        this.students.set(data);
-        this.filteredStudents = this.students();
+      next: (data: any) => {
+        this.items.set(data);
         this.loading.set(false);
       },
-      error: (err) => {
-        console.error('Failed to fetch students', err);
-        this.loading.set(false);
-      }
+      error: () => this.loading.set(false)
     });
   }
 
-    // Filtering logic
-filterStudents() {
-  const term = this.searchTerm.trim().toLowerCase();
-  if (!term) {
-    this.filteredStudents = this.students();
-    return;
+  get visibleColumns() {
+    const cols = [...this.selectedColumns()];
+    return cols;
   }
 
-  // multiple words split
-  const keywords = term.split(/\s+/);
-
-    this.filteredStudents = this.students().filter(student => {
-      // fields to search in
-      const haystack = [
-        student?.name,
-        student?.email,
-        student?.status
-      ].join(' ').toLowerCase();
-
-      // check if *all keywords* exist
-      return keywords.every(k => haystack.includes(k));
-    });
+  get isMobile() {
+    return this.mainLayoutService.isMobile;
   }
 
+  toggleFilterMenu() {
+    this.filterMenuVisible.update(v => !v);
+  }
 
   navigate(id: string) {
     this.router.navigate(['common/student-add-edit/add-details',id]);
