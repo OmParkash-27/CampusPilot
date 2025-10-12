@@ -58,7 +58,7 @@ export class StudentList extends BaseService<Student> {
     { field: 'guardianName', header: 'Guardian Name', sortable: false },
     { field: 'guardianContact', header: 'Guardian Contact', sortable: false },
     { field: 'address', header: 'Address', sortable: false },
-    { field: 'photos', header: 'Photos', sortable: false },
+    { field: 'photos', header: 'Docs', sortable: false },
     { field: 'courses', header: 'Courses', sortable: false },
   ];
 
