@@ -35,18 +35,20 @@
       <tr>
         @for (col of visibleColumns; track col.field) {
           @if (col.field === 'actions') {
-            <th pReorderableColumn>{{ col.header }}</th>
+            <th>{{ col.header }}</th>
           } @else {
+            @if (col.sortable) {
             <th pSortableColumn="{{ col.field }}" pReorderableColumn>
-              @if (col.sortable) {
                 <div class="flex gap-2" >
                   {{ col.header }}
                   <p-sortIcon [field]="col.field"></p-sortIcon>
                 </div>
-              } @else {
-                {{ col.header }}
-              }
             </th>
+            } @else {
+            <th pReorderableColumn>
+              {{ col.header }}
+            </th>
+            }
           }
         }
       </tr>

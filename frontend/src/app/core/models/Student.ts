@@ -20,7 +20,7 @@ export interface Student {
   rollNo: string;
   enrollmentNo?: string;
   courses: Course[];
-  dob?:  Date;
+  dob?:  Date | null | string | '';
   gender?: 'Male' | 'Female' | 'Other';
   phone?: string;
   address?: Address;

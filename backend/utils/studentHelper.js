@@ -4,8 +4,11 @@
  */
 function parseDate(dob) {
   if (!dob) return null;
-  const parsedDate = new Date(dob);
-  return isNaN(parsedDate.getTime()) ? null : parsedDate;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+
+  // Normalize to UTC midnight
+  return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
 }
 
 /**
@@ -15,8 +18,8 @@ function parseCourses(courses) {
   const parsedCourses = courses ? JSON.parse(courses) : [];
   parsedCourses.forEach(c => {
     if (c.batchYear) {
-      // Always store as number (year)
-      c.batchYear = new Date(c.batchYear).getFullYear();
+      const date = new Date(c.batchYear);
+      c.batchYear = date.getUTCFullYear(); // numeric year
     }
   });
   return parsedCourses;

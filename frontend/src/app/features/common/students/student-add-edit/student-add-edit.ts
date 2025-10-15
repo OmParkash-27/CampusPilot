@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, Output, EventEmitter, signal, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { User } from '../../../../core/models/User';
 import { Student } from '../../../../core/models/Student';
 import { StudentService } from '../student.service';
@@ -12,9 +11,9 @@ import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
-import { environment } from '../../../../../environments/environment';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../admin/users/user.service';
+import { extractYear, fromUTCDate, toUTCDate } from '../../../../utils/date';
 
 @Component({
   selector: 'app-student-add-edit',
@@ -34,7 +33,6 @@ import { UserService } from '../../../admin/users/user.service';
 })
 export class AddEditStudent implements OnInit {
 
-  API_URL = environment.apiUrl;
   studentForm!: FormGroup;
   isEditMode = false;
   isPartialAdd = signal(false);
@@ -42,6 +40,10 @@ export class AddEditStudent implements OnInit {
   photoPreviews: string[] = []; // multiple photos preview
   minDateBatch: Date = new Date(1990, 0, 1);
   maxDateBatch: Date = new Date();
+    // Data
+  userData?: User;
+  studentData?: Student;
+  photosRemoveUrls:string[]= [];
 
   formEffect = effect(() => {
       if (this.isPartialAdd()) {
@@ -71,11 +73,6 @@ export class AddEditStudent implements OnInit {
     { label: 'Female', value: 'Female' },
     { label: 'Other', value: 'Other' }
   ];
-
-  // Data
-  userData?: User;
-  studentData?: Student;
-  photosRemoveUrls:string[]= [];
 
   constructor(
     private fb: FormBuilder,
@@ -147,7 +144,7 @@ export class AddEditStudent implements OnInit {
       email: this.userData?.email,
       rollNo: this.studentData?.rollNo,
       enrollmentNo: this.studentData?.enrollmentNo,
-      dob: this.studentData?.dob ? new Date(this.studentData.dob) : null,
+      dob: this.studentData?.dob ? fromUTCDate(this.studentData?.dob) : null,
       gender: this.studentData?.gender,
       phone: this.studentData?.phone,
       address: this.studentData?.address,
@@ -263,7 +260,7 @@ export class AddEditStudent implements OnInit {
     formData.append('email', formValue.email);
     formData.append('rollNo', formValue.rollNo);
     formData.append('enrollmentNo', formValue.enrollmentNo);
-    formData.append('dob', formValue.dob);
+    formData.append('dob', toUTCDate(formValue.dob) || '');
     formData.append('gender', formValue.gender);
     formData.append('phone', formValue.phone);
     formData.append('guardianName', formValue.guardianName);
@@ -271,7 +268,11 @@ export class AddEditStudent implements OnInit {
 
     // data in formData always should be string to send on server
     formData.append('address', JSON.stringify(formValue.address));
-    formData.append('courses', JSON.stringify(formValue.courses));
+    const courses = this.courses.value.map((c: any) => ({
+      ...c,
+      batchYear: extractYear(c.batchYear)
+    }));
+    formData.append('courses', JSON.stringify(courses));
 
     // files (single profilePic)
     if (formValue.profilePic) {      
