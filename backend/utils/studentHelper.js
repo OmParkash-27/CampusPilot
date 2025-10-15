@@ -22,7 +22,7 @@ function parseCourses(courses) {
         c.batchYear = c.batchYear;
       } else {
         const date = new Date(c.batchYear);
-        c.batchYear = date.getUTCFullYear();
+        c.batchYear = date.getFullYear();
       }
     }
   });

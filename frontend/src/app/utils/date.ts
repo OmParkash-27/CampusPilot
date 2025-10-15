@@ -13,7 +13,9 @@ export function toUTCDate(date: Date | string | null): string | null {
  */
 export function fromUTCDate(utcString: string | null | Date): Date | null {
   if (!utcString) return null;
-  return new Date(utcString); // Angular DatePipe or p-datepicker handles local display
+   const d = new Date(utcString);
+  // return local date equivalent (Angular will render it correctly)
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
 /**
