@@ -13,7 +13,7 @@ import { SelectModule } from 'primeng/select';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../admin/users/user.service';
-import { extractYear, fromUTCDate, toUTCDate } from '../../../../utils/date';
+import { extractYear, fromUTCDate, normalizeCourses, toUTCDate } from '../../../../utils/date';
 
 @Component({
   selector: 'app-student-add-edit',
@@ -268,10 +268,8 @@ export class AddEditStudent implements OnInit {
 
     // data in formData always should be string to send on server
     formData.append('address', JSON.stringify(formValue.address));
-    const courses = this.courses.value.map((c: any) => ({
-      ...c,
-      batchYear: extractYear(c.batchYear)
-    }));
+
+    const courses = normalizeCourses(formValue.courses);
     formData.append('courses', JSON.stringify(courses));
 
     // files (single profilePic)

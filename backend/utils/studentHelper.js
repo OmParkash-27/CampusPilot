@@ -18,8 +18,12 @@ function parseCourses(courses) {
   const parsedCourses = courses ? JSON.parse(courses) : [];
   parsedCourses.forEach(c => {
     if (c.batchYear) {
-      const date = new Date(c.batchYear);
-      c.batchYear = date.getUTCFullYear(); // numeric year
+      if (typeof c.batchYear === 'number') {
+        c.batchYear = c.batchYear;
+      } else {
+        const date = new Date(c.batchYear);
+        c.batchYear = date.getUTCFullYear();
+      }
     }
   });
   return parsedCourses;

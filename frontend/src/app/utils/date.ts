@@ -21,8 +21,17 @@ export function fromUTCDate(utcString: string | null | Date): Date | null {
  */
 export function extractYear(value: string | Date | number | null): number | null {
   if (!value) return null;
-  const date = new Date(value);
-  return date.getUTCFullYear();
+  if (typeof value === 'number') return value;
+
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d.getFullYear();
+}
+
+export function normalizeCourses(courses: any[]): any[] {
+  return courses.map(c => ({
+    ...c,
+    batchYear: extractYear(c.batchYear),
+  }));
 }
 
 /**
@@ -34,3 +43,4 @@ export function formatDateForDisplay(date: string | Date | null): string {
     day: '2-digit', month: 'short', year: 'numeric'
   });
 }
+
