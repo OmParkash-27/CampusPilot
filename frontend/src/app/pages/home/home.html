@@ -3,7 +3,12 @@
     <div class="hero-section">
         <h1>Welcome to Campus Pilot</h1>
         <p>Your journey to knowledge starts here!</p>
-        <button *ngIf="!isLoggedIn()" pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
+        @if(!isLoggedIn()) {
+            <button pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
+            <p>Use Admin Credentials:- </p>
+            <p>Email:- om@example.com</p>
+            <p>Password:- 123456</p>
+        }
     </div>
 
     <p-divider></p-divider>
