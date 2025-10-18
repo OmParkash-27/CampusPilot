@@ -44,8 +44,7 @@ export class StudentList extends BaseService<Student> {
 
   showCoursesDialog = false;
   selectedCourses: any[] = [];
-  loggedUserRole: string| undefined= '';
-
+  
   allColumns = [
     { field: 'profilePic', header: 'Profile', sortable: false },
     { field: 'user.name', header: 'Name', sortable: true },
@@ -69,10 +68,8 @@ export class StudentList extends BaseService<Student> {
       'guardianName', 'guardianContact', 'gender', 'createdBy', 'updatedBy', 
   ]
 
-  constructor(private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, private authService: AuthService, private confirmService: ConfirmationService) {
-    super();
-    const user = this.authService.current_user();
-    this.loggedUserRole = user?.role;
+  constructor(authService: AuthService, private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, private confirmService: ConfirmationService) {
+    super(authService);
   }
   
   ngOnInit(): void {
@@ -99,12 +96,12 @@ export class StudentList extends BaseService<Student> {
     this.filterMenuVisible.update(v => !v);
   }
 
-  override fetchItems(): void {
+  fetchItems(): void {
     this.loading.set(true);
     this.studentService.getAllStudents().subscribe({
       next: (data: Student[]) => {
         this.items.set(data);
-        this.customrGlobalFilterItems.set(data);
+        this.customGlobalFilterItems.set(data);
         this.loading.set(false);
       },
       error: (err) => {
@@ -130,7 +127,7 @@ export class StudentList extends BaseService<Student> {
   }
 
   navigate(id: string) {
-    this.router.navigate(['common/student-add-edit/edit',id]);
+    this.router.navigate([`${this.loggedUserRole + '/common/student-add-edit/edit'}`,id]);
   }
 
   deleteStudent(id: string, event: any) {

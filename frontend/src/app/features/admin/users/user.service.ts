@@ -7,11 +7,7 @@ import { AuthService } from '../../../core/services/auth/auth.service';
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private model = 'users';
-  currentUser: User | null;
-  private authService = inject(AuthService)
-  
   constructor(private http: HttpService) {
-    this.currentUser = this.authService.current_user()
   }
   getAll(): Observable<User[]> {
     return this.http.getAll(this.model);

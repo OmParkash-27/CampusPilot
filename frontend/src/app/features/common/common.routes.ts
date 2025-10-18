@@ -1,4 +1,6 @@
 import { Routes } from "@angular/router"
+import { AuthGuard } from "../../core/gaurds/auth-guard"
+import { RoleGuard } from "../../core/gaurds/role-guard"
 
 export const COMMON_ROUTES:Routes = [
     {
@@ -19,6 +21,8 @@ export const COMMON_ROUTES:Routes = [
     },
     {
         path: 'student-add-edit/edit/:studentId',
+        canActivate: [AuthGuard, RoleGuard],
+        data: { roles: ['admin', 'editor'] },
         loadComponent: () => import('../common/students/student-add-edit/student-add-edit').then(m => m.AddEditStudent)
     },
     

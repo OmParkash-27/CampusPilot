@@ -1,28 +1,35 @@
 import { signal, WritableSignal } from '@angular/core';
+import { AuthService } from '../auth/auth.service';
+import { User } from '../../models/User';
 
 export abstract class BaseService<T> {
   loading = signal<boolean>(true);
   items = signal<T[]>([]);
-  customrGlobalFilterItems = signal<T[]>([]);    // filtered copy
+  customGlobalFilterItems = signal<T[]>([]);    // filtered copy
   globalFilter: string[] = [];
   filterMenuVisible = signal(false);
   selectedColumns: WritableSignal<any[]> = signal([]);
-  
   roles = [
     { label: 'Admin', value: 'admin' },
     { label: 'Student', value: 'student' },
     { label: 'Editor', value: 'editor' },
     { label: 'Teacher', value: 'teacher' }
   ];
+  currentUser: User | null = null;
+  loggedUserRole: string| undefined= '';
 
 
-  abstract fetchItems(): void;
+  
+  constructor(private authService: AuthService) {
+    this.currentUser = this.authService.current_user();
+    this.loggedUserRole = this.currentUser?.role;
+  }
 
   customGlobalFilter(value: string) {
     const search = value.toLowerCase().trim();
 
     if (!search) {
-      this.customrGlobalFilterItems.set(this.items()); // reset to full list
+      this.customGlobalFilterItems.set(this.items()); // reset to full list
       return;
     }
 
@@ -33,7 +40,7 @@ export abstract class BaseService<T> {
       });
     });
 
-    this.customrGlobalFilterItems.set(filtered);
+    this.customGlobalFilterItems.set(filtered);
   }
 
   protected resolveField(obj: any, path: string): any {

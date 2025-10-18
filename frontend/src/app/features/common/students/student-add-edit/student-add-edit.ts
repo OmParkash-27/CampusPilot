@@ -14,6 +14,8 @@ import { DatePickerModule } from 'primeng/datepicker';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../admin/users/user.service';
 import { extractYear, fromUTCDate, normalizeCourses, toUTCDate } from '../../../../utils/date';
+import { BaseService } from '../../../../core/services/shared/base.service';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-student-add-edit',
@@ -31,7 +33,7 @@ import { extractYear, fromUTCDate, normalizeCourses, toUTCDate } from '../../../
     FileUploadModule
   ],
 })
-export class AddEditStudent implements OnInit {
+export class AddEditStudent extends BaseService<Student> implements OnInit {
 
   studentForm!: FormGroup;
   isEditMode = false;
@@ -79,8 +81,11 @@ export class AddEditStudent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private studentService: StudentService,
-    private router: Router
-  ) {}
+    private router: Router,
+    authService: AuthService
+  ) {
+    super(authService)
+  }
 
   ngOnInit(): void {
     this.studentForm = this.fb.group({
@@ -289,14 +294,18 @@ export class AddEditStudent implements OnInit {
       formData.append("deletePhotosUrls", JSON.stringify(this.photosRemoveUrls));
 
       this.studentService.updateStudent(this.studentData!._id!, formData).subscribe(()=>{
-        this.router.navigate(['/common/student-list']);
+        this.navigateToList();
       });
     } else {
       if(this.isPartialAdd()) formData.append('userId', this.userData?._id!);
       this.studentService.createStudent(formData).subscribe(()=>{
-        this.router.navigate(['/common/student-list']);
+        this.navigateToList();
       });
     }
+  }
+
+  navigateToList() {
+    this.router.navigate([`${this.loggedUserRole + '/common/student-list'}`]);
   }
 
   onCancel() {

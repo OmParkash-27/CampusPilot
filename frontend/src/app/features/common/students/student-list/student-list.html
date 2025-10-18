@@ -1,7 +1,7 @@
 <div class="list-card">
   <p-confirmpopup key="deleteStudent"></p-confirmpopup>
   <h2>All Students</h2>
-    <p-table #dt2 [value]="customrGlobalFilterItems()" [paginator]="true" [rows]="10" [loading]="loading()"
+    <p-table #dt2 [value]="customGlobalFilterItems()" [paginator]="true" [rows]="10" [loading]="loading()"
      [globalFilterFields]="globalFilter" [reorderableColumns]="true" (onColReorder)="onColReorder($event)">
     
     <ng-template #caption>
@@ -10,7 +10,7 @@
               <p-inputicon>
                   <i class="pi pi-search"></i>
               </p-inputicon>
-              <input pInputText id="searchBox" (input)="dt2.filterGlobal($event.target.value, 'contains')" placeholder="Search" autocomplete="off" />
+              <input pInputText id="searchBox" (input)="customGlobalFilter($event.target.value)" placeholder="Search" autocomplete="off" />
           </p-iconfield>
           
           <!-- Column Toggle  -->
@@ -138,12 +138,15 @@
 
 <!-- Address Modal -->
 <p-dialog header="Student Address" [(visible)]="showAddressDialog" [modal]="true" [style]="{width: '400px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-  <p *ngIf="selectedAddress">{{ selectedAddress.street }}, {{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.zip }}</p>
-  <p *ngIf="!selectedAddress">No address available</p>
+  @if(selectedAddress?.city != '' && selectedAddress?.city != null) {
+    <p>{{ selectedAddress.street }}, {{ selectedAddress.city }}, {{ selectedAddress.state }} - {{ selectedAddress.zip }}</p>
+  } @else {
+    <p>No address available</p>
+  }
 </p-dialog>
 
 <!-- Photos Modal -->
-<p-dialog header="Student Photos" [(visible)]="showPhotosDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
+<p-dialog header="Student Documents" [(visible)]="showPhotosDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
   <p-galleria *ngIf="selectedPhotos?.length" [value]="selectedPhotos" [showItemNavigators]="true" [showThumbnails]="true" [circular]="true">
     <ng-template pTemplate="item" let-photo>
       <img [src]="photo" class="w-full border-round" />
@@ -152,7 +155,7 @@
       <img [src]="photo" class="w-5rem border-round" />
     </ng-template>
   </p-galleria>
-  <p *ngIf="!selectedPhotos?.length">No photos uploaded</p>
+  <p *ngIf="!selectedPhotos?.length">No documents uploaded</p>
 </p-dialog>
 
 <!-- Courses Modal with Accordion -->

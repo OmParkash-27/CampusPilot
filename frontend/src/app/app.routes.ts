@@ -36,16 +36,9 @@ export const routes: Routes = [
             {
                 path: 'student',
                 canActivate: [AuthGuard, RoleGuard],
-                data: { roles: ['student', 'admin', 'teacher', 'editor'] },
+                data: { roles: ['student', 'admin'] },
                 loadChildren: () => import('./features/student/student.routes').then(m => m.STUDENT_ROUTES)
             },
-            {
-                path: 'common',
-                canActivate: [AuthGuard, RoleGuard],
-                data: { roles: ['student', 'admin', 'teacher', 'editor'] },
-                loadChildren: () => import('./features/common/common.routes').then(m => m.COMMON_ROUTES)
-            },
-
             { path: '**', redirectTo: 'home' }
         ]
         

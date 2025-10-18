@@ -19,6 +19,7 @@ import { BaseService } from '../../../../core/services/shared/base.service';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { MainLayoutService } from '../../../../main-layout/main-layout.service';
 import { DrawerModule } from 'primeng/drawer';
+import { AuthService } from '../../../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-user-list',
@@ -45,13 +46,11 @@ export class UserList extends BaseService<User> implements OnInit  {
   override selectedColumns = signal([...this.allColumns]);
 
   private prevRole: User['role'] | null = null;
-  loggedUser: User | null = null;
   // Filtering logic
   override globalFilter = ['name', 'email', 'role', 'status'];
   
-  constructor(private mainLayoutService: MainLayoutService, public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
-    super();
-    this.loggedUser = this.userService.currentUser;
+  constructor(authService: AuthService, private mainLayoutService: MainLayoutService, public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
+    super(authService);
   }
   
   ngOnInit(): void {
@@ -71,7 +70,7 @@ export class UserList extends BaseService<User> implements OnInit  {
     this.filterMenuVisible.update(v => !v);
   }
 
-  override fetchItems(): void {
+  fetchItems(): void {
     this.loading.set(true);
     this.userService.getAll().subscribe({
       next: (users) => {

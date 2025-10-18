@@ -71,7 +71,7 @@
                   optionValue="value"
                   placeholder="Select Role"
                   styleClass="role-select"
-                  [disabled]="loggedUser?.email == user.email"
+                  [disabled]="currentUser?.email == user.email"
                   (onChange)="onRoleChange(user , $event)">
                 </p-select>
               }
@@ -81,15 +81,15 @@
                     [(ngModel)]="user.status" 
                     binary="true"
                     (onChange)="onStatusChange(user, $event)"
-                    [disabled]="loggedUser?.email == user.email">
+                    [disabled]="currentUser?.email == user.email">
                   </p-checkbox>
                   <p-badge [value]="user.status ? 'Active' : 'Inactive'" class=" sm:ml-4 md:ml-3 lg:ml-2 " [severity]="user.status ? 'success' : 'danger'" />
                 </div>
               }
               @case('actions') {
                 <div class="action-icons">
-                    <i class="pi pi-pencil edit-icon" [title]="loggedUser?.email !=user.email ? 'edit' : 'cant edit'" (click)="loggedUser?.email !=user.email ? navigate(user._id) : null"></i>
-                    <i class="pi pi-trash delete-icon" [title]="loggedUser?.email !=user.email ? 'delete' : 'cant delete'" (click)="loggedUser?.email != user.email ? deleteUser(user?._id, $event) : null"></i>
+                    <i class="pi pi-pencil edit-icon" [title]="currentUser?.email !=user.email ? 'edit' : 'cant edit'" (click)="currentUser?.email !=user.email ? navigate(user._id) : null"></i>
+                    <i class="pi pi-trash delete-icon" [title]="currentUser?.email !=user.email ? 'delete' : 'cant delete'" (click)="currentUser?.email != user.email ? deleteUser(user?._id, $event) : null"></i>
                 </div>
               }
               @default {

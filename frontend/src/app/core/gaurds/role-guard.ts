@@ -1,18 +1,25 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
 
-export const RoleGuard = (allowedRoles: string[]): CanActivateFn => {
-  return () => {
-    const authService = inject(AuthService);
-    const router = inject(Router);
+export const RoleGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-    const user = authService.current_user();
-    if (user && allowedRoles.includes(user.role)) {
-      return true;
-    } else {
-      router.navigate(['/login']); // or dashboard
-      return false;
-    }
-  };
+  const allowedRoles = route.data['roles'] as string[];
+  const user = authService.current_user();
+
+  if (user && allowedRoles?.includes(user.role)) {
+    return true;
+  }
+
+  // Access denied — redirect to proper dashboard instead of login
+  if (user) {
+    // Redirect to respective dashboard
+    router.navigate([`/${user.role}`]);
+  } else {
+    router.navigate(['/login']);
+  }
+
+  return false;
 };

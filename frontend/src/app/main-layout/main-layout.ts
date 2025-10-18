@@ -34,35 +34,34 @@ export class MainLayout {
   ) { 
       this.itemsSignal = this.mainLayoutService.getMenu();
       this.router.events.subscribe(event => {
-         if (event instanceof NavigationStart) {
+        if (event instanceof NavigationStart) {
         // Immediately close drawer and show loader
-        this.closeDrawer();
-        this.loadingService.show();
-      }
+          this.closeDrawer();
+          this.loadingService.show();
+        }
 
-      if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
-        // Hide loader once navigation is complete or cancelled
-        this.loadingService.hide();
-      }
-    });
+        if (event instanceof NavigationEnd || event instanceof NavigationCancel || event instanceof NavigationError) {
+          // Hide loader once navigation is complete or cancelled
+          this.loadingService.hide();
+        }
+      });
       this.speedDial = this.mainLayoutService.getSpeedDialContent();
-  }
-  get isMobile() {
-    return this.mainLayoutService.isMobile;
-  }
-
-  toggleDrawer() {
-    this.drawerVisible.update((v) => !v);
-  }
-
-  closeDrawer() {
-    if (this.isMobile()) {
-      this.drawerVisible.set(false);
     }
-  } 
+    get isMobile() {
+      return this.mainLayoutService.isMobile;
+    }
 
-  toggleSpeedDial() {
-    this.speedDialOpen = !this.speedDialOpen;
-  }
+    toggleDrawer() {
+      this.drawerVisible.update((v) => !v);
+    }
 
+    closeDrawer() {
+      if (this.isMobile()) {
+        this.drawerVisible.set(false);
+      }
+    } 
+
+    toggleSpeedDial() {
+      this.speedDialOpen = !this.speedDialOpen;
+    }
 }

@@ -6,5 +6,9 @@ export const TEACHER_ROUTES: Routes = [
     path: 'dashboard',
     loadComponent: () =>
       import('./dashboard/dashboard').then(m => m.TDashboard)
+  },
+  {
+    path: 'common',
+    loadChildren: () => import('../common/common.routes').then(m => m.COMMON_ROUTES)
   }
 ];

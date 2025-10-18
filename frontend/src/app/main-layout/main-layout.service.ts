@@ -55,6 +55,17 @@ export class MainLayoutService {
         );
 
         let updatedItem: RoleMenuItem = { ...item, visible };
+        //  Dynamic routerLink prefix logic
+        if (
+          current_user &&
+          updatedItem.routerLink?.startsWith('/common/')
+        ) {
+          // prepend user role-based prefix
+          updatedItem = {
+            ...updatedItem,
+            routerLink: `/${current_user.role}${updatedItem.routerLink}`
+          };
+        }
 
         // Handle sub-items visibility
         if (item.items?.length) {
@@ -66,7 +77,20 @@ export class MainLayoutService {
                     (!subItem.public && subItem.roles?.includes(current_user.role))
                   : subItem.public
               );
-              return { ...subItem, visible: subVisible };
+              let updatedSubItem: RoleMenuItem = { ...subItem, visible: subVisible };
+
+            // Same routerLink fix for subitems
+            if (
+              current_user &&
+              updatedSubItem.routerLink?.startsWith('/common/')
+            ) {
+              updatedSubItem = {
+                ...updatedSubItem,
+                routerLink: `/${current_user.role}${updatedSubItem.routerLink}`
+              };
+            }
+
+            return updatedSubItem;
             })
             .filter(si => si.visible);
         }

@@ -41,16 +41,15 @@ export class NewRegisterStudent extends BaseService<User> {
   override selectedColumns = signal([...this.allColumns]);
   override globalFilter = ['name', 'email', 'status'];
 
-  constructor(private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, private authService: AuthService) {
-    super();
-    const user = this.authService.current_user();
+  constructor(private mainLayoutService: MainLayoutService, public router: Router, private studentService: StudentService, authService: AuthService) {
+    super(authService);
   }
   
   ngOnInit(): void {
     this.fetchItems();
   }
 
-  override fetchItems(): void {
+  fetchItems(): void {
     this.loading.set(true);
     this.studentService.getNewRegisteredStudent().subscribe({
       next: (data: any) => {
@@ -75,7 +74,7 @@ export class NewRegisterStudent extends BaseService<User> {
   }
 
   navigate(id: string) {
-    this.router.navigate(['common/student-add-edit/add-details',id]);
+    this.router.navigate([`${this.loggedUserRole + '/common/student-add-edit/add-details'}`,id]);
   }
 
 
