@@ -6,7 +6,7 @@
         <img src="images/logo.png" alt="CampusPilot Logo" class="app-logo" />
         <span class="app-title">CampusPilot</span>
       </div>
-      <div *ngIf="!isMobile() && !!user()" class="mr-3" style="cursor: pointer;" (click)="showPopOver()">
+      <div *ngIf="!isMobile() && !!user()" class="mr-3" style="cursor: pointer;" (click)="!!user() ? showPopOver() : null">
         <p-chip  *ngIf="user()?.profilePic !== null" [label]="user()?.name" [image]="user()?.profilePic!" label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" />
         <p-chip *ngIf="user()?.profilePic === null" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
       </div>
@@ -30,15 +30,17 @@
       <p-drawer [visible]="drawerVisible()" [modal]="true" position="left" [dismissible]="true"
         (onHide)="closeDrawer()">
         <ng-template pTemplate="header">
-          <p-chip *ngIf="!!user() && user()?.profilePic !== null"
-            [image]="user()?.profilePic!" style="cursor: pointer;"
-            label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" (click)="showPopOver()">
-          </p-chip>
-
-          <p-chip *ngIf="user()?.profilePic === null"
-            icon="pi pi-user"
-            label="{{ user()?.name }}" (click)="showPopOver()">
-          </p-chip>
+          @if(!!user()) {
+            <p-chip *ngIf="!!user() && user()?.profilePic !== null"
+              [image]="user()?.profilePic!" style="cursor: pointer;"
+              label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" (click)="!!user() ? showPopOver() : null">
+            </p-chip>
+  
+            <p-chip *ngIf="user()?.profilePic === null"
+              icon="pi pi-user"
+              label="{{ user()?.name }}" (click)="!!user() ? showPopOver() : null ">
+            </p-chip>
+          }
         </ng-template>
         <p-menubar [model]="itemsSignal()"></p-menubar>
       </p-drawer>
