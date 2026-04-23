@@ -6,6 +6,7 @@ import { About } from './pages/about/about';
 import { Contact } from './pages/contact/contact';
 import { RoleGuard } from './core/gaurds/role-guard';
 import { AuthGuard } from './core/gaurds/auth-guard';
+import { ChangePassword } from './pages/change-password/change-password';
 
 export const routes: Routes = [
     {
@@ -13,6 +14,7 @@ export const routes: Routes = [
             { path: '', redirectTo: 'home', pathMatch: 'full'},
             { path: 'home', component: Home},
             { path: 'login', component: Login },
+            { path: 'change-password', component: ChangePassword },
             { path: 'about', component: About},
             { path: 'contact', component: Contact},
             {

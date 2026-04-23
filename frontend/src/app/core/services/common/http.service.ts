@@ -5,17 +5,16 @@ import { environment } from "../../../../environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class HttpService {
-     private API_URL = environment.apiUrl;
+  private API_URL = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
-
   
   put(formData: FormData, model: string, id: string, route?: string): Observable<any> {    
-      return this.http.put(`${this.API_URL + '/' + model + `${route ? route : ''}` + '/' + id}`, formData, { withCredentials: true });
+    return this.http.put(`${this.API_URL + '/' + model + `${route ? route : ''}` + '/' + id}`, formData, { withCredentials: true });
   }
 
   putWithoutId(formData: FormData, model: string ): Observable<any> {    
-      return this.http.put(`${this.API_URL + '/' + model}`, formData, { withCredentials: true });
+    return this.http.put(`${this.API_URL + '/' + model}`, formData, { withCredentials: true });
   }
 
   post(formData: FormData, model: string ): Observable<any> {

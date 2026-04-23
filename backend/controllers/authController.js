@@ -78,3 +78,54 @@
       res.status(500).json({ message: 'Server error' });
     }
   };
+
+  exports.changePassword = async (req, res) => {
+    try {
+      const userId = req.user.id; // from verifyToken middleware
+      const { oldPassword, newPassword } = req.body;
+
+      // 1. Validate input
+      if (!oldPassword || !newPassword) {
+        return res.status(400).json({ message: 'Old and new password are required' });
+      }
+
+      // 2. Get user
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // 3. Password length should be 6
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: 'Password must be at least 6 characters' });
+      }
+
+      // 4. Compare old password
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: 'Old password is incorrect' });
+      }
+
+      //  Prevent same password reuse (optional but recommended)
+      // const isSame = await bcrypt.compare(newPassword, user.password);
+      // if (isSame) {
+      //   return res.status(400).json({ message: 'New password must be different from old password' });
+      // }
+
+      // 5. Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      // 6. Update password
+      user.password = hashedPassword;
+      await user.save();
+
+      // 7. Invalidate old tokens → force re-login
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+
+      res.status(200).json({ message: 'Password updated successfully. Please login again.' });
+
+    } catch (error) {
+      res.status(500).json({ message: 'Password update failed', error: error.message });
+    }
+  };

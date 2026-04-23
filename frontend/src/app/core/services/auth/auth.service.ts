@@ -39,6 +39,11 @@ export class AuthService {
     return user;
   }
 
+  changePassword(oldPassword: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.API_URL}/${Request_For.AUTH}/${API.CHANGE_PASSWORD}`,
+      { oldPassword, newPassword },{ withCredentials: true });
+  }
+
   logout(): Observable<any> {
     return this.http.post(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.LOGOUT}`, {}, { withCredentials: true });
   }

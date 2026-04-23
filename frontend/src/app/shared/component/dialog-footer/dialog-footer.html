@@ -1,0 +1,10 @@
+<div class="flex justify-content-end gap-2 w-full">
+      
+    </div><button
+        *ngFor="let btn of buttons"
+        pButton
+        [label]="btn.label"
+        [icon]="btn.icon || ''"
+        [class]="btn.styleClass"
+        (click)="handleClick(btn)">
+      </button>

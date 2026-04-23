@@ -10,7 +10,7 @@ router.put('/update-role/:id',upload.none(), verifyToken, isAdmin, updateUserRol
 router.get('/', verifyToken, isAdmin, getAllUsers);
 router.get('/:id', verifyToken, getUser);
 router.put('/:id', upload.single('profilePic'), verifyToken, isAdmin, updateUser);
-router.put('/update-status/:id',upload.none(), verifyToken, updateUserStatus);
+router.put('/update-status/:id',upload.none(), verifyToken, isAdmin, updateUserStatus);
 router.delete('/:id', verifyToken, deleteUser);
 
 module.exports = router;

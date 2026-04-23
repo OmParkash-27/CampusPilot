@@ -6,7 +6,7 @@
         <img src="images/logo.png" alt="CampusPilot Logo" class="app-logo" />
         <span class="app-title">CampusPilot</span>
       </div>
-      <div *ngIf="!isMobile() && !!user()" class="mr-3">
+      <div *ngIf="!isMobile() && !!user()" class="mr-3" style="cursor: pointer;" (click)="showPopOver()">
         <p-chip  *ngIf="user()?.profilePic !== null" [label]="user()?.name" [image]="user()?.profilePic!" label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" />
         <p-chip *ngIf="user()?.profilePic === null" icon="pi pi-user" label="{{ user()?.name }}"> </p-chip>
       </div>
@@ -31,13 +31,13 @@
         (onHide)="closeDrawer()">
         <ng-template pTemplate="header">
           <p-chip *ngIf="!!user() && user()?.profilePic !== null"
-            [image]="user()?.profilePic!"
-            label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null">
+            [image]="user()?.profilePic!" style="cursor: pointer;"
+            label="{{ user()?.name }}" (onImageError)="user()!.profilePic=null" (click)="showPopOver()">
           </p-chip>
 
           <p-chip *ngIf="user()?.profilePic === null"
             icon="pi pi-user"
-            label="{{ user()?.name }}">
+            label="{{ user()?.name }}" (click)="showPopOver()">
           </p-chip>
         </ng-template>
         <p-menubar [model]="itemsSignal()"></p-menubar>
@@ -60,4 +60,12 @@
     </p-speedDial>
   </div>
 
+  <p-popover #op>
+    <div class="flex flex-col gap-4">
+      <p-button icon="pi pi-sign-out" title="Logout" [rounded]="true" [text]="true" [raised]="true" severity="info"
+        (onClick)="logOut()" />
+      <p-button icon="pi pi-cog" title="Change Password" [rounded]="true" [text]="true" [raised]="true" severity="info"
+        (onClick)="show()" />
+    </div>
+  </p-popover>
 </div>

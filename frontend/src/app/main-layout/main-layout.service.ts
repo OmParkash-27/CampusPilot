@@ -14,7 +14,8 @@ export class MainLayoutService {
   allSpeedDialItems: WritableSignal<MenuItem[]> = signal(speedDialItems);
   private windowWidth = signal(window.innerWidth);
   isMobile = computed(() => this.windowWidth() < 768);
-
+  showChangePassDialogSignal = signal(false);
+  
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -149,6 +150,8 @@ export class MainLayoutService {
           return { ...item, command: () => this.setTheme('dark') };
         case 'logout':
           return { ...item, command: () => this.logout() };
+        case 'setting':
+          return { ...item, command: () => this.showChangePassDialogSignal.set(true) };
         default:
           return item;
       }
@@ -172,7 +175,7 @@ export class MainLayoutService {
     }
   }
 
-  private logout() {
+  logout() {
     this.authService.logout().subscribe({
       next: () => {
         this.authService.current_user.set(null);

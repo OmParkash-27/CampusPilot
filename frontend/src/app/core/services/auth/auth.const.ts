@@ -10,6 +10,7 @@ export enum API {
   LOGOUT = 'logout',
   REGISTER = 'register',
   PROFILE = 'profile',
-  DASHBOARD = 'dashboard'
+  DASHBOARD = 'dashboard',
+  CHANGE_PASSWORD = 'change-password'
 }
 
