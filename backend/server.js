@@ -15,7 +15,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const verifyToken = require('./middleware/authMiddleware');
 const logMiddleware = require('./middleware/logMiddleware');
 const errorHandler = require("./middleware/errorHandler");
-
+const cleanupExpiredTokens = require("./utils/cleanupTokens");
 // Load environment variables
 const envFile = `.env.${process.env.NODE_ENV || 'development'}`;
 dotenv.config({ path: envFile });
@@ -45,27 +45,38 @@ app.use(
   })
 );
 
-//logs
-app.use(logMiddleware);
 
-//public folder
-app.use('/api', express.static(path.join(__dirname, './public')));
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 
+//logs
+app.use(logMiddleware);
+
 // Connect to MongoDB
 connectDB();
 
 // Routes
+app.get('/health', (req, res) => {
+  console.log("health ROUTE HIT");
+  res.json({ ok: true });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/students', verifyToken, studentRoutes); // protected
 app.use('/api/users', verifyToken, userRoutes);
 app.use('/api/dashboard', verifyToken, dashboardRoutes);
 
+//public folder
+app.use('/api', express.static(path.join(__dirname, './public')));
+
 //error msg show on logs 
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  // remove expired token from db
+  cleanupExpiredTokens();
+});

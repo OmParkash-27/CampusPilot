@@ -8,8 +8,8 @@ import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
-import { AuthService } from '../../core/services/auth/auth.service';
-import { DialogActionService } from '../../shared/services/dialog-action-service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { DialogActionService } from '../../services/dialog-action-service';
 import { Subscription } from 'rxjs';
 
 @Component({

@@ -1,28 +1,35 @@
 const winston = require("winston");
 const path = require("path");
 const fs = require("fs");
+const DailyRotateFile = require("winston-daily-rotate-file");
 
 const logDir = path.join(__dirname, "../logs");
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-// Custom format with stack support
+// Custom format
 const customFormat = winston.format.printf(({ level, message, timestamp, stack, ...meta }) => {
   return `[${timestamp}] ${level.toUpperCase()}: ${stack || message} ${
     Object.keys(meta).length ? JSON.stringify(meta) : ""
   }`;
 });
 
+// Rotation config
+const rotateOptions = {
+  datePattern: "YYYY-MM-DD",   // ✅ fixed
+  maxFiles: "2d",              // auto delete after 2 days
+};
+
+// Logger
 const logger = winston.createLogger({
-    // global for all transport, & can be overite
   level: "info",
   format: winston.format.combine(
-    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // ✅ fixed
     winston.format.errors({ stack: true })
   ),
+
   transports: [
-    // Console logs
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
@@ -32,11 +39,11 @@ const logger = winston.createLogger({
       )
     }),
 
-    // Error logs (with stack trace)
-    new winston.transports.File({
-        //overite global properties (level, timestamp, errors)
-      filename: path.join(logDir, "error.log"),
+    //  Error logs (ROTATED)
+    new DailyRotateFile({
+      filename: path.join(logDir, "error-%DATE%.log"),
       level: "error",
+      ...rotateOptions,
       format: winston.format.combine(
         winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
         winston.format.errors({ stack: true }),
@@ -44,20 +51,22 @@ const logger = winston.createLogger({
       )
     }),
 
-    // All logs (json format)
-    new winston.transports.File({
-        //overite global properties (all type level accept, timestamp, errors, format to display)
-      filename: path.join(logDir, "combined.log"),
+    //  Combined logs (ROTATED)
+    new DailyRotateFile({
+      filename: path.join(logDir, "combined-%DATE%.log"),
+      ...rotateOptions,
       format: winston.format.combine(
         winston.format.errors({ stack: true }),
-        winston.format.json(),
+        winston.format.json()
       )
     })
   ],
 
+  //  Exception logs (ROTATED)
   exceptionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logDir, "exceptions.log"),
+    new DailyRotateFile({
+      filename: path.join(logDir, "exceptions-%DATE%.log"),
+      ...rotateOptions,
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.errors({ stack: true }),
@@ -66,9 +75,11 @@ const logger = winston.createLogger({
     })
   ],
 
+  // Rejection logs (ROTATED)
   rejectionHandlers: [
-    new winston.transports.File({
-      filename: path.join(logDir, "rejections.log"),
+    new DailyRotateFile({
+      filename: path.join(logDir, "rejections-%DATE%.log"),
+      ...rotateOptions,
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.errors({ stack: true }),

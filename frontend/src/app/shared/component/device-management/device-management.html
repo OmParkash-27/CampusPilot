@@ -1,0 +1,61 @@
+<div class="flex flex-column align-items-center gap-1">
+    <i class="pi pi-desktop text-primary text-2xl mb-2"></i>
+    <h3 class="mb-3">Active Sessions</h3>
+</div>
+
+<div *ngFor="let d of devices" class="device-card">
+
+  <div class="left">
+    <i 
+      class="pi"
+      [ngClass]="isMobileDevice(d.userAgent) ? 'pi-mobile' : 'pi-desktop'">
+    </i>
+
+    <div>
+      <b>{{ d.userAgent }}</b>
+
+      <div class="text-sm text-gray-500">
+        IP: {{ d.ip }}
+      </div>
+      <div class="flex flex-row justify-content-between">
+        <div class="text-sm text-gray-500">
+          Login At: {{ d.createdAt | date:'short' }}
+        </div>
+  
+        <div *ngIf="d.isCurrent" class="current">
+          Current Device
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    @if(!d.isCurrent) {
+      <button
+        pButton 
+        icon="pi pi-sign-out"
+        class="p-button-danger p-button-sm"
+        title="Log out"
+        (click)="logoutDevice(d.id)">
+      </button>
+    }
+    @if(d.isCurrent) {
+      <button
+        pButton 
+        icon="pi pi-desktop"
+        title="Current Device"
+        class="p-button-success p-button-sm">
+      </button>
+    }
+  </div>
+
+</div>
+
+<!-- <div class="mt-3 text-right">
+  <button 
+    pButton 
+    label="Logout All Devices"
+    class="p-button-danger"
+    (click)="logoutAll()">
+  </button>
+</div> -->

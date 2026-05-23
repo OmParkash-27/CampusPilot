@@ -29,6 +29,8 @@ export class DialogFooter {
   handleClick(btn: any) {
     if (btn.type === 'submit') {
       this.actionService.triggerSubmit(); 
+    } if (btn.type === 'logout-all') {
+      this.actionService.triggerLogoutAll();
     } else {
       btn.action?.(this.ref);
     }

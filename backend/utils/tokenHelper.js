@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 // Generate Access Token (short-lived)
 const generateAccessToken = (user) => {
   return jwt.sign(
@@ -11,9 +12,9 @@ const generateAccessToken = (user) => {
 // Generate Refresh Token (long-lived)
 const generateRefreshToken = (user) => {
   return jwt.sign(
-    { id: user._id },
+    { id: user._id, jti: crypto.randomUUID() },
     process.env.JWT_SECRET,
-    { expiresIn: '1d' } // longer expiry
+    { expiresIn: '30m' } // longer expiry
   );
 };
 

@@ -14,12 +14,13 @@ import { SpeedDialModule } from 'primeng/speeddial';
 import { MenuItem } from 'primeng/api';
 import { LoadingService } from '../core/services/loading/loading-service';
 import { DialogService, DynamicDialogModule, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { ChangePassword } from '../pages/change-password/change-password';
+import { ChangePassword } from '../shared/component/change-password/change-password';
 import { TableModule } from "primeng/table";
 import { Popover, PopoverModule } from 'primeng/popover';
 import { DialogFooter } from '../shared/component/dialog-footer/dialog-footer';
 import { DialogHeader } from '../shared/component/dialog-header/dialog-header';
 import { AuthService } from '../core/services/auth/auth.service';
+import { DeviceManagement } from '../shared/component/device-management/device-management';
 
 @Component({
   selector: 'app-main-layout',
@@ -154,5 +155,51 @@ export class MainLayout {
             });
           }
         });
-      }
     }
+
+    openDevices() {
+      this.ref = this.dialogService.open(DeviceManagement, {
+        modal: true,
+        width: '56vw',
+        styleClass: 'custom-dialog',
+        contentStyle: { padding: '10px 24px' },
+
+        breakpoints: {
+          '960px': '70vw',
+          '640px': '90vw' 
+        },
+
+        data: {
+          header: {
+            title: 'Logged Devices',
+            icon: 'pi pi-desktop',
+            user: this.user()
+          },
+          footer: {
+            buttons: [
+              {
+                label: 'Close',
+                icon: 'pi pi-times',
+                styleClass: 'p-button-text',
+                action: (ref: any) => ref.close(null)
+              },
+              {
+                label: 'Logout All',
+                icon: 'pi pi-sign-out',
+                styleClass: 'p-button-danger',
+                type: 'logout-all'
+                // action: () => this.logoutAllDevices()
+              }
+            ]
+          }
+        },
+
+        templates: {
+          header: DialogHeader,
+          footer: DialogFooter
+        }
+      });
+
+      this.popover.hide();
+    }
+}

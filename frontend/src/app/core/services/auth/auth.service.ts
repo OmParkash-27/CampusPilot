@@ -47,4 +47,16 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http.post(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.LOGOUT}`, {}, { withCredentials: true });
   }
+
+  getDevices() {
+    return this.http.get(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.DEVICES}`, { withCredentials: true });
+  }
+
+  logoutDevice(id: string) {
+    return this.http.post(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.LOGOUT_DEVICE}`, { deviceId: id }, { withCredentials: true });
+  }
+
+  logoutAllDevices() {
+    return this.http.post(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.LOGOUT_DEVICES}`, {}, { withCredentials: true });
+  }
 }

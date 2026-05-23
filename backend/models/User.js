@@ -1,5 +1,17 @@
 const mongoose = require('mongoose');
 
+const refreshTokenSchema = new mongoose.Schema({
+  token: String, // hashed token
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  expiresAt: Date,
+  userAgent: String,
+  ip: String,
+  jti: String
+});
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -27,6 +39,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  refreshTokens: [refreshTokenSchema]
 }, { timestamps: true });
 
 

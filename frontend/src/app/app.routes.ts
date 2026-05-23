@@ -6,7 +6,7 @@ import { About } from './pages/about/about';
 import { Contact } from './pages/contact/contact';
 import { RoleGuard } from './core/gaurds/role-guard';
 import { AuthGuard } from './core/gaurds/auth-guard';
-import { ChangePassword } from './pages/change-password/change-password';
+import { ChangePassword } from './shared/component/change-password/change-password';
 
 export const routes: Routes = [
     {

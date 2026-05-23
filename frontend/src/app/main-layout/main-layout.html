@@ -64,10 +64,12 @@
 
   <p-popover #op>
     <div class="flex flex-col gap-4">
-      <p-button icon="pi pi-sign-out" title="Logout" [rounded]="true" [text]="true" [raised]="true" severity="info"
+      <p-button icon="pi pi-power-off" title="Logout" [rounded]="true" [text]="true" [raised]="true" severity="info"
         (onClick)="logOut()" />
-      <p-button icon="pi pi-cog" title="Change Password" [rounded]="true" [text]="true" [raised]="true" severity="info"
+      <p-button icon="pi pi-shield" title="Change Password" [rounded]="true" [text]="true" [raised]="true" severity="info"
         (onClick)="show()" />
+      <p-button icon="pi pi-objects-column" title="User Logged Devices" [rounded]="true" [text]="true" [raised]="true" severity="info"
+        (onClick)="openDevices()" />
     </div>
   </p-popover>
 </div>

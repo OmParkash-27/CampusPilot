@@ -1,0 +1,17 @@
+.device-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  gap: 1rem
+}
+
+.left {
+  display: flex;
+  gap: 10px;
+}
+
+.current {
+  color: green;
+  font-weight: bold;
+}
