@@ -40,26 +40,28 @@ const verifyToken = async (req, res, next) => {
   );
 
   // 3. Fallback (IMPORTANT FIX)
-  // if (matchedTokenIndex === -1) {
-  //   // token not in DB → treat as invalid session
-  //   res.clearCookie('accessToken');
-  //   res.clearCookie('refreshToken');
-  //   return res.status(401).json({code: "NO_REFRESH_TOKEN", message: "Session expired. Please login again." });
-  // }
   if (matchedTokenIndex === -1) {
-  for (let i = 0; i < user.refreshTokens.length; i++) {
-    if (!user.refreshTokens[i].jti) {
-      const ok = await bcrypt.compare(refreshToken, user.refreshTokens[i].token);
-      if (ok) {
-        matchedTokenIndex = i;
-        // ✅ MIGRATE: add jti now
-        user.refreshTokens[i].jti = decodedRefresh.jti;
-        await user.save();
+    // token not in DB → treat as invalid session
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res.status(401).json({code: "NO_REFRESH_TOKEN", message: "Session expired. Please login again." });
+  }
 
-        break;
-      }
-    }
-  }}
+  // Used previously when jti were not exist but token is valid
+  // if (matchedTokenIndex === -1) {
+  // for (let i = 0; i < user.refreshTokens.length; i++) {
+  //   if (!user.refreshTokens[i].jti) {
+  //     const ok = await bcrypt.compare(refreshToken, user.refreshTokens[i].token);
+  //     if (ok) {
+  //       matchedTokenIndex = i;
+  //       // ✅ MIGRATE: add jti now
+  //       user.refreshTokens[i].jti = decodedRefresh.jti;
+  //       await user.save();
+
+  //       break;
+  //     }
+  //   }
+  // }}
 
   // check if db does not have token (this will help when logout session by other device(that delete token from db))
   if (matchedTokenIndex === -1) {
