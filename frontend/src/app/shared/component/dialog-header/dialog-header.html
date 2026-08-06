@@ -16,11 +16,9 @@
             </div>
 
             <!-- CLOSE ICON -->
-            <button
-            pButton
-            icon="pi pi-times"
-            class="p-button-text p-button-rounded p-button-sm"
-            (click)="ref.close(null)">
+            <button iconOnly 
+                pButton (click)="ref.close(null)">
+                <svg data-p-icon="times" color="green"></svg>
             </button>
         </div>
     </div>

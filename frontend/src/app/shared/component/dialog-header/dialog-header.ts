@@ -2,10 +2,11 @@ import { Component, Input } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ChipModule } from 'primeng/chip';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Times } from '@primeicons/angular/times';
 
 @Component({
   selector: 'app-dialog-header',
-  imports: [ChipModule, ButtonModule],
+  imports: [ChipModule, ButtonModule, Times],
   templateUrl: './dialog-header.html',
   styleUrl: './dialog-header.scss',
   standalone: true

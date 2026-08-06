@@ -12,6 +12,7 @@ import { Student } from '../../../core/models/Student';
 
 @Component({
   selector: 'app-Sdashboard',
+  standalone:true,
   imports: [CommonModule, CardModule, AvatarModule, ImageModule, GalleriaModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'

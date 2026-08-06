@@ -16,7 +16,7 @@ import { Student } from '../../../../core/models/Student';
 import { AuthService } from '../../../../core/services/auth/auth.service';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
-import { ConfirmPopup } from "primeng/confirmpopup";
+import { ConfirmPopupModule } from "primeng/confirmpopup";
 import { ConfirmationService } from 'primeng/api';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { BaseService } from '../../../../core/services/shared/base.service';
@@ -25,10 +25,11 @@ import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-student-list',
+  standalone: true,
   imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, 
     InputIconModule, InputTextModule, FormsModule, RouterModule, 
     SelectModule, OverlayBadgeModule, BadgeModule, AccordionModule, 
-    GalleriaModule, DialogModule, ConfirmPopup, MultiSelectModule, DrawerModule],
+    GalleriaModule, DialogModule, ConfirmPopupModule, MultiSelectModule, DrawerModule],
   templateUrl: './student-list.html',
   styleUrl: './student-list.scss'
 })

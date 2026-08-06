@@ -35,10 +35,10 @@
       <div *ngIf="previewUrl" class="mb-2">
         <img [src]="previewUrl" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
-      <p-fileUpload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" auto="true"></p-fileUpload>
+      <p-fileupload name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" auto="true"></p-fileupload>
     </div>
 
-    <button pButton type="submit" label="{{ userId ? 'Update User' : 'Add User' }}" class="submit-btn"></button>
-    <button pButton type="button" label="Cancel" class="cancel-btn" (click)="router.navigate(['/admin/user-list'])"></button>
+    <button pButton type="submit" class="submit-btn">{{ userId ? 'Update User' : 'Add User' }}</button>
+    <button pButton type="button" class="cancel-btn" (click)="router.navigate(['/admin/user-list'])">Cancel</button>
   </form>
 </div>

@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-change-password',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule, ChipModule,
     CardModule,
     InputTextModule,

@@ -49,7 +49,8 @@ export class UserList extends BaseService<User> implements OnInit  {
   // Filtering logic
   override globalFilter = ['name', 'email', 'role', 'status'];
   
-  constructor(authService: AuthService, private mainLayoutService: MainLayoutService, public router: Router, private userService: UserService, private confirmService: ConfirmationService) {
+  constructor(authService: AuthService, private mainLayoutService: MainLayoutService, public router: Router,
+     private userService: UserService, private confirmService: ConfirmationService) {
     super(authService);
   }
   

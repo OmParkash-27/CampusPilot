@@ -23,7 +23,8 @@ import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-new-register-student',
-  imports: [CommonModule, TableModule, ButtonModule,IconFieldModule, InputIconModule, 
+  standalone: true,
+  imports: [CommonModule, TableModule, ButtonModule, IconFieldModule, InputIconModule, 
     InputTextModule, FormsModule, RouterModule, SelectModule, OverlayBadgeModule, 
     BadgeModule, AccordionModule, GalleriaModule, DialogModule, MultiSelectModule, DrawerModule],
   templateUrl: './new-register-student-list.html',

@@ -7,15 +7,15 @@
                 <p-galleria [value]="images()" [showIndicators]="true" [showThumbnails]="true"
                     [showIndicatorsOnItem]="true" indicatorsPosition="left"
                     [responsiveOptions]="responsiveOptions">
-                    <ng-template pTemplate="item" let-item>
+                    <ng-template #item let-item>
                         <img [src]="item" />
                     </ng-template>
-                    <ng-template pTemplate="indicator" let-index>
+                    <ng-template #indicator let-index>
                         <span style="color: #ffffff; cursor: pointer">
                             {{index + 1}}
                         </span>
                     </ng-template>
-                    <ng-template pTemplate="thumbnail" let-item>
+                    <ng-template #thumbnail let-item>
                         <div class="grid gap-4 justify-center">
                             <img [src]="item" />
                         </div>

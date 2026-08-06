@@ -7,9 +7,11 @@ import { FileUploadModule } from 'primeng/fileupload';
 import { Student } from '../../../core/models/Student';
 import { GalleriaModule } from 'primeng/galleria';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-upload-student-files',
-  imports: [CarouselModule, ButtonModule, FileUploadModule, GalleriaModule ],
+  standalone:true,
+  imports: [CommonModule, CarouselModule, ButtonModule,  FileUploadModule, GalleriaModule ],
   templateUrl: './upload-student-files.html',
   styleUrl: './upload-student-files.scss'
 })

@@ -15,7 +15,7 @@
           
           <!-- Column Toggle  -->
           <div class="">
-            <p-multiSelect
+            <p-multiselect
               [options]="allColumns"
               [(ngModel)]="selectedColumns"
               optionLabel="header"
@@ -31,7 +31,7 @@
       </div>
     </ng-template>
 
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         @for (col of visibleColumns; track col.field) {
           @if (col.field === 'actions') {
@@ -41,7 +41,7 @@
             <th pSortableColumn="{{ col.field }}" pReorderableColumn>
                 <div class="flex gap-2" >
                   {{ col.header }}
-                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                  <p-sorticon [field]="col.field"></p-sorticon>
                 </div>
             </th>
             } @else {
@@ -54,7 +54,7 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="body" let-student>
+    <ng-template #body let-student>
       <tr>
         @for (col of visibleColumns; track col.field) {
           <td>
@@ -106,7 +106,7 @@
     position="right" 
     [modal]="true" 
     (onHide)="filterMenuVisible.set(false)">
-    <ng-template pTemplate="header">
+    <ng-template #header>
         <h3>Filters</h3>
     </ng-template>
 
@@ -123,7 +123,7 @@
               autocomplete="off" />
         </p-iconfield>
 
-        <p-multiSelect
+        <p-multiselect
           [options]="allColumns"
           [(ngModel)]="selectedColumns"
           optionLabel="header"
@@ -147,20 +147,20 @@
 
 <!-- Photos Modal -->
 <p-dialog header="Student Documents" [(visible)]="showPhotosDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-  <p-galleria *ngIf="selectedPhotos?.length" [value]="selectedPhotos" [showItemNavigators]="true" [showThumbnails]="true" [circular]="true">
-    <ng-template pTemplate="item" let-photo>
+  <p-galleria *ngIf="selectedPhotos.length" [value]="selectedPhotos" [showItemNavigators]="true" [showThumbnails]="true" [circular]="true">
+    <ng-template #item let-photo>
       <img [src]="photo" class="w-full border-round" />
     </ng-template>
-    <ng-template pTemplate="thumbnail" let-photo>
+    <ng-template thumbnail let-photo>
       <img [src]="photo" class="w-5rem border-round" />
     </ng-template>
   </p-galleria>
-  <p *ngIf="!selectedPhotos?.length">No documents uploaded</p>
+  <p *ngIf="!selectedPhotos.length">No documents uploaded</p>
 </p-dialog>
 
 <!-- Courses Modal with Accordion -->
 <p-dialog header="Student Courses" [(visible)]="showCoursesDialog" [modal]="true" [style]="{width: '600px'}" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }">
-    <p-accordion [value]="['0']" [multiple]="true" *ngIf="selectedCourses?.length">
+    <p-accordion [value]="['0']" [multiple]="true" *ngIf="selectedCourses.length">
         <p-accordion-panel *ngFor="let course of selectedCourses; let i = index" [value]="i.toString()">
             <p-accordion-header>
                 {{ course.course }}
@@ -173,6 +173,6 @@
         </p-accordion-panel>
     </p-accordion>
 
-    <p *ngIf="!selectedCourses?.length">No courses enrolled</p>
+    <p *ngIf="!selectedCourses.length">No courses enrolled</p>
 
 </p-dialog>

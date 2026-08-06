@@ -4,7 +4,7 @@
         <h1>Welcome to Campus Pilot</h1>
         <p>Your journey to knowledge starts here!</p>
         @if(!isLoggedIn()) {
-            <button pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
+            <button pButton icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }">Get Started</button>
             <p>Use Admin Credentials:- </p>
             <p>Email:- om@example.com</p>
             <p>Password:- 123456</p>
@@ -57,7 +57,7 @@
     <!-- Testimonials Section -->
     <h2 class="section-title">What Students Say</h2>
     <p-carousel [value]="testimonials" [numVisible]="1" [numScroll]="1">
-        <ng-template pTemplate="item" let-testimonial>
+        <ng-template #item let-testimonial>
             <div class="testimonial">
                 <p-avatar [image]="testimonial.avatar" shape="circle" size="xlarge"
                     style="margin-bottom: 1rem;"></p-avatar>
@@ -89,7 +89,7 @@
     <div class="cta-section">
         <h2>Join Us Today</h2>
         <p>Register now to explore a new way of learning!</p>
-        <button *ngIf="!isLoggedIn()" pButton label="Register Now" class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"></button>
+        <button *ngIf="!isLoggedIn()" pButton class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }">Register Now</button>
     </div>
 
 </div>

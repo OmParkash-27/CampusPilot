@@ -78,9 +78,9 @@
                     <p-avatar-group>
                         @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
                         @if(idx
-                        < 2) { @if(cUser?.user?.profilePic !==null) { <p-avatar
+                        < 2) { @if(cUser?.user.profilePic !==null) { <p-avatar
                             [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
-                            [image]="cUser?.user?.profilePic" size="large" shape="circle"
+                            [image]="cUser?.user.profilePic" size="large" shape="circle"
                             (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
                         } @else {
                         <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
@@ -180,7 +180,7 @@
                 <div class="chips-badge-section flex flex-grow-1 flex-wrap w-full">
                     @for(student of latestStudents; track student?._id) {
                     <div class="chips-badge w-full flex align-items-center justify-content-around gap-1">
-                        <p-chip *ngIf="student.user?.profilePic !== null" [image]="student.user.profilePic ?? undefined"
+                        <p-chip *ngIf="student.user.profilePic !== null" [image]="student.user.profilePic ?? undefined"
                             label="{{ student.user.name }}" (onImageError)="student.user.profilePic=null">
                         </p-chip>
 
@@ -208,15 +208,15 @@
     <div class="flex flex-column align-items-start gap-3 mb-2">
         @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
         <div class="flex flex-row align-items-center gap-3">
-            @if(cUser?.user?.profilePic !== null) {
-            <p-avatar [image]="cUser?.user?.profilePic" size="large" shape="circle"
-                (onImageError)="cUser?.user!.profilePic=null" />
+            @if(cUser?.user.profilePic !== null) {
+            <p-avatar [image]="cUser?.user.profilePic" size="large" shape="circle"
+                (onImageError)="cUser.user.profilePic=null" />
             } @else {
             <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />
             }
-            <span>{{cUser?.user?.name}}</span>
-            <span>{{cUser?.user?.email}}</span>
-            <span>{{cUser?.user?.role}}</span>
+            <span>{{cUser?.user.name}}</span>
+            <span>{{cUser?.user.email}}</span>
+            <span>{{cUser?.user.role}}</span>
         </div>
         }
     </div>

@@ -89,7 +89,7 @@
       <div *ngIf="previewUrl()" class="mb-2">
         <img [src]="previewUrl()" alt="Profile Picture" width="120" style="border-radius: 8px;" />
       </div>
-      <p-fileUpload [disabled]="isPartialAdd()" name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true" ></p-fileUpload>
+      <p-fileupload [disabled]="isPartialAdd()" name="profilePic" customUpload (onSelect)="onFileSelect($event)" (onRemove)="onFileDeSelect($event)" chooseLabel="Choose" accept="image/*" maxFileSize="1000000" auto="true" ></p-fileupload>
     </div>
 
 
@@ -129,7 +129,7 @@
           <button type="button" pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm mr-2" (click)="onOldPhotoRemove(p, i)"></button>
         </div>
       </div>
-      <p-fileUpload name="photos" multiple="true" customUpload (onSelect)="onPhotosSelect($event)" (onRemove)="onRemoveFile($event)" chooseLabel="Add Photos" accept="image/*" fileLimit="10" maxFileSize="1000000" auto="true"></p-fileUpload>
+      <p-fileupload name="photos" multiple="true" customUpload (onSelect)="onPhotosSelect($event)" (onRemove)="onRemoveFile($event)" chooseLabel="Add Photos" accept="image/*" fileLimit="10" maxFileSize="1000000" auto="true"></p-fileupload>
     </div>
 
     <!-- Buttons -->

@@ -12,7 +12,7 @@ export interface DialogButton {
 }
 @Component({
   selector: 'app-dialog-footer',
-  imports: [CommonModule, ButtonModule],
+  imports: [CommonModule, ButtonModule, ],
   templateUrl: './dialog-footer.html',
   styleUrl: './dialog-footer.scss',
   standalone: true

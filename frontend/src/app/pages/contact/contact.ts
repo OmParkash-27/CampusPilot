@@ -15,7 +15,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, FormGroup } from '@angula
     InputTextModule,
     TextareaModule,
     ButtonModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   templateUrl: './contact.html',
   styleUrls: ['./contact.scss']

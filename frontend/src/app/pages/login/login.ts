@@ -11,8 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUploadModule } from 'primeng/fileupload';
 import { AuthService } from '../../core/services/auth/auth.service';
 import { switchMap } from 'rxjs';
-
-
+import { FileSelectEvent } from 'primeng/fileupload';
 
 
 @Component({
@@ -107,4 +106,11 @@ export class Login {
   get fRegister() {
     return this.registerForm.controls;
   }
+
+  onFileSelect(event: FileSelectEvent) {
+    const file = event.files?.[0];
+      if (file) {
+        this.registerForm.get('profilePic')?.setValue(file);
+      }
+    }
 }

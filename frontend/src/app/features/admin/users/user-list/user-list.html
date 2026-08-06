@@ -15,7 +15,7 @@
           
           <!-- Column Toggle  -->
           <div class="">
-            <p-multiSelect
+            <p-multiselect
               [options]="allColumns"
               [(ngModel)]="selectedColumns"
               optionLabel="header"
@@ -31,7 +31,7 @@
       </div>
     </ng-template>
 
-    <ng-template pTemplate="header">
+    <ng-template #header>
       <tr>
         @for (col of visibleColumns; track col.field) {
           @if (col.field === 'actions') {
@@ -41,7 +41,7 @@
             <th pSortableColumn="{{ col.field }}" pReorderableColumn>
                 <div class="flex gap-2" >
                   {{ col.header }}
-                  <p-sortIcon [field]="col.field"></p-sortIcon>
+                  <p-sorticon [field]="col.field"></p-sorticon>
                 </div>
             </th>
             } @else {
@@ -54,7 +54,7 @@
       </tr>
     </ng-template>
 
-    <ng-template pTemplate="body" let-user>
+    <ng-template #body let-user>
       <tr>
         @for (col of visibleColumns; track col.field) {
           <td>
@@ -115,7 +115,7 @@
     position="right" 
     [modal]="true" 
     (onHide)="filterMenuVisible.set(false)">
-    <ng-template pTemplate="header">
+    <ng-template #header>
         <h3>Filters</h3>
     </ng-template>
 
@@ -132,7 +132,7 @@
               autocomplete="off" />
         </p-iconfield>
 
-        <p-multiSelect
+        <p-multiselect
           [options]="allColumns"
           [(ngModel)]="selectedColumns"
           optionLabel="header"
