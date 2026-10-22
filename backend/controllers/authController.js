@@ -4,6 +4,16 @@ const bcrypt = require('bcryptjs');
 const { deleteFromCloudinary, uploadProfilePic } = require('../utils/cloudinaryHelper');
 const { generateAccessToken, generateRefreshToken } = require('../utils/tokenHelper');
 const crypto = require('crypto');
+
+const TEMP_LOCK_MINUTES = 5;
+
+function getLockUntil(attempts) {
+  if ([3, 6, 9].includes(attempts)) {
+    return new Date(Date.now() + TEMP_LOCK_MINUTES * 60 * 1000);
+  }
+  return null;
+}
+
 // Register a new user
 exports.registerUser = async (req, res) => {
   const { name, email, password } = req.body;
@@ -30,10 +40,75 @@ exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
 
+    // Permanent block check
+    if (user.permanentlyBlocked) {
+      return res.status(403).json({
+        message: 'Account permanently blocked. Contact admin.'
+      });
+    }
+
+    // Temporary lock check
+    if (user.lockUntil && user.lockUntil > new Date()) {
+      const minutesLeft = Math.ceil(
+        (user.lockUntil - new Date()) / (1000 * 60)
+      );
+
+      return res.status(429).json({
+        message: `Account temporarily locked. Try again after ${minutesLeft} minute(s).`
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: 'Invalid credentials' });
+
+    //wrong password
+    if (!isMatch) {
+      user.loginAttempts += 1;
+
+      // 10+ attempts = permanent block
+      if (user.loginAttempts >= 10) {
+        user.permanentlyBlocked = true;
+        user.lockUntil = null;
+
+        await user.save();
+
+        return res.status(403).json({
+          message:
+            'Account permanently blocked due to multiple failed login attempts. Contact admin.'
+        });
+      }
+
+       // Lock on 3, 6, 9 attempts
+      const lockUntil = getLockUntil(user.loginAttempts);
+
+      if (lockUntil) {
+        user.lockUntil = lockUntil;
+      }
+
+      await user.save();
+
+      return res.status(401).json({
+        message: lockUntil
+          ? `Too many failed attempts. Account locked for ${TEMP_LOCK_MINUTES} minutes.`
+          : 'Invalid credentials'
+      });
+       // Reset attempts after successful password
+        user.loginAttempts = 0;
+        user.lockUntil = null;
+
+      // Account status check
+      if (!user.status) {
+        await user.save();
+
+        return res.status(403).json({
+          message: 'Account is inactive. Contact to admin.'
+        });
+      }
+
+      // return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
     if (!user.status) {
+      await user.save();
       return res.status(403).json({ message: "Account is inactive. Contact to admin." });
     }
 
@@ -54,6 +129,7 @@ exports.loginUser = async (req, res) => {
       jti: decoded.jti
     });
 
+    user.loginAttempts = 0;
     await user.save();
 
     // Send token via cookie
@@ -70,9 +146,9 @@ exports.loginUser = async (req, res) => {
       maxAge: 30 * 60 * 1000
     });
 
-    res.status(200).json({ message: 'Login successful' });
+    return res.status(200).json({ message: 'Login successful' });
   } catch (err) {
-    res.status(500).json({ message: 'Login failed', error: err.message });
+    return res.status(500).json({ message: 'Login failed', error: err.message });
   }
 };
 
@@ -269,4 +345,21 @@ exports.logoutSpecificDevice = async (req, res) => {
   await user.save();
 
   res.json({ message: "Device logged out" });
+};
+
+exports.unlockUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    await User.findByIdAndUpdate(userId, {
+      loginAttempts: 0,
+      lockUntil: null,
+      permanentlyBlocked: false
+    });
+
+    res.json({ message: 'User unlocked successfully' });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Unlock failed' });
+  }
 };

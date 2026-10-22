@@ -28,4 +28,6 @@ router.post('/logout-device', verifyToken, logoutSpecificDevice);
 //logout all devices
 router.post('/logout-devices', verifyToken, logoutAllDevices);
 
+router.patch('/users/:userId/unlock', verifyToken, isAdmin, authController.unlockUser);
+
 module.exports = router;

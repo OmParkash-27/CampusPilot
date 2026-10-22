@@ -41,7 +41,7 @@ export class MainLayout {
   @ViewChild('op') popover!: any;
   @ViewChild('dialogHeader') dialogHeader!: TemplateRef<any>;
   @ViewChild('dialogFooter') dialogFooter!: TemplateRef<any>;
-  ref: DynamicDialogRef | undefined;
+  ref: DynamicDialogRef | null = null;
   private dialogService = inject(DialogService);
   constructor(
     private mainLayoutService: MainLayoutService, private router: Router, private authService: AuthService, private loadingService: LoadingService
@@ -143,10 +143,10 @@ export class MainLayout {
           footer: DialogFooter
         }
       });
-        this.ref.onClose.subscribe((data: any) => {
+        this.ref?.onClose.subscribe((data: any) => {
           if (data?.success) {
             // show toast or message
-            console.log('Password changed');
+            // console.log('Password changed');
 
             // optional: logout user (recommended)
             this.authService.logout().subscribe(() => {

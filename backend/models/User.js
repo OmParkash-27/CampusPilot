@@ -39,7 +39,21 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  refreshTokens: [refreshTokenSchema]
+  refreshTokens: [refreshTokenSchema],
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+
+  lockUntil: {
+    type: Date,
+    default: null
+  },
+
+  permanentlyBlocked: {
+    type: Boolean,
+    default: false
+  }
 }, { timestamps: true });
 
 

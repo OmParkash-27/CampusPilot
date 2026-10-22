@@ -17,13 +17,14 @@ const customFormat = winston.format.printf(({ level, message, timestamp, stack, 
 
 // Rotation config
 const rotateOptions = {
-  datePattern: "YYYY-MM-DD",   // ✅ fixed
+  datePattern: "DD-MM-YYYY",   // ✅ fixed
   maxFiles: "2d",              // auto delete after 2 days
 };
 
 // Logger
 const logger = winston.createLogger({
   level: "info",
+  
   format: winston.format.combine(
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }), // ✅ fixed
     winston.format.errors({ stack: true })
