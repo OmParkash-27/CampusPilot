@@ -78,12 +78,12 @@
               @case('status') {
                 <div class="space flex-1 flex align-items-center justify-content-center sm:justify-content-between">
                   <p-checkbox 
-                    [(ngModel)]="user.status" 
+                    [ngModel]="user.status && !user.permanentlyBlocked" 
                     binary="true"
                     (onChange)="onStatusChange(user, $event)"
                     [disabled]="currentUser?.email == user.email">
                   </p-checkbox>
-                  <p-badge [value]="user.status ? 'Active' : 'Inactive'" class=" sm:ml-4 md:ml-3 lg:ml-2 " [severity]="user.status ? 'success' : 'danger'" />
+                  <p-badge [value]="user.status && !user.permanentlyBlocked ? 'Active' : 'Inactive'" class=" sm:ml-4 md:ml-3 lg:ml-2 " [severity]="user.status && !user.permanentlyBlocked ? 'success' : 'danger'" />
                 </div>
               }
               @case('actions') {

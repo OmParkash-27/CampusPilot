@@ -105,7 +105,7 @@ export class MainLayout {
         header: 'change', // we'll use custom header inside component
         modal: true,
         width: '40vw',
-        closable: true,
+        // closable: true,
         styleClass: 'custom-dialog', // 👈 important
         contentStyle: { padding: '0', overflow: 'hidden' },
         breakpoints: {

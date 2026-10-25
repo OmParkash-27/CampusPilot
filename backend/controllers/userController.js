@@ -53,15 +53,22 @@ exports.updateUserRole = async (req, res) => {
 exports.updateUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
-
+    let { status } = req.body;
+    if (typeof status === 'string') {
+      status = status.toLowerCase() === 'true';
+    }
+    const permanentlyBlocked = !status
     // if (typeof status !== 'boolean') {
     //   return res.status(400).json({ message: 'Status must be a boolean' });
     // }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { status },
+      { status,
+        loginAttempts: 0,
+        lockUntil: null,
+        permanentlyBlocked
+       },
       { new: true }
     ).select('-password');
 
@@ -77,7 +84,7 @@ exports.updateUserStatus = async (req, res) => {
 
 //add user
 exports.addUser = async (req, res) => {
-  const { name, email, role, status } = req.body;
+  let { name, email, role, status } = req.body;
   let profilePicUrl = null;
 
   try {
@@ -93,6 +100,10 @@ exports.addUser = async (req, res) => {
 
     const pass = Array.from(name).length > 6 ? name : '123456';
     const hashedPassword = await bcrypt.hash(pass, 10);
+    if (typeof status === 'string') {
+      status = status.toLowerCase() === 'true';
+    }
+    const permanentlyBlocked = !status
 
     const newUser = await User.create({
       name,
@@ -100,7 +111,8 @@ exports.addUser = async (req, res) => {
       password: hashedPassword,
       profilePic: profilePicUrl,
       status,
-      role
+      role,
+      permanentlyBlocked
     });
 
     res.status(201).json({ message: 'User registered successfully', user: newUser });
@@ -113,7 +125,7 @@ exports.addUser = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, email, role, status } = req.body;
+  let { name, email, role, status } = req.body;
   let newProfilePicUrl = null;
 
   const allowedRoles = ['admin', 'editor', 'teacher', 'student'];
@@ -129,12 +141,18 @@ exports.updateUser = async (req, res) => {
       newProfilePicUrl = await uploadProfilePic(req.file);
     }
 
+    if (typeof status === 'string') {
+      status = status.toLowerCase() === 'true';
+    }
+    const permanentlyBlocked = !status
+
     const oldProfilePic = user.profilePic;
 
     user.name = name || user.name;
     user.email = email || user.email;
     user.role = role || user.role;
     user.status = status || user.status;
+    user.permanentlyBlocked = permanentlyBlocked;
     if (newProfilePicUrl) user.profilePic = newProfilePicUrl;
 
     await user.save();

@@ -91,9 +91,9 @@ exports.loginUser = async (req, res) => {
           ? `Too many failed attempts. Account locked for ${TEMP_LOCK_MINUTES} minutes.`
           : 'Invalid credentials'
       });
-       // Reset attempts after successful password
-        user.loginAttempts = 0;
-        user.lockUntil = null;
+      // Reset attempts after successful password
+      user.loginAttempts = 0;
+      user.lockUntil = null;
 
       // Account status check
       if (!user.status) {
@@ -345,21 +345,4 @@ exports.logoutSpecificDevice = async (req, res) => {
   await user.save();
 
   res.json({ message: "Device logged out" });
-};
-
-exports.unlockUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    await User.findByIdAndUpdate(userId, {
-      loginAttempts: 0,
-      lockUntil: null,
-      permanentlyBlocked: false
-    });
-
-    res.json({ message: 'User unlocked successfully' });
-
-  } catch (err) {
-    res.status(500).json({ message: 'Unlock failed' });
-  }
 };
