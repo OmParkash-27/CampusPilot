@@ -1,11 +1,9 @@
 
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { CarouselModule } from 'primeng/carousel';
 import { GalleriaModule } from 'primeng/galleria';
-import { DividerModule } from 'primeng/divider';
 import { AvatarModule } from 'primeng/avatar';
 import { RippleModule } from 'primeng/ripple';
 import { RouterModule } from '@angular/router';
@@ -13,14 +11,15 @@ import { AuthService } from '../../core/services/auth/auth.service';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule,
-    CardModule,
+  imports: [
+    CommonModule,
     ButtonModule,
     CarouselModule,
     GalleriaModule,
-    DividerModule,
     AvatarModule,
-    RippleModule, RouterModule],
+    RippleModule,
+    RouterModule,
+  ],
   templateUrl: './home.html',
   styleUrl: './home.scss',
   standalone: true
