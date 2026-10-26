@@ -3,21 +3,115 @@
 @import "primeflex/primeflex.css";       
 
 :root {
+  /* Existing tokens */
   --label-color: #212121;
   --card-heading-color: #212121;
   --cta-section: #b4ffdf;
   --hero-section: #b4ffdf;
   --header-section: bisque;
   --border-black-white: black;
+
+  /* Home page tokens — light mode */
+  --home-hero-bg-from: #e8f5e9;
+  --home-hero-bg-to: #e3f2fd;
+  --home-hero-heading: #1a237e;
+  --home-hero-sub: #37474f;
+  --home-hero-badge-bg: rgba(13, 110, 253, 0.1);
+  --home-hero-badge-color: #0d6efd;
+  --home-hero-credential-bg: rgba(255, 255, 255, 0.7);
+  --home-hero-credential-border: rgba(0, 0, 0, 0.08);
+
+  --home-section-bg: #f8fafc;
+  --home-section-alt-bg: #ffffff;
+  --home-section-heading: #1a237e;
+  --home-section-sub: #546e7a;
+
+  --home-feature-card-bg: #ffffff;
+  --home-feature-card-border: rgba(0, 0, 0, 0.07);
+  --home-feature-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  --home-feature-card-shadow-hover: 0 8px 28px rgba(13, 110, 253, 0.15);
+  --home-feature-icon-bg: rgba(13, 110, 253, 0.1);
+  --home-feature-icon-color: #0d6efd;
+  --home-feature-text: #546e7a;
+
+  --home-testimonial-bg: #ffffff;
+  --home-testimonial-border: rgba(0, 0, 0, 0.07);
+  --home-testimonial-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+  --home-testimonial-quote-color: #37474f;
+  --home-testimonial-name-color: #1a237e;
+  --home-testimonial-accent: rgba(13, 110, 253, 0.08);
+
+  --home-gallery-bg: #f0f4f8;
+  --home-gallery-border: rgba(0, 0, 0, 0.06);
+
+  --home-cta-bg-from: #1a237e;
+  --home-cta-bg-to: #0d47a1;
+  --home-cta-heading: #ffffff;
+  --home-cta-sub: rgba(255, 255, 255, 0.85);
+
+  --home-divider-color: rgba(0, 0, 0, 0.08);
+  --home-accent: #0d6efd;
+  --home-accent-hover: #0a58ca;
+  --home-success: #198754;
+  --home-text-primary: #212121;
+  --home-text-secondary: #546e7a;
+  --home-text-muted: #78909c;
 }
 
 :root.my-dark {
-  --label-color: #212121;
-  --card-heading-color: #212121;
+  /* Existing tokens */
+  --label-color: #e0e0e0;
+  --card-heading-color: #e0e0e0;
   --cta-section: #4d846b;
   --hero-section: #4d846b;
   --header-section: #c99f6b;
   --border-black-white: white;
+
+  /* Home page tokens — dark mode */
+  --home-hero-bg-from: #0f172a;
+  --home-hero-bg-to: #1e293b;
+  --home-hero-heading: #e2e8f0;
+  --home-hero-sub: #94a3b8;
+  --home-hero-badge-bg: rgba(99, 179, 237, 0.12);
+  --home-hero-badge-color: #63b3ed;
+  --home-hero-credential-bg: rgba(30, 41, 59, 0.85);
+  --home-hero-credential-border: rgba(255, 255, 255, 0.08);
+
+  --home-section-bg: #0f172a;
+  --home-section-alt-bg: #1e293b;
+  --home-section-heading: #e2e8f0;
+  --home-section-sub: #94a3b8;
+
+  --home-feature-card-bg: #1e293b;
+  --home-feature-card-border: rgba(255, 255, 255, 0.07);
+  --home-feature-card-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --home-feature-card-shadow-hover: 0 8px 28px rgba(99, 179, 237, 0.18);
+  --home-feature-icon-bg: rgba(99, 179, 237, 0.12);
+  --home-feature-icon-color: #63b3ed;
+  --home-feature-text: #94a3b8;
+
+  --home-testimonial-bg: #1e293b;
+  --home-testimonial-border: rgba(255, 255, 255, 0.07);
+  --home-testimonial-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  --home-testimonial-quote-color: #cbd5e1;
+  --home-testimonial-name-color: #93c5fd;
+  --home-testimonial-accent: rgba(99, 179, 237, 0.08);
+
+  --home-gallery-bg: #1e293b;
+  --home-gallery-border: rgba(255, 255, 255, 0.06);
+
+  --home-cta-bg-from: #0f172a;
+  --home-cta-bg-to: #1e293b;
+  --home-cta-heading: #e2e8f0;
+  --home-cta-sub: rgba(226, 232, 240, 0.75);
+
+  --home-divider-color: rgba(255, 255, 255, 0.08);
+  --home-accent: #63b3ed;
+  --home-accent-hover: #90cdf4;
+  --home-success: #4ade80;
+  --home-text-primary: #e2e8f0;
+  --home-text-secondary: #94a3b8;
+  --home-text-muted: #64748b;
 }
 
 label {

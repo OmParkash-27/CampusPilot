@@ -1,95 +1,231 @@
 <div class="home-wrapper">
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <h1>Welcome to Campus Pilot</h1>
-        <p>Your journey to knowledge starts here!</p>
-        @if(!isLoggedIn()) {
-            <button pButton label="Get Started" icon="pi pi-arrow-right" class="p-button-rounded p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'login' }"></button>
-            <p>Use Admin Credentials:- </p>
-            <p>Email:- om@example.com</p>
-            <p>Password:- 123456</p>
-        }
+
+  <!-- ── Hero Section ─────────────────────────────────────────────────────── -->
+  <section class="hero-section" aria-label="Hero">
+    <div class="hero-badge">
+      <i class="pi pi-star-fill" aria-hidden="true"></i>
+      Student Management Platform
     </div>
 
-    <p-divider></p-divider>
+    <h1>
+      Welcome to <span class="hero-accent">Campus Pilot</span>
+    </h1>
 
-    <!-- Features Section -->
+    <p class="hero-tagline">
+      Your journey to knowledge starts here. Manage students, teachers,
+      documents and more — all in one place.
+    </p>
+
+    @if (!isLoggedIn()) {
+      <div class="hero-actions">
+        <button
+          pButton
+          pRipple
+          label="Get Started"
+          icon="pi pi-arrow-right"
+          iconPos="right"
+          class="btn-hero-primary p-button-rounded"
+          [routerLink]="['/login']"
+          [queryParams]="{ mode: 'login' }"
+          aria-label="Get Started — go to login"
+        ></button>
+
+        <button
+          pButton
+          pRipple
+          label="Register"
+          icon="pi pi-user-plus"
+          iconPos="right"
+          class="btn-hero-outline p-button-rounded p-button-outlined"
+          [routerLink]="['/login']"
+          [queryParams]="{ mode: 'register' }"
+          aria-label="Register a new account"
+        ></button>
+      </div>
+
+      <div class="hero-credentials" role="note" aria-label="Demo admin credentials">
+        <p class="credentials-title">Try with Admin credentials</p>
+        <div class="credentials-row">
+          <span class="cred-key">Email</span>
+          <span class="cred-val">om&#64;example.com</span>
+        </div>
+        <div class="credentials-row">
+          <span class="cred-key">Password</span>
+          <span class="cred-val">123456</span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <hr class="home-divider" aria-hidden="true" />
+
+  <!-- ── Features Section ─────────────────────────────────────────────────── -->
+  <section class="features-section" aria-labelledby="features-heading">
+    <div class="features-header">
+      <span class="section-label">What we offer</span>
+      <h2 class="section-heading" id="features-heading">Everything you need</h2>
+      <p class="section-sub">
+        A complete platform built for administrators, teachers, editors and students.
+      </p>
+    </div>
+
     <div class="features-grid">
-        <p-card header="Easy Registration" [style]="{width: '100%'}">
-            <i class="pi pi-user-plus feature-icon"></i>
-            <p>Register quickly and see upload documents anytime.</p>
-        </p-card>
 
-        <p-card header="Users" [style]="{width: '100%'}">
-            <i class="pi pi-shield feature-icon"></i>
-            <p>There are four types of users:- Admins, Teachers, Editors, Students</p>
-        </p-card>
+      <article class="feature-card" tabindex="0" aria-label="Easy Registration">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-user-plus feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Easy Registration</h3>
+        <p class="feature-desc">Register quickly and upload documents anytime from any device.</p>
+      </article>
 
-        <p-card header="Student Management" [style]="{width: '100%'}">
-            <i class="pi pi-users feature-icon"></i>
-            <p>Students are manage by Admins, Editors, Teachers.</p>
-        </p-card>
+      <article class="feature-card" tabindex="0" aria-label="User Roles">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-shield feature-icon"></i>
+        </div>
+        <h3 class="feature-title">User Roles</h3>
+        <p class="feature-desc">Four role types: Admins, Teachers, Editors, and Students — each with tailored access.</p>
+      </article>
 
-        <p-card header="Teachers & Editors Management" [style]="{width: '100%'}">
-            <i class="pi pi-key feature-icon"></i>
-            <p>Teachers and Editors are manage by Admins.</p>
-        </p-card>
+      <article class="feature-card" tabindex="0" aria-label="Student Management">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-users feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Student Management</h3>
+        <p class="feature-desc">Students are managed collaboratively by Admins, Editors and Teachers.</p>
+      </article>
 
-        <p-card header="Menu Bar" [style]="{width: '100%'}">
-            <i class="pi pi-list feature-icon"></i>
-            <p>Menu items are based on user Role.</p>
-        </p-card>
+      <article class="feature-card" tabindex="0" aria-label="Staff Management">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-key feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Staff Management</h3>
+        <p class="feature-desc">Teachers and Editors are created and managed by Admins.</p>
+      </article>
 
-        <p-card header="Documents" [style]="{width: '100%'}">
-            <i class="pi pi-file feature-icon"></i>
-            <p>Upload, Submit, and View Documents easily.</p>
-        </p-card>
-        
-        <p-card header="Responsiveness" [style]="{width: '100%'}">
-            <i class="pi pi-mobile feature-icon"></i>
-            <p>Campus Pilot is responsive for mobiles, tablets & laptops.</p>
-        </p-card>
+      <article class="feature-card" tabindex="0" aria-label="Role-based Menu">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-list feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Menu Bar</h3>
+        <p class="feature-desc">Navigation items adapt automatically based on the logged-in user's role.</p>
+      </article>
+
+      <article class="feature-card" tabindex="0" aria-label="Document Management">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-file feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Documents</h3>
+        <p class="feature-desc">Upload, submit, and view documents easily from the student portal.</p>
+      </article>
+
+      <article class="feature-card" tabindex="0" aria-label="Responsive Design">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-mobile feature-icon"></i>
+        </div>
+        <h3 class="feature-title">Responsiveness</h3>
+        <p class="feature-desc">Campus Pilot works seamlessly on mobiles, tablets and laptops.</p>
+      </article>
 
     </div>
+  </section>
 
-    <p-divider></p-divider>
+  <hr class="home-divider" aria-hidden="true" />
 
-    <!-- Testimonials Section -->
-    <h2 class="section-title">What Students Say</h2>
-    <p-carousel [value]="testimonials" [numVisible]="1" [numScroll]="1">
-        <ng-template pTemplate="item" let-testimonial>
-            <div class="testimonial">
-                <p-avatar [image]="testimonial.avatar" shape="circle" size="xlarge"
-                    style="margin-bottom: 1rem;"></p-avatar>
-                <p>"{{ testimonial.message }}"</p>
-                <h4>{{ testimonial.name }}</h4>
-            </div>
-        </ng-template>
+  <!-- ── Testimonials Section ──────────────────────────────────────────────── -->
+  <section class="testimonials-section" aria-labelledby="testimonials-heading">
+    <div class="testimonials-header">
+      <span class="section-label">Voices from campus</span>
+      <h2 class="section-heading" id="testimonials-heading">What Students Say</h2>
+      <p class="section-sub">Real experiences from the people who use Campus Pilot every day.</p>
+    </div>
+
+    <p-carousel
+      [value]="testimonials"
+      [numVisible]="1"
+      [numScroll]="1"
+      [circular]="true"
+      [autoplayInterval]="5000"
+      aria-label="Student testimonials"
+    >
+      <ng-template pTemplate="item" let-testimonial>
+        <div class="testimonial-card">
+          <i class="pi pi-quote-left testimonial-quote-icon" aria-hidden="true"></i>
+
+          <div class="testimonial-avatar">
+            <p-avatar
+              [image]="testimonial.avatar"
+              shape="circle"
+              size="xlarge"
+              [attr.aria-label]="testimonial.name"
+            ></p-avatar>
+          </div>
+
+          <p class="testimonial-message">{{ testimonial.message }}</p>
+          <h4 class="testimonial-name">{{ testimonial.name }}</h4>
+        </div>
+      </ng-template>
     </p-carousel>
+  </section>
 
-    <p-divider></p-divider>
+  <hr class="home-divider" aria-hidden="true" />
 
-    <!-- Gallery -->
-    <h2 class="section-title">Campus Life</h2>
-    
+  <!-- ── Gallery Section ──────────────────────────────────────────────────── -->
+  <section class="gallery-section" aria-labelledby="gallery-heading">
+    <div class="gallery-header">
+      <span class="section-label">Our campus</span>
+      <h2 class="section-heading" id="gallery-heading">Campus Life</h2>
+      <p class="section-sub">Take a glimpse at our vibrant campus community.</p>
+    </div>
+
     <div class="galleria-wrapper">
-        <p-galleria [value]="galleryImages" [autoPlay]="false" [circular]="true" [showThumbnails]="true" [showThumbnailNavigators]="true" [thumbnailsPosition]="'bottom'" [responsiveOptions]="responsiveOptions" [numVisible]="5" >
-            <ng-template #item let-item>
-                <img [src]="item.itemImageSrc"/>
-            </ng-template>
-            <ng-template #thumbnail let-item>
-                <img [src]="item.thumbnailImageSrc" />
-            </ng-template>
-        </p-galleria>
+      <p-galleria
+        [value]="galleryImages"
+        [autoPlay]="false"
+        [circular]="true"
+        [showThumbnails]="true"
+        [showThumbnailNavigators]="true"
+        [thumbnailsPosition]="'bottom'"
+        [responsiveOptions]="responsiveOptions"
+        [numVisible]="5"
+        aria-label="Campus photo gallery"
+      >
+        <ng-template #item let-item>
+          <img [src]="item.itemImageSrc" [alt]="item.alt" />
+        </ng-template>
+        <ng-template #thumbnail let-item>
+          <img [src]="item.thumbnailImageSrc" [alt]="item.alt" />
+        </ng-template>
+      </p-galleria>
+    </div>
+  </section>
+
+  <hr class="home-divider" aria-hidden="true" />
+
+  <!-- ── CTA Section ──────────────────────────────────────────────────────── -->
+  <section class="cta-section" aria-labelledby="cta-heading">
+    <div class="cta-icon" aria-hidden="true">
+      <i class="pi pi-graduation-cap"></i>
     </div>
 
-    <p-divider></p-divider>
+    <h2 id="cta-heading">Join Us Today</h2>
+    <p class="cta-sub">
+      Register now to explore a smarter, more connected way of learning and management.
+    </p>
 
-    <!-- CTA -->
-    <div class="cta-section">
-        <h2>Join Us Today</h2>
-        <p>Register now to explore a new way of learning!</p>
-        <button *ngIf="!isLoggedIn()" pButton label="Register Now" class="p-button-rounded p-button-success p-button-lg" [routerLink]="['/login']" [queryParams]="{ mode: 'register' }"></button>
-    </div>
+    @if (!isLoggedIn()) {
+      <button
+        pButton
+        pRipple
+        label="Register Now"
+        icon="pi pi-user-plus"
+        iconPos="right"
+        class="btn-cta-success p-button-rounded"
+        [routerLink]="['/login']"
+        [queryParams]="{ mode: 'register' }"
+        aria-label="Register a new account"
+      ></button>
+    }
+  </section>
 
 </div>
