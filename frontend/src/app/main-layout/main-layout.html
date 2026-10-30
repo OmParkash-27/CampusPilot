@@ -47,6 +47,8 @@
 
       <!-- Body content -->
       <div class="main" [class.full-width]="isMobile()">
+        <!-- Dynamic breadcrumb — renders only on pages that opt in via route data -->
+        <app-breadcrumb></app-breadcrumb>
         <router-outlet></router-outlet>
       </div>
     </div>

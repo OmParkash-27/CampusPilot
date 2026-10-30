@@ -21,12 +21,13 @@ import { DialogFooter } from '../shared/component/dialog-footer/dialog-footer';
 import { DialogHeader } from '../shared/component/dialog-header/dialog-header';
 import { AuthService } from '../core/services/auth/auth.service';
 import { DeviceManagement } from '../shared/component/device-management/device-management';
+import { Breadcrumb } from '../shared/component/breadcrumb/breadcrumb';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
   imports: [CommonModule, FormsModule, PopoverModule, SpeedDialModule, RouterOutlet, MenubarModule, DrawerModule, ButtonModule,
-     RouterModule, ConfirmDialogModule, ChipModule, ToggleSwitchModule, TableModule],
+     RouterModule, ConfirmDialogModule, ChipModule, ToggleSwitchModule, TableModule, Breadcrumb],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
   providers: [DialogService ]

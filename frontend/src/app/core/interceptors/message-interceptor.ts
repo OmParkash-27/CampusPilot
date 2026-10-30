@@ -25,6 +25,14 @@ export const MessageInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err) => {
       const errorMsg = err.error?.message || 'Something went wrong';
       const errorCode = err.error?.code || null;
+       const isProfileRequest =
+        req.url.includes('/api/auth/profile');
+
+      // No existing session is normal during initial app load.
+      if (isProfileRequest && err.status === 401) {
+        authService.current_user.set(null);
+        return throwError(() => err);
+      }
       messageService.add({
         severity: 'error',
         summary: 'Error',

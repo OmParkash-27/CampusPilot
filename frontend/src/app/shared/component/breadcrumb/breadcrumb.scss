@@ -1,0 +1,164 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// breadcrumb.scss — Dynamic breadcrumb bar, light + dark mode, responsive
+// All colors are driven by CSS custom properties defined in styles.scss.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Outer bar ─────────────────────────────────────────────────────────────────
+.breadcrumb-bar {
+  // Sits flush above the page content; does not scroll with the content area
+  flex-shrink: 0;
+  padding: 0.35rem 1rem;
+  background: var(--breadcrumb-bg);
+  border-bottom: 1px solid var(--breadcrumb-border);
+  // Smooth theme transitions
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+// ── PrimeNG p-breadcrumb deep overrides ───────────────────────────────────────
+// styleClass="app-breadcrumb" is set on <p-breadcrumb> in the template.
+// ::ng-deep ensures these rules pierce the shadow boundary of the PrimeNG component.
+::ng-deep .app-breadcrumb {
+  // Strip PrimeNG's own card-like surface
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+
+  // ── Ordered list ────────────────────────────────────────────────────────────
+  ol {
+    display: flex;
+    flex-wrap: wrap;         // wrap on very narrow screens instead of clipping
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // ── Each list item ──────────────────────────────────────────────────────────
+  li {
+    display: flex;
+    align-items: center;
+    min-width: 0;            // let text-overflow kick in for long labels
+  }
+
+  // ── Crumb anchor / span ─────────────────────────────────────────────────────
+  .p-breadcrumb-item-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-decoration: none;
+    // Truncate labels that are too long
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    color: var(--breadcrumb-link-color);
+    transition: color 0.2s ease, background 0.2s ease;
+
+    &:hover {
+      color: var(--breadcrumb-link-hover-color);
+      background: var(--breadcrumb-link-hover-bg);
+    }
+
+    // Clear keyboard focus ring
+    &:focus-visible {
+      outline: 2px solid var(--breadcrumb-link-hover-color);
+      outline-offset: 2px;
+    }
+
+    // Icons (home icon + item icons)
+    .p-breadcrumb-item-icon,
+    .p-menuitem-icon {
+      font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+  }
+
+  // ── Home item (first crumb) ─────────────────────────────────────────────────
+  // Uses :first-child instead of a PrimeNG class name for robustness.
+  li:first-child .p-breadcrumb-item-link {
+    color: var(--breadcrumb-link-color);
+
+    &:hover {
+      color: var(--breadcrumb-link-hover-color);
+      background: var(--breadcrumb-link-hover-bg);
+    }
+  }
+
+  // ── Current page (last crumb) — non-clickable ───────────────────────────────
+  li:last-child .p-breadcrumb-item-link {
+    color: var(--breadcrumb-current-color);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+
+    // Suppress hover effect on the last crumb
+    &:hover {
+      background: transparent;
+      color: var(--breadcrumb-current-color);
+    }
+  }
+
+  // ── Separator ───────────────────────────────────────────────────────────────
+  .p-breadcrumb-separator {
+    display: flex;
+    align-items: center;
+    color: var(--breadcrumb-separator-color);
+    font-size: 0.68rem;
+    padding: 0 0.05rem;
+    user-select: none;
+    transition: color 0.3s ease;
+
+    // PrimeNG renders the separator icon inside a <span> with class p-icon
+    .p-icon {
+      width: 0.68rem;
+      height: 0.68rem;
+    }
+  }
+}
+
+// ── Responsive — tablet ───────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .breadcrumb-bar {
+    padding: 0.3rem 0.75rem;
+  }
+
+  ::ng-deep .app-breadcrumb {
+    .p-breadcrumb-item-link {
+      font-size: 0.8rem;
+      max-width: 160px;
+    }
+  }
+}
+
+// ── Responsive — mobile ───────────────────────────────────────────────────────
+@media (max-width: 480px) {
+  .breadcrumb-bar {
+    padding: 0.3rem 0.6rem;
+  }
+
+  ::ng-deep .app-breadcrumb {
+    ol {
+      // On very small screens allow wrapping between items
+      gap: 0;
+    }
+
+    .p-breadcrumb-item-link {
+      font-size: 0.75rem;
+      max-width: 110px;
+      padding: 0.15rem 0.3rem;
+    }
+
+    // Hide the home icon label (icon only) on tiny screens to save space
+    li.p-breadcrumb-home .p-breadcrumb-item-link .p-menuitem-text {
+      display: none;
+    }
+  }
+}

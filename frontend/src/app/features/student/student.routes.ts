@@ -7,14 +7,13 @@ export const STUDENT_ROUTES: Routes = [
   {
     path: 'dashboard',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin', 'student'] },
-    loadComponent: () =>
-      import('./dashboard/dashboard').then(m => m.SDashboard)
+    data: { roles: ['admin', 'student'], breadcrumb: 'Dashboard' },
+    loadComponent: () => import('./dashboard/dashboard').then(m => m.SDashboard)
   },
   {
     path: 'upload-files',
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['student'] },
+    data: { roles: ['student'], breadcrumb: 'Upload Files' },
     loadComponent: () =>
       import('./upload-student-files/upload-student-files').then(m => m.UploadStudentFiles)
   }

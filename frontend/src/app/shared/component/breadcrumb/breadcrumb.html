@@ -1,0 +1,10 @@
+@if (!state().hidden && !isSingleCrumb()) {
+  <nav class="breadcrumb-bar" aria-label="Breadcrumb navigation">
+    <p-breadcrumb
+      [model]="state().items"
+      [home]="homeItem"
+      homeAriaLabel="Home"
+      styleClass="app-breadcrumb"
+    ></p-breadcrumb>
+  </nav>
+}

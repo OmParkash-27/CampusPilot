@@ -56,6 +56,15 @@
   --home-text-primary: #212121;
   --home-text-secondary: #546e7a;
   --home-text-muted: #78909c;
+
+  /* Breadcrumb tokens — light mode */
+  --breadcrumb-bg: #f1f5f9;
+  --breadcrumb-border: rgba(0, 0, 0, 0.08);
+  --breadcrumb-link-color: #475569;
+  --breadcrumb-link-hover-color: #0d6efd;
+  --breadcrumb-link-hover-bg: rgba(13, 110, 253, 0.08);
+  --breadcrumb-current-color: #1e293b;
+  --breadcrumb-separator-color: #94a3b8;
 }
 
 :root.my-dark {
@@ -112,6 +121,15 @@
   --home-text-primary: #e2e8f0;
   --home-text-secondary: #94a3b8;
   --home-text-muted: #64748b;
+
+  /* Breadcrumb tokens — dark mode */
+  --breadcrumb-bg: #1e293b;
+  --breadcrumb-border: rgba(255, 255, 255, 0.07);
+  --breadcrumb-link-color: #94a3b8;
+  --breadcrumb-link-hover-color: #63b3ed;
+  --breadcrumb-link-hover-bg: rgba(99, 179, 237, 0.1);
+  --breadcrumb-current-color: #e2e8f0;
+  --breadcrumb-separator-color: #475569;
 }
 
 label {
