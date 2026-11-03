@@ -1,223 +1,518 @@
-<div class="grid nested-grid grid-nogutter gap-3 sm:gap-3 md:gap-3 justify-content-start bg-gray-100 p-3">
-    <div class="sm:col-12 md:col-7 lg:col-7">
-        <div class="grid grid-nogutter gap-3 sm:gap-3 md:gap-3">
-            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
-                <!-- Total Students -->
-                <p-card class="border-round-lg">
-                    <div class="flex flex-column row-gap-6">
-                        <div>
-                            <h2 class="text-lg text-400">Total Students</h2>
-                            <span class="text-3xl ">{{ dashboardData()?.totalStudents }}</span>
-                        </div>
-                        <div class="flex items-center justify-content-center">
-                            <img src="images/line-graph-svgrepo-com.svg" class="w-7" alt="students icon" />
-                        </div>
+<div class="dash-page">
 
-                    </div>
-                </p-card>
-            </div>
-            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
-                <p-card class="border-round-lg">
-                    <div class="flex flex-column row-gap-6">
-                        <div>
-                            <h2 class="text-lg text-400">Total Admins</h2>
-                            <span class="text-3xl ">{{ dashboardData()?.totalAdmins }}</span>
-                        </div>
-                        <div class="flex items-center justify-content-center">
-                            <img src="images/pie-chart-svgrepo-com.svg" class="w-7" alt="students icon" />
-                        </div>
-                    </div>
-                </p-card>
-            </div>
-            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
-                <p-card class="border-round-lg">
-                    <div class="flex flex-column row-gap-6">
-                        <div>
-                            <h2 class="text-lg text-400">Total Teachers</h2>
-                            <span class="text-3xl ">{{ dashboardData()?.totalTeachers }}</span>
-                        </div>
-                        <div class="flex items-center justify-content-center">
-                            <img src="images/histogram-svgrepo-com.svg" class="w-7" alt="students icon" />
-                        </div>
-                    </div>
-                </p-card>
-            </div>
-            <div class="sm:col-12 md:col-5 lg:col-5 flex-grow-1">
-                <p-card class="border-round-lg">
-                    <div class="flex flex-column row-gap-6">
-                        <div>
-                            <h2 class="text-lg text-400">Total Editors</h2>
-                            <span class="text-3xl ">{{ dashboardData()?.totalEditors }}</span>
-                        </div>
-                        <div class="flex items-center justify-content-center">
-                            <img src="images/document-svgrepo-com.svg" class="w-7" alt="students icon" />
-                        </div>
-                    </div>
-                </p-card>
-            </div>
+  <!-- ══════════════════════════════════════════════════════════════
+       WELCOME BANNER
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="dash-welcome">
+    <div class="dash-welcome__left">
+      <p class="dash-welcome__eyebrow">
+        <i class="pi pi-sun" aria-hidden="true"></i>
+        {{ greeting() }},
+      </p>
+      <h1 class="dash-welcome__name">{{ user()?.name }}</h1>
+      <p class="dash-welcome__sub">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        {{ today | date: 'EEEE, MMMM d, y' }}
+        &nbsp;·&nbsp;
+        <span class="dash-welcome__role">{{ user()?.role | titlecase }}</span>
+      </p>
+    </div>
+
+    <div class="dash-welcome__actions">
+      <button pButton
+        class="dash-btn dash-btn--primary"
+        icon="pi pi-user-plus"
+        label="Add User"
+        (click)="navigateTo('admin/user-add-edit')"
+        pTooltip="Create a new user"
+        tooltipPosition="bottom"
+      ></button>
+      <button pButton
+        class="dash-btn dash-btn--outline"
+        icon="pi pi-graduation-cap"
+        label="Add Student"
+        (click)="navigateTo('admin/common/student-add-edit')"
+        pTooltip="Create a new student"
+        tooltipPosition="bottom"
+      ></button>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       OVERVIEW STAT CARDS
+  ══════════════════════════════════════════════════════════════ -->
+  <div class="dash-stats">
+
+    <div class="stat-card stat-card--students" (click)="navigateTo('admin/common/student-list')" tabindex="0" role="button" aria-label="View all students">
+      <div class="stat-card__icon">
+        <i class="pi pi-graduation-cap"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Total Students</span>
+        <span class="stat-card__value">{{ dashboardData()?.totalStudents ?? '—' }}</span>
+        <span class="stat-card__sub">{{ totalCurrentYear() }} enrolled {{ current_year }}</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--teachers" (click)="navigateTo('admin/user-list')" tabindex="0" role="button" aria-label="View all users">
+      <div class="stat-card__icon">
+        <i class="pi pi-user-edit"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Total Teachers</span>
+        <span class="stat-card__value">{{ dashboardData()?.totalTeachers ?? '—' }}</span>
+        <span class="stat-card__sub">Active teaching staff</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--editors" (click)="navigateTo('admin/user-list')" tabindex="0" role="button" aria-label="View all users">
+      <div class="stat-card__icon">
+        <i class="pi pi-pencil"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Total Editors</span>
+        <span class="stat-card__value">{{ dashboardData()?.totalEditors ?? '—' }}</span>
+        <span class="stat-card__sub">Student record managers</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--admins" (click)="navigateTo('admin/user-list')" tabindex="0" role="button" aria-label="View all users">
+      <div class="stat-card__icon">
+        <i class="pi pi-shield"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Total Admins</span>
+        <span class="stat-card__value">{{ dashboardData()?.totalAdmins ?? '—' }}</span>
+        <span class="stat-card__sub">System administrators</span>
+      </div>
+    </div>
+
+    <div class="stat-card stat-card--total" tabindex="0" role="presentation">
+      <div class="stat-card__icon">
+        <i class="pi pi-users"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">All Staff</span>
+        <span class="stat-card__value">{{ totalUsers() }}</span>
+        <span class="stat-card__sub">Admins + Teachers + Editors</span>
+      </div>
+    </div>
+    <div class="stat-card stat-card--newRegistered" (click)="navigateTo('admin/common/student-new-register-list')" tabindex="0" role="button" aria-label="View all users">
+      <div class="stat-card__icon">
+        <i class="pi pi-pencil"></i>
+      </div>
+      <div class="stat-card__body">
+        <span class="stat-card__label">Pending Registration</span>
+        <span class="stat-card__value">{{ dashboardData()?.totalNewRegisteredStudents  ?? '—' }}</span>
+        <span class="stat-card__sub">Student record managers</span>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       QUICK ACTIONS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="dash-section" aria-labelledby="quick-actions-heading">
+    <div class="dash-section__header">
+      <span class="dash-section__label" id="quick-actions-heading">Quick Actions</span>
+    </div>
+
+    <div class="quick-actions">
+
+      <button class="qa-card" (click)="navigateTo('admin/user-add-edit')" aria-label="Add new user">
+        <div class="qa-card__icon qa-card__icon--blue">
+          <i class="pi pi-user-plus"></i>
         </div>
-    </div>
-    <!-- profile section  -->
-    <div class="sm:col-8 md:col-3 lg:col-3 flex-grow-1">
-        <p-card class="shadow-md border-round-lg min-h-full relative ">
-            <h2 class="text-lg text-400 mb-6">Profile</h2>
-            <div class="flex flex-column align-items-center gap-5">
-                <div class="flex flex-column absolute align-items-center gap-3 user-profile">
-                    @if(user()?.profilePic) {
-                    <p-avatar class="w-10rem h-10rem" [image]="user()?.profilePic!" shape="circle">
-                    </p-avatar>
-                    } @else {
-                    <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
-                    }
-                    <span class="text-3xl surface-0 -mt-6 w-8rem text-center">{{ user()?.name }}</span>
-                    <p>{{user()?.email}}</p>
-                    <p>{{user()?.role}}</p>
-                </div>
-                <div class="card flex flex-column absolute bottom-0 mb-3 align-items-center gap-2 students-avatar">
-                    <p>You Created Students</p>
-                    <p-avatar-group>
-                        @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
-                        @if(idx
-                        < 2) { @if(cUser?.user?.profilePic !==null) { <p-avatar
-                            [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
-                            [image]="cUser?.user?.profilePic" size="large" shape="circle"
-                            (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
-                        } @else {
-                        <p-avatar [class]="dashboardData()?.uCreatedStudent.length <= 2 ? 'cursor-pointer' : ''"
-                            [icon]="'pi pi-user'" size="large" shape="circle"
-                            (click)="dashboardData()?.uCreatedStudent.length <= 2 ? showAllUsers() : null" />
-                        }
-                        } @if(idx === 2) {
-                        <p-avatar class="cursor-pointer" [label]="'+' + (dashboardData()?.uCreatedStudent.length - 2)"
-                            (click)="showAllUsers()" shape="circle" size="large" />
-                        }
-                        } @empty {
-                        no data
-                        }
-                    </p-avatar-group>
-                </div>
-            </div>
+        <span class="qa-card__label">Add User</span>
+      </button>
 
-        </p-card>
-    </div>
-</div>
-
-<!-- Section 2 -->
-
-<div class="grid grid-nogutter nested-grid bg-gray-100 justify-content-start gap-3 p-3 pt-0">
-    <div class="col-12 sm:col-12 md:col-3 lg:col-3 meter-group flex-grow-1">
-        <!-- Avatar + MeterGroup -->
-        <p-card class="shadow-md min-h-full relative">
-            <h2 class="text-lg text-400 mb-6">{{current_year}} Courses Students</h2>
-            <p-metergroup [value]="meterGroupValues" orientation="vertical" labelOrientation="horizontal" [max]="10"
-                class="align-items-center flex-column-reverse "></p-metergroup>
-        </p-card>
-    </div>
-    <div class="col-12 sm:col-12 md:col-8 lg:col-8 flex-grow-1">
-        <div class="grid grid-nogutter row-gap-3">
-            <div class="col-12 sm:col-12 md:col-12 lg:col-12 ">
-                <!-- Doughnut Chart -->
-                <p-card class="shadow-md ">
-                    <h2 class="text-lg text-400 mb-6">Doughnut Chart</h2>
-                    <p-chart type="doughnut" [data]="doughnutData"
-                        class="flex justify-content-center max-h-20rem"></p-chart>
-                </p-card>
-            </div>
-            <div class="col-12 sm:col-12 md:col-12 lg:col-12 ">
-                <!-- Line Chart -->
-                <p-card class="shadow-md ">
-                    <h2 class="text-lg text-400 mb-6">Line Chart</h2>
-                    <p-chart type="line" [data]="lineData" class="flex justify-content-center"></p-chart>
-                </p-card>
-            </div>
+      <button class="qa-card" (click)="navigateTo('admin/user-list')" aria-label="Manage all users">
+        <div class="qa-card__icon qa-card__icon--purple">
+          <i class="pi pi-users"></i>
         </div>
+        <span class="qa-card__label">Manage Users</span>
+      </button>
+
+      <button class="qa-card" (click)="navigateTo('admin/common/student-add-edit')" aria-label="Add new student">
+        <div class="qa-card__icon qa-card__icon--green">
+          <i class="pi pi-graduation-cap"></i>
+        </div>
+        <span class="qa-card__label">Add Student</span>
+      </button>
+
+      <button class="qa-card" (click)="navigateTo('admin/common/student-list')" aria-label="View all students">
+        <div class="qa-card__icon qa-card__icon--amber">
+          <i class="pi pi-list"></i>
+        </div>
+        <span class="qa-card__label">Student List</span>
+      </button>
+
+      <button class="qa-card" (click)="navigateTo('admin/common/student-new-register-list')" aria-label="View pending registrations">
+        <div class="qa-card__icon qa-card__icon--cyan">
+          <i class="pi pi-inbox"></i>
+        </div>
+        <span class="qa-card__label">Pending Registrations</span>
+      </button>
+
     </div>
-</div>
+  </section>
 
-<!-- section 3 -->
 
-<div class="grid grid-nogutter nested-grid bg-gray-100 gap-3 p-3 pt-0">
-    <div class="col-12 sm:col-12 md:col-12 lg:col-12">
-        <p-card class="shadow-md">
+  <!-- ══════════════════════════════════════════════════════════════
+       ANALYTICS ROW — DOUGHNUT + METER GROUP
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="dash-section" aria-labelledby="analytics-heading">
+    <div class="dash-section__header">
+      <span class="dash-section__label" id="analytics-heading">Analytics</span>
+      <span class="dash-section__meta">Academic year {{ current_year }}</span>
+    </div>
+
+    <div class="dash-grid dash-grid--analytics">
+
+      <!-- Doughnut: user role distribution -->
+      <div class="dash-card dash-card--chart">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-chart-pie dash-card__icon dash-card__icon--purple"></i>
             <div>
-                <h2 class="text-lg text-400">Staff</h2>
+              <h3 class="dash-card__title">User Distribution</h3>
+              <p class="dash-card__subtitle">Breakdown by role</p>
             </div>
-            <div class="users-section flex justify-content-center relative p-7">
-                <div class="chips flex flex-wrap gap-5">
-                    @for(user of latestUsers; track user?._id) {
-                    <p-chip *ngIf="user?.profilePic !== null" [image]="user?.profilePic ?? undefined"
-                        label="{{ user?.name }}" (onImageError)="user.profilePic=null">
-                    </p-chip>
-
-                    <p-chip *ngIf="user?.profilePic === null" icon="pi pi-user" label="{{ user?.name }}">
-                    </p-chip>
-                    }
-                </div>
-                <div class="view-all-btn absolute right-0">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info"
-                        (onClick)="router.navigate(['admin/user-list'])" />
-                </div>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap--doughnut">
+          <p-chart type="doughnut" [data]="doughnutData" [options]="doughnutOptions"></p-chart>
+          @if (dashboardData()) {
+            <div class="doughnut-center">
+              <span class="doughnut-center__value">{{ (dashboardData()?.totalStudents ?? 0) + totalUsers() }}</span>
+              <span class="doughnut-center__label">Total</span>
             </div>
-        </p-card>
-    </div>
-</div>
+          }
+        </div>
+      </div>
 
-<!-- section-4 -->
-<div class="grid grid-nogutter nested-grid bg-gray-100 gap-3 p-3 pt-0">
-    <div class="col-12 sm:col-12 md:col-5 lg:col-7">
-        <!-- Polar Chart -->
-        <p-card class="shadow-md flex flex-col">
-            <h2 class="text-lg text-400 mb-6">Polar Area</h2>
-            <p-chart type="polarArea" [data]="polarData" class="flex justify-content-center max-h-20rem"></p-chart>
-        </p-card>
-    </div>
-    <div class="col-12 sm:col-12 md:col-6 lg:col-4 flex-grow-1">
-        <p-card class="shadow-md student-section-card">
+      <!-- Line: course enrollments this year -->
+      <div class="dash-card dash-card--chart">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-chart-line dash-card__icon dash-card__icon--blue"></i>
             <div>
-                <h2 class="text-lg text-400">Students</h2>
+              <h3 class="dash-card__title">{{ current_year }} Enrollments</h3>
+              <p class="dash-card__subtitle">Students per course this year</p>
             </div>
-            <div class="students-section flex p-4">
-                <div class="chips-badge-section flex flex-grow-1 flex-wrap w-full">
-                    @for(student of latestStudents; track student?._id) {
-                    <div class="chips-badge w-full flex align-items-center justify-content-around gap-1">
-                        <p-chip *ngIf="student.user?.profilePic !== null" [image]="student.user.profilePic ?? undefined"
-                            label="{{ student.user.name }}" (onImageError)="student.user.profilePic=null">
-                        </p-chip>
+          </div>
+          <span class="dash-badge dash-badge--blue">{{ totalCurrentYear() }} total</span>
+        </div>
+        <div class="chart-wrap chart-wrap--line">
+          <p-chart type="line" [data]="lineData" [options]="lineOptions"></p-chart>
+        </div>
+      </div>
 
-                        <p-chip *ngIf="student.user.profilePic === null" icon="pi pi-user"
-                            label="{{ student.user.name }}">
-                        </p-chip>
-                        <p-badge [value]="student.user.status ? 'Active': 'Inactive'"
-                            [severity]="student.user.status ? 'info' : 'warn'" />
-                    </div>
-                    } @empty {
-                    no data
-                    }
-                </div>
-                <div class="view-all-btn">
-                    <p-button icon="pi pi-user" [rounded]="true" [text]="true" [raised]="true" severity="info"
-                        (onClick)="router.navigate(['admin/common/student-list'])" />
-                </div>
+      <!-- Polar: course distribution this year -->
+      <div class="dash-card dash-card--chart">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-chart-bar dash-card__icon dash-card__icon--green"></i>
+            <div>
+              <h3 class="dash-card__title">Course Distribution</h3>
+              <p class="dash-card__subtitle">Polar view · {{ current_year }}</p>
             </div>
-        </p-card>
+          </div>
+        </div>
+        <div class="chart-wrap chart-wrap--polar">
+          <p-chart type="polarArea" [data]="polarData" [options]="polarOptions"></p-chart>
+        </div>
+      </div>
+
+      <!-- Meter group: course counts -->
+      <div class="dash-card">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-chart-scatter dash-card__icon dash-card__icon--amber"></i>
+            <div>
+              <h3 class="dash-card__title">Course Meters</h3>
+              <p class="dash-card__subtitle">Relative enrollment · {{ current_year }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="meter-wrap">
+          <p-metergroup
+            [value]="meterGroupValues"
+            orientation="vertical"
+            labelOrientation="horizontal"
+          ></p-metergroup>
+        </div>
+      </div>
+
     </div>
-</div>
+  </section>
 
-<p-dialog header="You Created Students" [modal]="true" [(visible)]="usersDialongVisible"
-    [breakpoints]="{ '1199px': '50vw', '575px': '95vw' }" [style]="{ width: '50vw' }">
-    <div class="flex flex-column align-items-start gap-3 mb-2">
-        @for(cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
-        <div class="flex flex-row align-items-center gap-3">
-            @if(cUser?.user?.profilePic !== null) {
-            <p-avatar [image]="cUser?.user?.profilePic" size="large" shape="circle"
-                (onImageError)="cUser?.user!.profilePic=null" />
-            } @else {
-            <p-avatar [icon]="'pi pi-user'" size="large" shape="circle" />
+
+  <!-- ══════════════════════════════════════════════════════════════
+       RECENT RECORDS ROW — STAFF + STUDENTS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="dash-section" aria-labelledby="recent-heading">
+    <div class="dash-section__header">
+      <span class="dash-section__label" id="recent-heading">Recent Records</span>
+      <span class="dash-section__meta">Latest 5 entries</span>
+    </div>
+
+    <div class="dash-grid dash-grid--recent">
+
+      <!-- Recent Staff -->
+      <div class="dash-card">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-id-card dash-card__icon dash-card__icon--purple"></i>
+            <div>
+              <h3 class="dash-card__title">Recent Staff</h3>
+              <p class="dash-card__subtitle">Latest registered non-student users</p>
+            </div>
+          </div>
+          <button pButton
+            class="dash-btn dash-btn--ghost"
+            icon="pi pi-arrow-right"
+            label="View All"
+            (click)="navigateTo('admin/user-list')"
+          ></button>
+        </div>
+
+        <div class="record-table">
+          <div class="record-table__head">
+            <span>User</span>
+            <span>Role</span>
+          </div>
+
+          @for (u of latestUsers; track u._id) {
+            <div class="record-table__row">
+              <div class="record-user">
+                @if (u.profilePic) {
+                  <p-avatar [image]="u.profilePic" shape="circle" size="normal"
+                    (onImageError)="u.profilePic = null"></p-avatar>
+                } @else {
+                  <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                }
+                <div class="record-user__info">
+                  <span class="record-user__name">{{ u.name }}</span>
+                  <span class="record-user__email">{{ u.email }}</span>
+                </div>
+              </div>
+              <p-tag
+                [value]="u.role | titlecase"
+                [severity]="getRoleSeverity(u.role)"
+              ></p-tag>
+            </div>
+          }
+
+          @empty {
+            <div class="record-table__empty">
+              <i class="pi pi-inbox"></i>
+              <span>No recent staff records</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent Students -->
+      <div class="dash-card">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-graduation-cap dash-card__icon dash-card__icon--blue"></i>
+            <div>
+              <h3 class="dash-card__title">Recent Students</h3>
+              <p class="dash-card__subtitle">Latest enrolled students</p>
+            </div>
+          </div>
+          <button pButton
+            class="dash-btn dash-btn--ghost"
+            icon="pi pi-arrow-right"
+            label="View All"
+            (click)="navigateTo('admin/common/student-list')"
+          ></button>
+        </div>
+
+        <div class="record-table">
+          <div class="record-table__head">
+            <span>Student</span>
+            <span>Status</span>
+          </div>
+
+          @for (s of latestStudents; track s._id) {
+            <div class="record-table__row">
+              <div class="record-user">
+                @if (dashboardData()?.uCreatedStudent?.user?.profilePic) {
+                  <p-avatar [image]="s.user.profilePic!" shape="circle" size="normal"
+                    (onImageError)="s.user.profilePic = null"></p-avatar>
+                } @else {
+                  <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                }
+                <div class="record-user__info">
+                  <span class="record-user__name">{{ s?.user?.name }}</span>
+                  <span class="record-user__email">{{ s.rollNo }}</span>
+                </div>
+              </div>
+              <span class="status-pill"
+                [class.status-pill--active]="s?.user?.status"
+                [class.status-pill--inactive]="!s?.user?.status">
+                {{ s?.user?.status ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          }
+
+          @empty {
+            <div class="record-table__empty">
+              <i class="pi pi-inbox"></i>
+              <span>No recent student records</span>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       ADMIN PROFILE + CREATED STUDENTS
+  ══════════════════════════════════════════════════════════════ -->
+  <section class="dash-section" aria-labelledby="profile-heading">
+    <div class="dash-section__header">
+      <span class="dash-section__label" id="profile-heading">Your Activity</span>
+    </div>
+
+    <div class="dash-grid dash-grid--profile">
+
+      <!-- Admin profile card -->
+      <div class="dash-card profile-card">
+        <div class="profile-card__avatar">
+          @if (user()?.profilePic) {
+            <p-avatar [image]="user()!.profilePic!" shape="circle" size="xlarge"></p-avatar>
+          } @else {
+            <p-avatar icon="pi pi-user" shape="circle" size="xlarge"></p-avatar>
+          }
+        </div>
+        <div class="profile-card__info">
+          <h3 class="profile-card__name">{{ user()?.name }}</h3>
+          <p class="profile-card__email">{{ user()?.email }}</p>
+          <p-tag
+            [value]="(user()?.role ?? '') | titlecase"
+            severity="danger"
+            styleClass="profile-card__role-tag"
+          ></p-tag>
+        </div>
+        <div class="profile-card__stats">
+          <div class="profile-stat">
+            <span class="profile-stat__value">{{ dashboardData()?.uCreatedStudent?.length ?? 0 }}</span>
+            <span class="profile-stat__label">Students Created</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat__value">{{ totalCurrentYear() }}</span>
+            <span class="profile-stat__label">{{ current_year }} Enrollments</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Students created by this admin -->
+      <div class="dash-card">
+        <div class="dash-card__head">
+          <div class="dash-card__title-group">
+            <i class="pi pi-user-plus dash-card__icon dash-card__icon--green"></i>
+            <div>
+              <h3 class="dash-card__title">Students You Created</h3>
+              <p class="dash-card__subtitle">Records attributed to your account</p>
+            </div>
+          </div>
+          @if ((dashboardData()?.uCreatedStudent?.length ?? 0) > 0) {
+            <button pButton
+              class="dash-btn dash-btn--ghost"
+              label="See All"
+              icon="pi pi-list"
+              (click)="showAllUsers()"
+            ></button>
+          }
+        </div>
+
+        @if ((dashboardData()?.uCreatedStudent?.length ?? 0) === 0) {
+          <div class="empty-state">
+            <div class="empty-state__icon">
+              <i class="pi pi-users"></i>
+            </div>
+            <p class="empty-state__msg">No students created yet</p>
+            <button pButton
+              class="dash-btn dash-btn--primary"
+              label="Create First Student"
+              icon="pi pi-plus"
+              (click)="navigateTo('admin/common/student-add-edit')"
+            ></button>
+          </div>
+        } @else {
+          <div class="avatar-grid">
+            @for (cUser of dashboardData()?.uCreatedStudent; track cUser._id; let idx = $index) {
+              @if (idx < 6) {
+                <div class="avatar-item" (click)="showAllUsers()" pTooltip="{{ cUser?.user?.name }}" tooltipPosition="top">
+                  @if (cUser?.user?.profilePic) {
+                    <p-avatar [image]="cUser.user.profilePic" shape="circle" size="large"
+                      (onImageError)="cUser.user.profilePic = null"></p-avatar>
+                  } @else {
+                    <p-avatar icon="pi pi-user" shape="circle" size="large"></p-avatar>
+                  }
+                  <span class="avatar-item__name">{{ cUser?.user?.name | slice:0:10 }}</span>
+                </div>
+              }
+              @if (idx === 6) {
+                <div class="avatar-item avatar-item--overflow" (click)="showAllUsers()">
+                  <p-avatar
+                    [label]="'+' + (dashboardData()?.uCreatedStudent.length - 6)"
+                    shape="circle"
+                    size="large"
+                  ></p-avatar>
+                  <span class="avatar-item__name">More</span>
+                </div>
+              }
             }
-            <span>{{cUser?.user?.name}}</span>
-            <span>{{cUser?.user?.email}}</span>
-            <span>{{cUser?.user?.role}}</span>
-        </div>
+          </div>
         }
+      </div>
+
     </div>
-</p-dialog>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════════════════
+       DIALOG — ALL STUDENTS CREATED BY THIS ADMIN
+  ══════════════════════════════════════════════════════════════ -->
+  <p-dialog
+    header="Students You Created"
+    [modal]="true"
+    [(visible)]="usersDialogVisible"
+    [breakpoints]="{ '1199px': '55vw', '768px': '85vw', '575px': '95vw' }"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <div class="dialog-list">
+      @for (cUser of dashboardData()?.uCreatedStudent; track cUser._id) {
+        <div class="dialog-row">
+          @if (cUser?.user?.profilePic) {
+            <p-avatar [image]="cUser.user.profilePic" shape="circle" size="large"
+              (onImageError)="cUser.user.profilePic = null"></p-avatar>
+          } @else {
+            <p-avatar icon="pi pi-user" shape="circle" size="large"></p-avatar>
+          }
+          <div class="dialog-row__info">
+            <span class="dialog-row__name">{{ cUser?.user?.name }}</span>
+            <span class="dialog-row__email">{{ cUser?.user?.email }}</span>
+          </div>
+          <p-tag
+            [value]="(cUser?.user?.role ?? '') | titlecase"
+            [severity]="getRoleSeverity(cUser?.user?.role)"
+          ></p-tag>
+        </div>
+      }
+    </div>
+  </p-dialog>
+
+</div>

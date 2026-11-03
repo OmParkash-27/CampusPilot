@@ -16,5 +16,12 @@ export const STUDENT_ROUTES: Routes = [
     data: { roles: ['student'], breadcrumb: 'Upload Files' },
     loadComponent: () =>
       import('./upload-student-files/upload-student-files').then(m => m.UploadStudentFiles)
+  },
+  {
+    path: 'view-documents',
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['student'], breadcrumb: 'View Documents' },
+    loadComponent: () =>
+      import('./view-documents/view-documents').then(m => m.ViewDocuments)
   }
 ];

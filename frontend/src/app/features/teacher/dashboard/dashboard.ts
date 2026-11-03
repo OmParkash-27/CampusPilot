@@ -1,146 +1,150 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChartModule } from 'primeng/chart';
-
+import { ButtonModule } from 'primeng/button';
+import { AvatarModule } from 'primeng/avatar';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
+import { RouterModule, Router } from '@angular/router';
 import { DashboardService } from './dashboard.service';
-import { RecentList } from '../../common/dashboards-component/components/recent-list/recent-list';
-import { StatsCard } from '../../common/dashboards-component/components/stats-card/stats-card';
-
+import { AuthService } from '../../../core/services/auth/auth.service';
 
 interface DashboardData {
   totalStudents: number;
-  currentYearTotalStudents: number,
-  totalBcaStudents: number,
-  currentYearBcaStudents: number,
-  totalMcaStudents: number,
-  currentYearMcaStudents: number,
-  totalBbaStudents: number,
-  currentYearBbaStudents: number,
-  totalMbaStudents: number,
-  currentYearMbaStudents: number,
+  currentYearTotalStudents: number;
+  totalBcaStudents: number;
+  currentYearBcaStudents: number;
+  totalMcaStudents: number;
+  currentYearMcaStudents: number;
+  totalBbaStudents: number;
+  currentYearBbaStudents: number;
+  totalMbaStudents: number;
+  currentYearMbaStudents: number;
   lastCreated: any[];
   lastUpdated: any[];
+  [key: string]: any; // allow dynamic key access in template
 }
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RecentList, StatsCard, ChartModule],
+  imports: [CommonModule, ChartModule, ButtonModule, AvatarModule, TagModule, TooltipModule, RouterModule],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss']
 })
 export class TDashboard implements OnInit {
   loading = true;
   currentYear = new Date().getFullYear();
-  
+  today = new Date();
 
-  // Default values to avoid null checks in HTML
+  private authService = inject(AuthService);
+  private dashboardService = inject(DashboardService);
+  private cdr = inject(ChangeDetectorRef);
+  router = inject(Router);
+
+  user = this.authService.current_user;
+
+  greeting = computed(() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  });
+
   data: DashboardData = {
-    totalStudents: 0,
-    currentYearTotalStudents: 0,
-    totalBcaStudents: 0,
-    currentYearBcaStudents: 0,
-    totalMcaStudents: 0,
-    currentYearMcaStudents: 0,
-    totalBbaStudents: 0,
-    currentYearBbaStudents: 0,
-    totalMbaStudents: 0,
-    currentYearMbaStudents: 0,
-    lastCreated: [],
-    lastUpdated: []
+    totalStudents: 0, currentYearTotalStudents: 0,
+    totalBcaStudents: 0, currentYearBcaStudents: 0,
+    totalMcaStudents: 0, currentYearMcaStudents: 0,
+    totalBbaStudents: 0, currentYearBbaStudents: 0,
+    totalMbaStudents: 0, currentYearMbaStudents: 0,
+    lastCreated: [], lastUpdated: []
   };
 
-  // Chart models
   barData: any = {};
-  pieData: any = {};
-  chartOptions: any = {};
+  barOptions: any = {};
 
-  studentCols = [
-    { field: 'user.name', header: 'Name' },
-    { field: 'courses[0].course', header: 'Course' },
-    { field: 'rollNo', header: 'Roll No' },
+  // Course rows for the breakdown panel
+  courses = [
+    { name: 'BCA', icon: 'pi pi-desktop',        color: '#3b82f6', totalKey: 'totalBcaStudents', yearKey: 'currentYearBcaStudents' },
+    { name: 'MCA', icon: 'pi pi-microchip',       color: '#10b981', totalKey: 'totalMcaStudents', yearKey: 'currentYearMcaStudents' },
+    { name: 'BBA', icon: 'pi pi-briefcase',       color: '#f59e0b', totalKey: 'totalBbaStudents', yearKey: 'currentYearBbaStudents' },
+    { name: 'MBA', icon: 'pi pi-chart-line',      color: '#a78bfa', totalKey: 'totalMbaStudents', yearKey: 'currentYearMbaStudents' },
   ];
-
-  userCols = [
-    { field: 'user.name', header: 'Name' },
-    { field: 'courses[0].course', header: 'Course' },
-    { field: 'rollNo', header: 'Roll No' }
-  ];
-
-  constructor(
-    private dashboardService: DashboardService,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit(): void {
     this.dashboardService.getDashboardData().subscribe({
       next: (res) => {
-        // merge received values onto defaults
         this.data = { ...this.data, ...res };
+        this.buildCharts();
+        Promise.resolve().then(() => { this.loading = false; this.cdr.detectChanges(); });
+      },
+      error: () => {
+        Promise.resolve().then(() => { this.loading = false; this.cdr.detectChanges(); });
+      }
+    });
+  }
 
-        const labels = ['All Students', 'BCA', 'MCA', 'BBA', 'MBA'];
-        const counts = [
+  private buildCharts(): void {
+    const isDark = document.documentElement.classList.contains('my-dark');
+    const labelColor  = isDark ? '#94a3b8' : '#475569';
+    const gridColor   = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+    const tooltipBg   = isDark ? '#1e293b' : '#ffffff';
+    const tooltipText = isDark ? '#e2e8f0' : '#0f172a';
+
+    const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#a78bfa', '#f87171'];
+
+    this.barData = {
+      labels: ['All', 'BCA', 'MCA', 'BBA', 'MBA'],
+      datasets: [{
+        label: 'Total',
+        data: [
           this.data.totalStudents,
           this.data.totalBcaStudents,
           this.data.totalMcaStudents,
           this.data.totalBbaStudents,
           this.data.totalMbaStudents
-        ];
+        ],
+        backgroundColor: COLORS,
+        borderRadius: 6,
+        borderSkipped: false,
+      }, {
+        label: `${this.currentYear}`,
+        data: [
+          this.data.currentYearTotalStudents,
+          this.data.currentYearBcaStudents,
+          this.data.currentYearMcaStudents,
+          this.data.currentYearBbaStudents,
+          this.data.currentYearMbaStudents
+        ],
+        backgroundColor: COLORS.map(c => c + '55'),
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    };
 
-        // Bar chart
-        this.barData = {
-          labels,
-          datasets: [
-            {
-              label: 'Counts',
-              backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#FF7043', '#26C6DA'],
-              data: counts
-            }
-          ]
-        };
-
-        // Pie chart
-        this.pieData = {
-          labels,
-          datasets: [
-            {
-              data: counts,
-              backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#AB47BC', '#FF7043', '#26C6DA'],
-              hoverBackgroundColor: ['#64B5F6', '#81C784', '#FFB74D', '#C58CE0', '#FF8A65', '#4DD0E1']
-            }
-          ]
-        };
-
-        this.chartOptions = {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: { color: '#495057' }
-            }
-          },
-          scales: {
-            x: { ticks: { color: '#495057' }, grid: { color: '#ebedef' } },
-            y: { ticks: { color: '#495057' }, grid: { color: '#ebedef' } }
-          }
-        };
-
-        // Defer changing loading flag to avoid ExpressionChangedAfterItHasBeenCheckedError.
-        // Promise.resolve pushes it to the microtask queue (safe & light-weight).
-        Promise.resolve().then(() => {
-          this.loading = false;
-          // ensure change detection runs
-          this.cdr.detectChanges();
-        });
+    this.barOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: labelColor, font: { size: 12 } } },
+        tooltip: {
+          backgroundColor: tooltipBg, titleColor: tooltipText,
+          bodyColor: labelColor, borderWidth: 1, padding: 10,
+          borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+          cornerRadius: 8,
+        }
       },
-      error: (err) => {
-        console.error('Dashboard load error', err);
-        // still clear loading to show error state / empty UI
-        Promise.resolve().then(() => {
-          this.loading = false;
-          this.cdr.detectChanges();
-        });
+      scales: {
+        x: { ticks: { color: labelColor }, grid: { color: gridColor } },
+        y: { beginAtZero: true, ticks: { color: labelColor, stepSize: 1 }, grid: { color: gridColor } }
       }
-    });
+    };
   }
+
+  getCoursePct(totalKey: string, base: number): number {
+    if (!base) return 0;
+    return Math.round(((this.data as any)[totalKey] / base) * 100);
+  }
+
+  navigateTo(path: string): void { this.router.navigate([path]); }
 }

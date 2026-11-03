@@ -7,6 +7,13 @@ const getAdminDashboardStats = async (req, res) => {
     const currentYear = new Date().getFullYear();
     const userEmail = req.user.email;
     const totalStudents = await Student.countDocuments();
+
+    const linkedStudentUserIds = await Student.distinct("user");
+    const totalNewRegisteredStudents = await User.countDocuments({
+      role: "student",
+      _id: { $nin: linkedStudentUserIds }
+    });
+
     const totalUsers = await User.countDocuments();
     const totalAdmins = await User.countDocuments({ role: 'admin' });
     const totalTeachers = await User.countDocuments({ role: 'teacher' });
@@ -23,6 +30,7 @@ const getAdminDashboardStats = async (req, res) => {
 
     res.json({
       totalStudents,
+      totalNewRegisteredStudents,
       totalUsers,
       totalAdmins,
       totalTeachers,
@@ -84,7 +92,7 @@ const getStudentDashboardStats = async (req, res) => {
   const { id } = req.user;
   
   try {
-    const student = await Student.findOne({ user: id }).populate('user', 'name email profilePic');
+    const student = await Student.findOne({ user: id }).populate('user', 'name email profilePic status');
     if(!student) return res.status(404).json({ message: "Student not found" });
     res.status(200).json(student);
   } catch (error) {

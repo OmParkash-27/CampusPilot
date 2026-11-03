@@ -1,71 +1,214 @@
-<div *ngIf="loading" class="p-text-center">Loading...</div>
-
-<div *ngIf="!loading" class="dashboard-container">
-
-  <!-- 📊 Stats Cards -->
-  <div class="stats-grid">
-    <app-stats-card
-      [title]="['Total Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalStudents, data.currentYearTotalStudents]"
-      icon="pi pi-users"
-      color="#42A5F5">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['BCA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalBcaStudents, data.currentYearBcaStudents]"
-      icon="pi pi-user"
-      color="#66BB6A">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['BBA Students', `${currentYear + ' Students'}`,]"
-      [value]="[data.totalBbaStudents, data.currentYearBbaStudents]"
-      icon="pi pi-briefcase"
-      color="#AB47BC">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['MCA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalMcaStudents, data.currentYearMcaStudents]"
-      icon="pi pi-graduation-cap"
-      color="#FFA726">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['MBA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalMbaStudents, data.currentYearMbaStudents]"
-      icon="pi pi-shield"
-      color="#FF7043">
-    </app-stats-card>
+<!-- ─── Loading ──────────────────────────────────────────────────── -->
+@if (loading) {
+  <div class="ed-loading">
+    <i class="pi pi-spin pi-spinner ed-loading__icon"></i>
+    <span>Loading dashboard…</span>
   </div>
+}
 
-  <!-- 📈 Charts -->
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h3>Counts (Bar)</h3>
-      <p-chart type="bar" [data]="barData" [options]="chartOptions" style="height:360px"></p-chart>
+<!-- ─── Dashboard ─────────────────────────────────────────────────── -->
+@if (!loading) {
+<div class="ed-page">
+
+  <!-- ══ WELCOME HEADER ══════════════════════════════════════════════ -->
+  <header class="ed-header">
+    <div class="ed-header__left">
+      <div class="ed-header__avatar-wrap">
+        @if (user()?.profilePic) {
+          <p-avatar [image]="user()!.profilePic!" shape="circle" size="large"
+            (onImageError)="user()!.profilePic = null"></p-avatar>
+        } @else {
+          <p-avatar icon="pi pi-user" shape="circle" size="large"></p-avatar>
+        }
+      </div>
+      <div>
+        <p class="ed-header__eyebrow">{{ greeting() }}</p>
+        <h1 class="ed-header__name">{{ user()?.name }}</h1>
+        <p class="ed-header__meta">
+          <span class="ed-role-badge">Editor</span>
+          <span class="ed-sep">·</span>
+          {{ today | date:'MMM d, y' }}
+        </p>
+      </div>
     </div>
 
-    <div class="chart-card">
-      <h3>Distribution (Pie)</h3>
-      <p-chart type="pie" [data]="pieData" [options]="chartOptions" style="height:360px"></p-chart>
+    <div class="ed-header__actions">
+      <button pButton class="ed-btn ed-btn--primary"
+        icon="pi pi-plus" label="New Student"
+        (click)="navigateTo('editor/common/student-add-edit')"
+        pTooltip="Create student record" tooltipPosition="bottom">
+      </button>
+      <button pButton class="ed-btn ed-btn--secondary"
+        icon="pi pi-list" label="All Students"
+        (click)="navigateTo('editor/common/student-list')"
+        pTooltip="Browse all students" tooltipPosition="bottom">
+      </button>
+      <button pButton class="ed-btn ed-btn--secondary"
+        icon="pi pi-inbox" label="Pending"
+        (click)="navigateTo('editor/common/student-new-register-list')"
+        pTooltip="New registrations awaiting details" tooltipPosition="bottom">
+      </button>
     </div>
+  </header>
+
+
+  <!-- ══ METRIC STRIP ════════════════════════════════════════════════ -->
+  <div class="ed-metrics">
+    @for (m of metrics; track m.label) {
+      <div class="ed-metric">
+        <div class="ed-metric__icon" [style.background]="m.color + '1a'" [style.color]="m.color">
+          <i [class]="m.icon"></i>
+        </div>
+        <div class="ed-metric__body">
+          <span class="ed-metric__value">{{ m.value }}</span>
+          <span class="ed-metric__label">{{ m.label }}</span>
+          <span class="ed-metric__sub">{{ m.sub }}</span>
+        </div>
+      </div>
+    }
   </div>
 
-  <!-- 🆕 Recent Lists -->
-  <div class="recent-section">
-    <app-recent-list
-      title="Last Created Students"
-      [data]="data.lastCreated"
-      [columns]="studentCols">
-    </app-recent-list>
 
-    <app-recent-list
-      title="Last Updated Students"
-      [data]="data.lastUpdated"
-      [columns]="userCols">
-    </app-recent-list>
+  <!-- ══ CONTENT GRID ═════════════════════════════════════════════════ -->
+  <div class="ed-grid">
+
+    <!-- ── LEFT PANEL (charts + course breakdown) ─────────── -->
+    <div class="ed-left">
+
+      <!-- Doughnut chart -->
+      <div class="ed-card">
+        <div class="ed-card__head">
+          <div class="ed-card__title-wrap">
+            <i class="pi pi-chart-pie ed-card__icon ed-card__icon--indigo"></i>
+            <div>
+              <h3 class="ed-card__title">Course Distribution</h3>
+              <p class="ed-card__sub">All-time totals across courses</p>
+            </div>
+          </div>
+          <span class="ed-badge ed-badge--indigo">{{ data.totalStudents }} total</span>
+        </div>
+        <div class="ed-chart-wrap">
+          <p-chart type="doughnut" [data]="doughnutData" [options]="doughnutOptions"></p-chart>
+          <div class="ed-doughnut-center">
+            <span class="ed-doughnut-center__val">{{ data.totalStudents }}</span>
+            <span class="ed-doughnut-center__lbl">students</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course stat list -->
+      <div class="ed-card">
+        <div class="ed-card__head">
+          <div class="ed-card__title-wrap">
+            <i class="pi pi-list-check ed-card__icon ed-card__icon--teal"></i>
+            <div>
+              <h3 class="ed-card__title">Course Stats</h3>
+              <p class="ed-card__sub">Total vs {{ currentYear }} enrolments</p>
+            </div>
+          </div>
+        </div>
+        <div class="ed-course-list">
+          @for (row of [
+            { name:'BCA', icon:'pi pi-desktop', color:'#6366f1', total: data.totalBcaStudents, year: data.currentYearBcaStudents },
+            { name:'MCA', icon:'pi pi-microchip', color:'#10b981', total: data.totalMcaStudents, year: data.currentYearMcaStudents },
+            { name:'BBA', icon:'pi pi-briefcase', color:'#f59e0b', total: data.totalBbaStudents, year: data.currentYearBbaStudents },
+            { name:'MBA', icon:'pi pi-chart-line', color:'#ec4899', total: data.totalMbaStudents, year: data.currentYearMbaStudents }
+          ]; track row.name) {
+            <div class="ed-course-row">
+              <div class="ed-course-row__label">
+                <span class="ed-course-dot" [style.background]="row.color"></span>
+                <span class="ed-course-row__name">{{ row.name }}</span>
+              </div>
+              <div class="ed-course-row__nums">
+                <span class="ed-course-row__total">{{ row.total }}</span>
+                <span class="ed-course-row__year-tag" [style.color]="row.color">+{{ row.year }} this yr</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ── RIGHT PANEL (activity feed) ────────────────────── -->
+    <div class="ed-right">
+
+      <!-- Activity timeline -->
+      <div class="ed-card ed-card--full">
+        <div class="ed-card__head">
+          <div class="ed-card__title-wrap">
+            <i class="pi pi-clock ed-card__icon ed-card__icon--pink"></i>
+            <div>
+              <h3 class="ed-card__title">Your Activity</h3>
+              <p class="ed-card__sub">Recently created and edited student records</p>
+            </div>
+          </div>
+          <button pButton class="ed-btn ed-btn--ghost"
+            icon="pi pi-arrow-right" label="View All"
+            (click)="navigateTo('editor/common/student-list')">
+          </button>
+        </div>
+
+        @if (activityFeed.length === 0) {
+          <div class="ed-empty">
+            <div class="ed-empty__icon"><i class="pi pi-inbox"></i></div>
+            <p class="ed-empty__msg">No recent activity. Start by creating a student record.</p>
+            <button pButton class="ed-btn ed-btn--primary" label="Add Student" icon="pi pi-plus"
+              (click)="navigateTo('editor/common/student-add-edit')">
+            </button>
+          </div>
+        }
+
+        @if (activityFeed.length > 0) {
+          <div class="ed-timeline">
+            @for (item of activityFeed; track item.student._id + item.action) {
+              <div class="ed-timeline__item">
+
+                <!-- Connector line -->
+                <div class="ed-timeline__line-col">
+                  <div class="ed-timeline__dot"
+                    [class.ed-timeline__dot--created]="item.action === 'created'"
+                    [class.ed-timeline__dot--updated]="item.action === 'updated'">
+                    <i [class]="item.action === 'created' ? 'pi pi-plus' : 'pi pi-pencil'"></i>
+                  </div>
+                  <div class="ed-timeline__connector"></div>
+                </div>
+
+                <!-- Content -->
+                <div class="ed-timeline__content">
+                  <div class="ed-timeline__row">
+                    @if (item.student.user?.profilePic) {
+                      <p-avatar [image]="item.student.user.profilePic" shape="circle" size="normal"
+                        (onImageError)="item.student.user.profilePic = null"></p-avatar>
+                    } @else {
+                      <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                    }
+                    <div class="ed-timeline__info">
+                      <span class="ed-timeline__name">{{ item.student.user?.name }}</span>
+                      <span class="ed-timeline__detail">
+                        {{ item.action === 'created' ? 'Record created' : 'Record updated' }}
+                        &nbsp;·&nbsp;{{ item.student.courses?.[0]?.course ?? '—' }}
+                        &nbsp;·&nbsp;Roll: {{ item.student.rollNo }}
+                      </span>
+                    </div>
+                    <span class="ed-action-badge"
+                      [class.ed-action-badge--created]="item.action === 'created'"
+                      [class.ed-action-badge--updated]="item.action === 'updated'">
+                      {{ item.action === 'created' ? 'Added' : 'Edited' }}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+    </div>
+
   </div>
 
 </div>
+}

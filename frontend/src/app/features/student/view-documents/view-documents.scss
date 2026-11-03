@@ -1,0 +1,612 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// view-documents.scss — Student Document Library
+// Teal accent palette, distinct from Upload Files (plain gray utility UI).
+// All surface / text tokens via --dash-* CSS custom properties (styles.scss).
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── Component-scoped accent palette ──────────────────────────────────────────
+:host {
+  --vd-accent:          #0d9488;
+  --vd-accent-hover:    #0f766e;
+  --vd-accent-light:    rgba(13, 148, 136, 0.1);
+  --vd-accent-mid:      rgba(13, 148, 136, 0.18);
+  --vd-green:           #22c55e;
+  --vd-green-light:     rgba(34, 197, 94, 0.1);
+  --vd-red:             #ef4444;
+  --vd-red-light:       rgba(239, 68, 68, 0.1);
+  --vd-amber:           #f59e0b;
+  --vd-amber-light:     rgba(245, 158, 11, 0.1);
+  --vd-overlay-bg:      rgba(13, 148, 136, 0.65);
+}
+
+// ── Page wrapper ──────────────────────────────────────────────────────────────
+.vd-page {
+  background: var(--dash-page-bg, #f1f5f9);
+  min-height: 100%;
+  padding: 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: background 0.3s ease;
+}
+
+// ── Page header ───────────────────────────────────────────────────────────────
+.vd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon-wrap {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--vd-accent-light);
+    border: 1px solid var(--vd-accent-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    color: var(--vd-accent);
+  }
+
+  &__title {
+    font-size: clamp(1.2rem, 2.5vw, 1.5rem);
+    font-weight: 800;
+    color: var(--dash-text-primary, #0f172a);
+    margin: 0 0 0.15rem;
+    line-height: 1.2;
+  }
+
+  &__sub {
+    font-size: 0.8rem;
+    color: var(--dash-text-muted, #94a3b8);
+    margin: 0;
+    strong { color: var(--dash-text-secondary, #475569); }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+}
+
+// ── Shared buttons ────────────────────────────────────────────────────────────
+.vd-btn {
+  border-radius: 9px !important;
+  font-weight: 600 !important;
+  font-size: 0.84rem !important;
+  transition: all 0.2s ease !important;
+
+  &--primary {
+    background: var(--vd-accent) !important;
+    border-color: var(--vd-accent) !important;
+    color: #fff !important;
+    &:hover {
+      background: var(--vd-accent-hover) !important;
+      transform: translateY(-1px);
+    }
+    &:focus-visible { outline: 3px solid var(--vd-accent); outline-offset: 2px; }
+  }
+
+  &--outline {
+    background: transparent !important;
+    border: 1px solid var(--dash-card-border, rgba(0,0,0,0.1)) !important;
+    color: var(--vd-accent) !important;
+    &:hover {
+      background: var(--vd-accent-light) !important;
+      border-color: var(--vd-accent) !important;
+    }
+    &:focus-visible { outline: 2px solid var(--vd-accent); outline-offset: 2px; }
+  }
+}
+
+// ── Stats strip ───────────────────────────────────────────────────────────────
+.vd-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.85rem;
+}
+
+.vd-stat {
+  background: var(--dash-card-bg, #fff);
+  border: 2px solid var(--dash-card-border, rgba(0,0,0,0.07));
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--dash-card-shadow, 0 1px 4px rgba(0,0,0,0.05));
+
+  &:hover {
+    border-color: var(--vd-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(13, 148, 136, 0.12);
+  }
+
+  &--active {
+    border-color: var(--vd-accent) !important;
+    background: var(--vd-accent-light) !important;
+    box-shadow: 0 0 0 3px var(--vd-accent-mid) !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--vd-accent);
+    outline-offset: 2px;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: transform 0.2s ease;
+
+    &--teal  { background: var(--vd-accent-light);  color: var(--vd-accent); }
+    &--green { background: var(--vd-green-light);   color: var(--vd-green); }
+    &--red   { background: var(--vd-red-light);     color: var(--vd-red); }
+    &--amber { background: var(--vd-amber-light);   color: var(--vd-amber); }
+  }
+
+  &:hover &__icon { transform: scale(1.1); }
+
+  &__value {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--dash-text-primary, #0f172a);
+    line-height: 1;
+    margin: 0 0 0.1rem;
+  }
+
+  &__label {
+    font-size: 0.72rem;
+    color: var(--dash-text-muted, #94a3b8);
+    font-weight: 500;
+    margin: 0;
+    white-space: nowrap;
+  }
+}
+
+// ── Search + filter toolbar ───────────────────────────────────────────────────
+.vd-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+
+  &__search {
+    flex: 1 1 220px;
+    min-width: 180px;
+
+    // Override PrimeNG iconfield sizing
+    ::ng-deep input.p-inputtext {
+      width: 100%;
+      border-radius: 9px;
+      font-size: 0.85rem;
+    }
+  }
+
+  &__count {
+    font-size: 0.75rem;
+    color: var(--dash-text-muted, #94a3b8);
+    white-space: nowrap;
+    margin: 0;
+    margin-left: auto;
+  }
+}
+
+// ── Filter pills ──────────────────────────────────────────────────────────────
+.vd-filter-pills {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.vd-pill {
+  padding: 0.3rem 0.85rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--dash-card-border, rgba(0,0,0,0.08));
+  background: var(--dash-card-bg, #fff);
+  color: var(--dash-text-secondary, #475569);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--vd-accent);
+    color: var(--vd-accent);
+    background: var(--vd-accent-light);
+  }
+
+  &--active {
+    background: var(--vd-accent) !important;
+    border-color: var(--vd-accent) !important;
+    color: #fff !important;
+  }
+
+  &:focus-visible { outline: 2px solid var(--vd-accent); outline-offset: 2px; }
+}
+
+// ── Document grid ─────────────────────────────────────────────────────────────
+.vd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+// ── Document card ─────────────────────────────────────────────────────────────
+.vd-card {
+  background: var(--dash-card-bg, #fff);
+  border: 1px solid var(--dash-card-border, rgba(0,0,0,0.07));
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--dash-card-shadow, 0 1px 4px rgba(0,0,0,0.06));
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.22s ease;
+
+  &:hover {
+    box-shadow: 0 6px 24px rgba(13, 148, 136, 0.14);
+    transform: translateY(-3px);
+    border-color: var(--vd-accent);
+  }
+
+  // ── Thumbnail area ─────────────────────────────────────────────────────────
+  &__thumb {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--dash-table-header-bg, #f8fafc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:focus-visible { outline: 3px solid var(--vd-accent); outline-offset: -3px; }
+  }
+
+  &__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover &__img { transform: scale(1.04); }
+
+  // File type placeholder (PDF / other)
+  &__file-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    width: 100%;
+    height: 100%;
+
+    i { font-size: 2.5rem; }
+
+    span {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    &--pdf   { color: var(--vd-red);   background: var(--vd-red-light); }
+    &--other { color: var(--vd-amber); background: var(--vd-amber-light); }
+  }
+
+  // Hover overlay
+  &__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--vd-overlay-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    opacity: 0;
+    transition: opacity 0.22s ease;
+    pointer-events: none;
+  }
+
+  &:hover &__overlay,
+  &__thumb:focus-visible &__overlay { opacity: 1; }
+
+  &__overlay-icon {
+    font-size: 1.5rem;
+    color: #fff;
+  }
+
+  &__overlay-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  // Sequential number badge
+  &__num {
+    position: absolute;
+    top: 6px;
+    left: 8px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.92);
+    background: rgba(0,0,0,0.38);
+    border-radius: 6px;
+    padding: 0.1rem 0.4rem;
+    line-height: 1.5;
+    pointer-events: none;
+    backdrop-filter: blur(4px);
+  }
+
+  // ── Card body ──────────────────────────────────────────────────────────────
+  &__body {
+    padding: 0.85rem 1rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+  }
+
+  &__meta { display: flex; align-items: center; gap: 0.4rem; }
+
+  &__name {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: var(--dash-text-primary, #0f172a);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ── Card action buttons ────────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    gap: 0.45rem;
+    margin-top: auto;
+    padding-top: 0.35rem;
+  }
+
+  &__btn {
+    flex: 1;
+    border-radius: 7px !important;
+    font-size: 0.75rem !important;
+    font-weight: 600 !important;
+    padding: 0.38rem 0.5rem !important;
+    transition: all 0.18s ease !important;
+
+    &--view {
+      background: var(--vd-accent-light) !important;
+      border: 1px solid var(--vd-accent-mid) !important;
+      color: var(--vd-accent) !important;
+
+      &:hover {
+        background: var(--vd-accent) !important;
+        color: #fff !important;
+      }
+    }
+
+    &--download {
+      background: transparent !important;
+      border: 1px solid var(--dash-card-border, rgba(0,0,0,0.08)) !important;
+      color: var(--dash-text-secondary, #475569) !important;
+
+      &:hover {
+        background: var(--dash-table-row-hover, #f1f5f9) !important;
+        border-color: var(--dash-text-secondary, #475569) !important;
+      }
+    }
+  }
+}
+
+// ── Skeleton cards ────────────────────────────────────────────────────────────
+.vd-skeleton-card {
+  background: var(--dash-card-bg, #fff);
+  border: 1px solid var(--dash-card-border, rgba(0,0,0,0.07));
+  border-radius: 14px;
+  overflow: hidden;
+
+  &__body {
+    padding: 0.75rem 0.9rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+}
+
+// ── Empty / error states ──────────────────────────────────────────────────────
+.vd-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 4rem 1.5rem;
+  text-align: center;
+
+  &--error {}
+  &--search { padding: 2.5rem 1.5rem; }
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--vd-accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+
+    i { font-size: 1.85rem; color: var(--vd-accent); }
+
+    &--red {
+      background: var(--vd-red-light);
+      i { color: var(--vd-red); }
+    }
+  }
+
+  &__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--dash-text-primary, #0f172a);
+    margin: 0;
+  }
+
+  &__sub {
+    font-size: 0.83rem;
+    color: var(--dash-text-muted, #94a3b8);
+    margin: 0;
+    max-width: 340px;
+    line-height: 1.6;
+    strong { color: var(--dash-text-secondary, #475569); }
+  }
+}
+
+// ── Preview dialog internals ──────────────────────────────────────────────────
+.vd-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  &__img-wrap {
+    width: 100%;
+    max-height: 60vh;
+    overflow: hidden;
+    border-radius: 10px;
+    background: var(--dash-table-header-bg, #f8fafc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__img {
+    max-width: 100%;
+    max-height: 60vh;
+    object-fit: contain;
+    display: block;
+    border-radius: 10px;
+  }
+
+  &__no-preview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 3rem 1rem;
+    background: var(--dash-table-header-bg, #f8fafc);
+    border-radius: 10px;
+
+    i { font-size: 3rem; color: var(--dash-text-muted, #94a3b8); }
+
+    p {
+      font-size: 0.88rem;
+      color: var(--dash-text-secondary, #475569);
+      margin: 0;
+      text-align: center;
+    }
+  }
+
+  &__hint {
+    font-size: 0.75rem !important;
+    color: var(--dash-text-muted, #94a3b8) !important;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 0.25rem;
+    border-top: 1px solid var(--dash-divider, rgba(0,0,0,0.06));
+  }
+
+  &__btns {
+    display: flex;
+    gap: 0.6rem;
+    margin-left: auto;
+  }
+}
+
+// ── PrimeNG p-dialog tweaks (globally scoped because dialogs mount on body) ───
+::ng-deep .vd-preview-dialog {
+  .p-dialog-header {
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .p-dialog-content {
+    padding-top: 0.5rem;
+    overflow: hidden;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .vd-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .vd-page { padding: 0.85rem; gap: 1rem; }
+
+  .vd-header {
+    flex-direction: column;
+    align-items: flex-start;
+    &__actions { width: 100%; }
+  }
+
+  .vd-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+
+  .vd-stat__value { font-size: 1.2rem; }
+
+  .vd-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    &__search { flex: none; }
+    &__count { margin-left: 0; }
+  }
+
+  .vd-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .vd-stats { grid-template-columns: 1fr 1fr; }
+  .vd-grid  { grid-template-columns: repeat(2, 1fr); }
+}
