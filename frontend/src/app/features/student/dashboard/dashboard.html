@@ -1,79 +1,439 @@
-<div class="grid nested-grid grid-nogutter justify-content-start bg-gray-100 p-3 h-full min-h-full overflow-auto gap-3">
-    <!-- Document section -->
-    <div class="col-12 sm:col-12 md:col-12 lg:col-6 xl:col-6 h-full">
-        <p-card class="border-round-lg relative min-h-full">
-            <h2 class="text-lg text-400 mb-6">Documents</h2>
-            <div class="galleria-container">
-                <p-galleria [value]="images()" [showIndicators]="true" [showThumbnails]="true"
-                    [showIndicatorsOnItem]="true" indicatorsPosition="left"
-                    [responsiveOptions]="responsiveOptions">
-                    <ng-template pTemplate="item" let-item>
-                        <img [src]="item" />
-                    </ng-template>
-                    <ng-template pTemplate="indicator" let-index>
-                        <span style="color: #ffffff; cursor: pointer">
-                            {{index + 1}}
-                        </span>
-                    </ng-template>
-                    <ng-template pTemplate="thumbnail" let-item>
-                        <div class="grid gap-4 justify-center">
-                            <img [src]="item" />
-                        </div>
-                    </ng-template>
-                </p-galleria>
-                @if(!images().length) {
-                    <div class="empty-img">
-                        <img src="images/empty.jpg" alt="no img" >
-                    </div>
-                }
-            </div>
-        </p-card>
+<div class="sd-page">
+
+  <!-- ════════════════════════════════════════════════════════════
+       HERO BANNER
+  ════════════════════════════════════════════════════════════ -->
+  <header class="sd-hero">
+    <!-- Decorative shapes -->
+    <div class="sd-hero__shape sd-hero__shape--1" aria-hidden="true"></div>
+    <div class="sd-hero__shape sd-hero__shape--2" aria-hidden="true"></div>
+
+    <div class="sd-hero__left">
+      <!-- Avatar -->
+      <div class="sd-hero__avatar">
+        @if (student()?.user?.profilePic) {
+          <p-avatar
+            [image]="student()!.user.profilePic!"
+            shape="circle"
+            size="xlarge"
+            (onImageError)="student()!.user.profilePic = null">
+          </p-avatar>
+        } @else {
+          <p-avatar icon="pi pi-user" shape="circle" size="xlarge"></p-avatar>
+        }
+        <!-- Online indicator -->
+        <span class="sd-hero__online" title="Active session"></span>
+      </div>
+
+      <!-- Greeting text -->
+      <div class="sd-hero__text">
+        <p class="sd-hero__eyebrow">
+          <i class="pi pi-star-fill" aria-hidden="true"></i>
+          {{ greeting() }}
+        </p>
+        <h1 class="sd-hero__name">{{ student()?.user?.name ?? 'Student' }}</h1>
+        <p class="sd-hero__meta">
+          <span class="sd-hero__role-badge">Student</span>
+          <span class="sd-hero__sep">·</span>
+          {{ today | date:'EEEE, MMMM d, y' }}
+        </p>
+        @if (student()?.rollNo) {
+          <p class="sd-hero__id">
+            <i class="pi pi-id-card" aria-hidden="true"></i>
+            Roll: <strong>{{ student()?.rollNo }}</strong>
+            @if (student()?.enrollmentNo) {
+              &nbsp;·&nbsp; Enrolment: <strong>{{ student()?.enrollmentNo }}</strong>
+            }
+          </p>
+        }
+      </div>
     </div>
-    <!-- Profile section -->
-    <div class="col-12 sm:col-12 md:col-12 lg:col-5 xl:col-5 flex-grow-1 h-full">
-        <p-card class="shadow-md border-round-lg min-h-full max-h-full overflow-auto">
-            <h2 class="text-lg text-400">Profile</h2>
-            <div class="flex flex-column align-items-center gap-5 mt-6">
-                <div class="flex flex-column align-items-center gap-3 user-profile">
-                    @if(!!user() && user()?.user?.profilePic !== null) {
-                    <p-avatar class="w-10rem h-10rem" [image]="user()?.user?.profilePic ?? undefined" shape="circle"
-                        (onImageError)="user()!.user.profilePic=null"></p-avatar>
-                    } @else {
-                    <p-avatar class="w-10rem h-10rem" [icon]="'pi pi-user'" shape="circle"></p-avatar>
-                    }
-                    <span class="text-3xl surface-0 -mt-6 w-8rem text-center">{{
-                        user()?.user?.name
-                        }}</span>
-                    <p>{{ user()?.user?.email }}</p>
-                   
-                </div>
-                <div class="details-section flex align-items-start flex-row gap-5">
-                    <div class="academic-section flex justify-content-center align-items-center flex-column gap-2 w-4">
-                        <h2 class="text-lg text-400">Academic</h2>
-                        <span class="text-center"> <b>Roll Number</b> {{user()?.rollNo}}</span>
-                        <span class="text-center"> <b>Enrollment Number</b> {{user()?.enrollmentNo}}</span>
-                        <span class="text-center"><b>Course </b> {{user()?.courses?.[0]?.course}}</span>
-                        <span class="text-center"> <b>Batch Year</b> {{user()?.courses?.[0]?.batchYear}}</span>
-                        <span class="text-center"> <b>Status</b> {{user()?.courses?.[0]?.status}}</span>
-                    </div>
-                    <div class="personal-section flex justify-content-center align-items-center flex-column gap-2 w-4">
-                        <h2 class="text-lg text-400">Personal</h2>
-                         <span class="text-center"><b>Date of Birth</b> {{user()?.dob | date}}</span>
-                        <span class="text-center"><b>Gender</b> {{user()?.gender}}</span>
-                        <span class="text-center"><b>Phone</b> {{user()?.phone}}</span>
-                        <span class="text-center"> <b>Gaurdian</b> {{user()?.guardianName}}</span>
-                        <span class="text-center"> <b>Gaurdian Phone</b> {{user()?.guardianContact}}</span>
-                    </div>
-                    <div class="personal-section flex justify-content-center align-items-center flex-column gap-2 w-4">
-                        <h2 class="text-lg text-400">Address</h2>
-                        
-                        <span class="text-center"> <b>Street</b> {{user()?.address?.street}}</span>
-                        <span class="text-center"> <b>City</b> {{user()?.address?.city}}</span>
-                        <span class="text-center"> <b>State</b> {{user()?.address?.state}}</span>
-                        <span class="text-center"> <b>Zip Code</b> {{user()?.address?.zip}}</span>
-                    </div>
-                </div>
-            </div>
-        </p-card>
+
+    <!-- Hero right: quick-action buttons -->
+    <div class="sd-hero__actions">
+      <button pButton class="sd-btn sd-btn--primary"
+        icon="pi pi-upload" label="Upload Documents"
+        (click)="navigateTo('student/upload-files')"
+        pTooltip="Upload your academic documents" tooltipPosition="bottom">
+      </button>
+      <button pButton class="sd-btn sd-btn--outline"
+        icon="pi pi-images" label="My Documents"
+        (click)="navigateTo('/student/view-documents')"
+        pTooltip="View your documents" tooltipPosition="bottom">
+      </button>
     </div>
+  </header>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       INFO STRIP — 4 key metrics
+  ════════════════════════════════════════════════════════════ -->
+  <div class="sd-strip">
+
+    <div class="sd-strip__item">
+      <div class="sd-strip__icon sd-strip__icon--teal">
+        <i class="pi pi-graduation-cap"></i>
+      </div>
+      <div>
+        <p class="sd-strip__value">{{ student()?.courses?.length ?? 0 }}</p>
+        <p class="sd-strip__label">Enrolled Course{{ (student()?.courses?.length ?? 0) !== 1 ? 's' : '' }}</p>
+      </div>
+    </div>
+
+    <div class="sd-strip__item">
+      <div class="sd-strip__icon sd-strip__icon--blue">
+        <i class="pi pi-images"></i>
+      </div>
+      <div>
+        <p class="sd-strip__value">{{ photos().length }}</p>
+        <p class="sd-strip__label">Document{{ photos().length !== 1 ? 's' : '' }} Uploaded</p>
+      </div>
+    </div>
+
+    <div class="sd-strip__item">
+      <div class="sd-strip__icon" [class]="student()?.user?.status ? 'sd-strip__icon--green' : 'sd-strip__icon--amber'">
+        <i [class]="student()?.user?.status ? 'pi pi-check-circle' : 'pi pi-exclamation-circle'"></i>
+      </div>
+      <div>
+        <p class="sd-strip__value">{{ student()?.user?.status ? 'Active' : 'Inactive' }}</p>
+        <p class="sd-strip__label">Account Status</p>
+      </div>
+    </div>
+
+    <div class="sd-strip__item sd-strip__item--progress" [pTooltip]="profileCompletion() + '% of profile fields completed'" tooltipPosition="top">
+      <div class="sd-strip__progress-ring">
+        <svg viewBox="0 0 36 36" class="sd-ring-svg" aria-hidden="true">
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--sd-ring-track)" stroke-width="2.8"></circle>
+          <circle cx="18" cy="18" r="15.9" fill="none"
+            stroke="var(--sd-accent)"
+            stroke-width="2.8"
+            [attr.stroke-dasharray]="profileCompletion() + ', 100'"
+            stroke-linecap="round"
+            transform="rotate(-90 18 18)">
+          </circle>
+          <text x="18" y="20.5" text-anchor="middle" class="sd-ring-text">{{ profileCompletion() }}%</text>
+        </svg>
+      </div>
+      <div>
+        <p class="sd-strip__value">Profile</p>
+        <p class="sd-strip__label">Completion</p>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       MAIN TWO-COLUMN GRID
+  ════════════════════════════════════════════════════════════ -->
+  <div class="sd-grid">
+
+    <!-- ── LEFT COLUMN ──────────────────────────────────────── -->
+    <div class="sd-left">
+
+      <!-- My Courses -->
+      <div class="sd-card">
+        <div class="sd-card__head">
+          <div class="sd-card__title-wrap">
+            <div class="sd-card__icon-wrap sd-card__icon-wrap--teal">
+              <i class="pi pi-graduation-cap"></i>
+            </div>
+            <div>
+              <h2 class="sd-card__title">My Courses</h2>
+              <p class="sd-card__sub">Enrolled academic programmes</p>
+            </div>
+          </div>
+        </div>
+
+        @if (!student()?.courses?.length) {
+          <div class="sd-empty">
+            <i class="pi pi-book sd-empty__icon"></i>
+            <p>No courses found. Contact your administrator.</p>
+          </div>
+        }
+
+        <div class="sd-courses">
+          @for (c of student()?.courses; track c.course) {
+            <div class="sd-course-card">
+              <div class="sd-course-card__icon-area">
+                <i class="pi pi-book"></i>
+              </div>
+              <div class="sd-course-card__body">
+                <div class="sd-course-card__top">
+                  <span class="sd-course-card__name">{{ c.course }}</span>
+                  <p-tag
+                    [value]="c.status | titlecase"
+                    [severity]="getStatusSeverity(c.status)"
+                  ></p-tag>
+                </div>
+                <div class="sd-course-card__bottom">
+                  <span class="sd-course-card__meta">
+                    <i class="pi pi-calendar" aria-hidden="true"></i>
+                    Batch {{ c.batchYear }}
+                  </span>
+                  @if (student()?.rollNo) {
+                    <span class="sd-course-card__meta">
+                      <i class="pi pi-id-card" aria-hidden="true"></i>
+                      Roll: {{ student()?.rollNo }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+
+      <!-- Personal & Address Details -->
+      <div class="sd-card">
+        <div class="sd-card__head">
+          <div class="sd-card__title-wrap">
+            <div class="sd-card__icon-wrap sd-card__icon-wrap--blue">
+              <i class="pi pi-user"></i>
+            </div>
+            <div>
+              <h2 class="sd-card__title">Personal Details</h2>
+              <p class="sd-card__sub">Your profile information</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sd-details-grid">
+
+          <div class="sd-detail-group">
+            <h3 class="sd-detail-group__heading">
+              <i class="pi pi-user-edit" aria-hidden="true"></i>
+              Identity
+            </h3>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Date of Birth</span>
+              <span class="sd-detail-row__val">{{ student()?.dob ? (student()!.dob | date:'mediumDate') : '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Gender</span>
+              <span class="sd-detail-row__val">{{ student()?.gender ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Phone</span>
+              <span class="sd-detail-row__val">{{ student()?.phone ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Email</span>
+              <span class="sd-detail-row__val sd-detail-row__val--break">{{ student()?.user?.email ?? '—' }}</span>
+            </div>
+          </div>
+
+          <div class="sd-detail-group">
+            <h3 class="sd-detail-group__heading">
+              <i class="pi pi-heart" aria-hidden="true"></i>
+              Guardian
+            </h3>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Name</span>
+              <span class="sd-detail-row__val">{{ student()?.guardianName ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Contact</span>
+              <span class="sd-detail-row__val">{{ student()?.guardianContact ?? '—' }}</span>
+            </div>
+          </div>
+
+          <div class="sd-detail-group">
+            <h3 class="sd-detail-group__heading">
+              <i class="pi pi-map-marker" aria-hidden="true"></i>
+              Address
+            </h3>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">Street</span>
+              <span class="sd-detail-row__val">{{ student()?.address?.street ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">City</span>
+              <span class="sd-detail-row__val">{{ student()?.address?.city ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">State</span>
+              <span class="sd-detail-row__val">{{ student()?.address?.state ?? '—' }}</span>
+            </div>
+            <div class="sd-detail-row">
+              <span class="sd-detail-row__key">ZIP</span>
+              <span class="sd-detail-row__val">{{ student()?.address?.zip ?? '—' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+
+      <!-- Quick Actions -->
+      <div class="sd-card">
+        <div class="sd-card__head">
+          <div class="sd-card__title-wrap">
+            <div class="sd-card__icon-wrap sd-card__icon-wrap--amber">
+              <i class="pi pi-bolt"></i>
+            </div>
+            <h2 class="sd-card__title">Quick Actions</h2>
+          </div>
+        </div>
+
+        <div class="sd-qa-grid">
+
+          <button class="sd-qa-btn" (click)="navigateTo('student/upload-files')" aria-label="Upload documents">
+            <div class="sd-qa-btn__icon sd-qa-btn__icon--teal">
+              <i class="pi pi-upload"></i>
+            </div>
+            <span class="sd-qa-btn__label">Upload Files</span>
+          </button>
+
+          <button class="sd-qa-btn" (click)="navigateTo('student/view-documents')" aria-label="View documents">
+            <div class="sd-qa-btn__icon sd-qa-btn__icon--blue">
+              <i class="pi pi-images"></i>
+            </div>
+            <span class="sd-qa-btn__label">My Documents</span>
+          </button>
+
+          <button class="sd-qa-btn" (click)="navigateTo('student/dashboard')" aria-label="View profile">
+            <div class="sd-qa-btn__icon sd-qa-btn__icon--purple">
+              <i class="pi pi-user"></i>
+            </div>
+            <span class="sd-qa-btn__label">My Profile</span>
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- ── RIGHT COLUMN ─────────────────────────────────────── -->
+    <div class="sd-right">
+
+      <!-- My Documents -->
+      <div class="sd-card sd-card--docs">
+        <div class="sd-card__head">
+          <div class="sd-card__title-wrap">
+            <div class="sd-card__icon-wrap sd-card__icon-wrap--blue">
+              <i class="pi pi-images"></i>
+            </div>
+            <div>
+              <h2 class="sd-card__title">My Documents</h2>
+              <p class="sd-card__sub">
+                {{ photos().length }} file{{ photos().length !== 1 ? 's' : '' }} uploaded
+              </p>
+            </div>
+          </div>
+          <button pButton class="sd-btn sd-btn--ghost"
+            icon="pi pi-plus" label="Upload More"
+            (click)="navigateTo('student/upload-files')">
+          </button>
+        </div>
+
+        @if (photos().length === 0) {
+          <div class="sd-docs-empty">
+            <div class="sd-docs-empty__icon">
+              <i class="pi pi-cloud-upload"></i>
+            </div>
+            <p class="sd-docs-empty__title">No documents yet</p>
+            <p class="sd-docs-empty__sub">Upload your academic documents and certificates here.</p>
+            <button pButton class="sd-btn sd-btn--primary"
+              label="Upload Documents" icon="pi pi-upload"
+              (click)="navigateTo('student/upload-files')">
+            </button>
+          </div>
+        }
+
+        @if (photos().length > 0) {
+          <div class="sd-docs-grid">
+            @for (photo of photos(); track photo; let i = $index) {
+              <button class="sd-doc-thumb" (click)="openPhoto(i)"
+                [attr.aria-label]="'View document ' + (i + 1)"
+                pTooltip="Click to view full size" tooltipPosition="top">
+                <img [src]="photo" [alt]="'Document ' + (i + 1)" class="sd-doc-thumb__img" />
+                <div class="sd-doc-thumb__overlay">
+                  <i class="pi pi-eye"></i>
+                </div>
+                <span class="sd-doc-thumb__num">{{ i + 1 }}</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Academic Info tile -->
+      <div class="sd-card">
+        <div class="sd-card__head">
+          <div class="sd-card__title-wrap">
+            <div class="sd-card__icon-wrap sd-card__icon-wrap--purple">
+              <i class="pi pi-id-card"></i>
+            </div>
+            <div>
+              <h2 class="sd-card__title">Academic Identity</h2>
+              <p class="sd-card__sub">Your registration details</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="sd-academic-rows">
+          <div class="sd-acad-row">
+            <span class="sd-acad-row__key">
+              <i class="pi pi-hashtag" aria-hidden="true"></i>
+              Roll Number
+            </span>
+            <span class="sd-acad-row__val sd-acad-row__val--mono">{{ student()?.rollNo ?? '—' }}</span>
+          </div>
+          <div class="sd-acad-row">
+            <span class="sd-acad-row__key">
+              <i class="pi pi-list-check" aria-hidden="true"></i>
+              Enrolment No.
+            </span>
+            <span class="sd-acad-row__val sd-acad-row__val--mono">{{ student()?.enrollmentNo ?? '—' }}</span>
+          </div>
+          <div class="sd-acad-row">
+            <span class="sd-acad-row__key">
+              <i class="pi pi-envelope" aria-hidden="true"></i>
+              Email
+            </span>
+            <span class="sd-acad-row__val sd-acad-row__val--break">{{ student()?.user?.email ?? '—' }}</span>
+          </div>
+          <div class="sd-acad-row">
+            <span class="sd-acad-row__key">
+              <i class="pi pi-verified" aria-hidden="true"></i>
+              Account Status
+            </span>
+            <p-tag
+              [value]="student()?.user?.status ? 'Active' : 'Inactive'"
+              [severity]="student()?.user?.status ? 'success' : 'warn'">
+            </p-tag>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       FULL-SCREEN GALLERIA LIGHTBOX
+  ════════════════════════════════════════════════════════════ -->
+  <p-galleria
+    [value]="photos()"
+    [(visible)]="galleriaVisible"
+    [(activeIndex)]="activePhotoIndex"
+    [responsiveOptions]="responsiveOptions"
+    [numVisible]="5"
+    [circular]="true"
+    [fullScreen]="true"
+    [showItemNavigators]="true"
+    [showThumbnails]="true"
+  >
+    <ng-template #item let-item>
+      <img [src]="item" style="width:100%; max-height:80vh; object-fit:contain; display:block;" [alt]="'Document'" />
+    </ng-template>
+    <ng-template #thumbnail let-item>
+      <img [src]="item" style="height:60px; object-fit:cover; width:auto; max-width:80px; display:block;" [alt]="'Thumb'" />
+    </ng-template>
+  </p-galleria>
+
 </div>

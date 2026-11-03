@@ -1,71 +1,243 @@
-<div *ngIf="loading" class="p-text-center">Loading...</div>
-
-<div *ngIf="!loading" class="dashboard-container">
-
-  <!-- 📊 Stats Cards -->
-  <div class="stats-grid">
-    <app-stats-card
-      [title]="['Total Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalStudents, data.currentYearTotalStudents]"
-      icon="pi pi-users"
-      color="#42A5F5">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['BCA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalBcaStudents, data.currentYearBcaStudents]"
-      icon="pi pi-user"
-      color="#66BB6A">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['BBA Students', `${currentYear + ' Students'}`,]"
-      [value]="[data.totalBbaStudents, data.currentYearBbaStudents]"
-      icon="pi pi-briefcase"
-      color="#AB47BC">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['MCA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalMcaStudents, data.currentYearMcaStudents]"
-      icon="pi pi-graduation-cap"
-      color="#FFA726">
-    </app-stats-card>
-
-    <app-stats-card
-      [title]="['MBA Students', `${currentYear + ' Students'}`]"
-      [value]="[data.totalMbaStudents, data.currentYearMbaStudents]"
-      icon="pi pi-shield"
-      color="#FF7043">
-    </app-stats-card>
+<!-- ─── Loading ──────────────────────────────────────────────────── -->
+@if (loading) {
+  <div class="td-loading">
+    <i class="pi pi-spin pi-spinner td-loading__icon"></i>
+    <span>Loading dashboard…</span>
   </div>
+}
 
-  <!-- 📈 Charts -->
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h3>Counts (Bar)</h3>
-      <p-chart type="bar" [data]="barData" [options]="chartOptions" style="height:360px"></p-chart>
+<!-- ─── Dashboard ─────────────────────────────────────────────────── -->
+@if (!loading) {
+<div class="td-page">
+
+  <!-- ══ WELCOME BANNER ══════════════════════════════════════════════ -->
+  <header class="td-banner">
+    <div class="td-banner__left">
+      <p class="td-banner__eyebrow">
+        <i class="pi pi-book" aria-hidden="true"></i>
+        {{ greeting() }},&nbsp;<strong>{{ user()?.name }}</strong>
+      </p>
+      <h1 class="td-banner__title">Teacher Workspace</h1>
+      <p class="td-banner__meta">
+        <i class="pi pi-calendar" aria-hidden="true"></i>
+        {{ today | date:'EEEE, MMMM d, y' }}
+        &nbsp;·&nbsp;Academic year {{ currentYear }}
+      </p>
     </div>
 
-    <div class="chart-card">
-      <h3>Distribution (Pie)</h3>
-      <p-chart type="pie" [data]="pieData" [options]="chartOptions" style="height:360px"></p-chart>
+    <div class="td-banner__actions">
+      <button pButton class="td-btn td-btn--solid"
+        icon="pi pi-graduation-cap" label="Add Student"
+        (click)="navigateTo('teacher/common/student-add-edit')"
+        pTooltip="Create a new student record" tooltipPosition="bottom">
+      </button>
+      <button pButton class="td-btn td-btn--outline"
+        icon="pi pi-list" label="All Students"
+        (click)="navigateTo('teacher/common/student-list')"
+        pTooltip="Browse the full student list" tooltipPosition="bottom">
+      </button>
     </div>
-  </div>
+  </header>
 
-  <!-- 🆕 Recent Lists -->
-  <div class="recent-section">
-    <app-recent-list
-      title="Last Created Students"
-      [data]="data.lastCreated"
-      [columns]="studentCols">
-    </app-recent-list>
 
-    <app-recent-list
-      title="Last Updated Students"
-      [data]="data.lastUpdated"
-      [columns]="userCols">
-    </app-recent-list>
+  <!-- ══ MAIN GRID ═══════════════════════════════════════════════════ -->
+  <div class="td-grid">
+
+    <!-- ── LEFT COLUMN ─────────────────────────────────────── -->
+    <aside class="td-aside">
+
+      <!-- Summary tile -->
+      <div class="td-tile td-tile--hero">
+        <div class="td-tile__icon-wrap">
+          <i class="pi pi-users"></i>
+        </div>
+        <div>
+          <p class="td-tile__label">Total Students</p>
+          <p class="td-tile__value">{{ data.totalStudents }}</p>
+        </div>
+        <div class="td-tile__divider"></div>
+        <div>
+          <p class="td-tile__label">{{ currentYear }} Enrolments</p>
+          <p class="td-tile__value td-tile__value--sm">{{ data.currentYearTotalStudents }}</p>
+        </div>
+      </div>
+
+      <!-- Course breakdown -->
+      <div class="td-card td-course-panel">
+        <div class="td-card__head">
+          <div class="td-card__title-wrap">
+            <i class="pi pi-chart-scatter td-card__icon" style="color:#3b82f6"></i>
+            <div>
+              <h3 class="td-card__title">Courses</h3>
+              <p class="td-card__sub">All-time totals</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="td-courses">
+          @for (c of courses; track c.name) {
+            <div class="td-course-row">
+              <div class="td-course-row__left">
+                <span class="td-course-dot" [style.background]="c.color"></span>
+                <span class="td-course-row__name">{{ c.name }}</span>
+              </div>
+              <div class="td-course-row__right">
+                <span class="td-course-row__total">{{ (data)[c.totalKey] }}</span>
+                <span class="td-course-row__year">{{ currentYear }}: <strong>{{ (data)[c.yearKey] }}</strong></span>
+              </div>
+              <div class="td-course-bar-bg">
+                <div class="td-course-bar-fill"
+                  [style.width.%]="getCoursePct(c.totalKey, data.totalStudents)"
+                  [style.background]="c.color">
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="td-card td-quick-panel">
+        <div class="td-card__head">
+          <div class="td-card__title-wrap">
+            <i class="pi pi-bolt td-card__icon" style="color:#f59e0b"></i>
+            <h3 class="td-card__title">Quick Actions</h3>
+          </div>
+        </div>
+        <div class="td-qa-list">
+          <button class="td-qa-btn" (click)="navigateTo('teacher/common/student-add-edit')" aria-label="Add student">
+            <span class="td-qa-btn__icon td-qa-btn__icon--blue"><i class="pi pi-plus"></i></span>
+            <span>Add Student</span>
+          </button>
+          <button class="td-qa-btn" (click)="navigateTo('teacher/common/student-list')" aria-label="Student list">
+            <span class="td-qa-btn__icon td-qa-btn__icon--green"><i class="pi pi-list"></i></span>
+            <span>Student List</span>
+          </button>
+          <button class="td-qa-btn" (click)="navigateTo('teacher/common/student-new-register-list')" aria-label="Pending registrations">
+            <span class="td-qa-btn__icon td-qa-btn__icon--amber"><i class="pi pi-inbox"></i></span>
+            <span>Pending Registrations</span>
+          </button>
+        </div>
+      </div>
+
+    </aside>
+
+
+    <!-- ── RIGHT COLUMN ────────────────────────────────────── -->
+    <main class="td-main">
+
+      <!-- Bar chart -->
+      <div class="td-card">
+        <div class="td-card__head">
+          <div class="td-card__title-wrap">
+            <i class="pi pi-chart-bar td-card__icon" style="color:#3b82f6"></i>
+            <div>
+              <h3 class="td-card__title">Student Distribution</h3>
+              <p class="td-card__sub">Total vs {{ currentYear }} enrolments per course</p>
+            </div>
+          </div>
+        </div>
+        <div class="td-chart-wrap">
+          <p-chart type="bar" [data]="barData" [options]="barOptions"></p-chart>
+        </div>
+      </div>
+
+      <!-- Recent: students you created -->
+      <div class="td-card">
+        <div class="td-card__head">
+          <div class="td-card__title-wrap">
+            <i class="pi pi-user-plus td-card__icon" style="color:#10b981"></i>
+            <div>
+              <h3 class="td-card__title">Students You Added</h3>
+              <p class="td-card__sub">Latest records created by you</p>
+            </div>
+          </div>
+          <button pButton class="td-btn td-btn--ghost"
+            icon="pi pi-arrow-right" label="All Students"
+            (click)="navigateTo('teacher/common/student-list')">
+          </button>
+        </div>
+
+        <div class="td-student-table">
+          <div class="td-student-table__head">
+            <span>Student</span>
+            <span>Course</span>
+            <span>Roll No</span>
+          </div>
+          @for (s of data.lastCreated; track s._id) {
+            <div class="td-student-table__row">
+              <div class="td-student-user">
+                @if (s.user?.profilePic) {
+                  <p-avatar [image]="s.user.profilePic" shape="circle" size="normal"
+                    (onImageError)="s.user.profilePic = null"></p-avatar>
+                } @else {
+                  <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                }
+                <div class="td-student-user__info">
+                  <span class="td-student-user__name">{{ s.user?.name }}</span>
+                  <span class="td-student-user__email">{{ s.user?.email }}</span>
+                </div>
+              </div>
+              <span class="td-course-tag">{{ s.courses?.[0]?.course ?? '—' }}</span>
+              <span class="td-roll">{{ s.rollNo }}</span>
+            </div>
+          }
+          @empty {
+            <div class="td-empty">
+              <i class="pi pi-inbox"></i>
+              <span>No records yet. Add your first student.</span>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Recent: students you updated -->
+      <div class="td-card">
+        <div class="td-card__head">
+          <div class="td-card__title-wrap">
+            <i class="pi pi-history td-card__icon" style="color:#a78bfa"></i>
+            <div>
+              <h3 class="td-card__title">Recently Updated</h3>
+              <p class="td-card__sub">Latest student records you edited</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="td-student-table">
+          <div class="td-student-table__head">
+            <span>Student</span>
+            <span>Course</span>
+            <span>Roll No</span>
+          </div>
+          @for (s of data.lastUpdated; track s._id) {
+            <div class="td-student-table__row">
+              <div class="td-student-user">
+                @if (s.user?.profilePic) {
+                  <p-avatar [image]="s.user.profilePic" shape="circle" size="normal"
+                    (onImageError)="s.user.profilePic = null"></p-avatar>
+                } @else {
+                  <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+                }
+                <div class="td-student-user__info">
+                  <span class="td-student-user__name">{{ s.user?.name }}</span>
+                  <span class="td-student-user__email">{{ s.user?.email }}</span>
+                </div>
+              </div>
+              <span class="td-course-tag">{{ s.courses?.[0]?.course ?? '—' }}</span>
+              <span class="td-roll">{{ s.rollNo }}</span>
+            </div>
+          }
+          @empty {
+            <div class="td-empty">
+              <i class="pi pi-inbox"></i>
+              <span>No recent updates by you.</span>
+            </div>
+          }
+        </div>
+      </div>
+
+    </main>
   </div>
 
 </div>
+}

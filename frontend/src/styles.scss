@@ -65,6 +65,51 @@
   --breadcrumb-link-hover-bg: rgba(13, 110, 253, 0.08);
   --breadcrumb-current-color: #1e293b;
   --breadcrumb-separator-color: #94a3b8;
+
+  /* Dashboard tokens — light mode */
+  --dash-page-bg: #f1f5f9;
+  --dash-card-bg: #ffffff;
+  --dash-card-border: rgba(0, 0, 0, 0.07);
+  --dash-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.05);
+  --dash-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.1), 0 12px 32px rgba(13, 110, 253, 0.1);
+  --dash-card-radius: 14px;
+
+  --dash-text-primary: #0f172a;
+  --dash-text-secondary: #475569;
+  --dash-text-muted: #94a3b8;
+
+  --dash-accent: #2563eb;
+  --dash-accent-light: rgba(37, 99, 235, 0.1);
+  --dash-accent-hover: #1d4ed8;
+
+  --dash-stat-students-bg: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --dash-stat-new-registered-bg: linear-gradient(135deg,#a2d 0%,#f59e0b 100%);
+  --dash-stat-teachers-bg: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  --dash-stat-editors-bg: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+  --dash-stat-admins-bg: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+  --dash-stat-total-bg: linear-gradient(135deg, #0891b2 0%, #22d3ee 100%);
+
+  --dash-quick-action-bg: #f8fafc;
+  --dash-quick-action-border: rgba(0, 0, 0, 0.07);
+  --dash-quick-action-hover-bg: #eff6ff;
+  --dash-quick-action-hover-border: #2563eb;
+
+  --dash-table-header-bg: #f8fafc;
+  --dash-table-row-hover: #f1f5f9;
+  --dash-table-border: rgba(0, 0, 0, 0.06);
+  --dash-table-text: #0f172a;
+
+  --dash-divider: rgba(0, 0, 0, 0.06);
+  --dash-badge-active-bg: rgba(5, 150, 105, 0.1);
+  --dash-badge-active-color: #059669;
+  --dash-badge-inactive-bg: rgba(239, 68, 68, 0.1);
+  --dash-badge-inactive-color: #dc2626;
+
+  --dash-welcome-bg: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+  --dash-welcome-text: #ffffff;
+  --dash-welcome-sub: rgba(255, 255, 255, 0.75);
+
+  --dash-section-label: #2563eb;
 }
 
 :root.my-dark {
@@ -130,6 +175,51 @@
   --breadcrumb-link-hover-bg: rgba(99, 179, 237, 0.1);
   --breadcrumb-current-color: #e2e8f0;
   --breadcrumb-separator-color: #475569;
+
+  /* Dashboard tokens — dark mode */
+  --dash-page-bg: #0f172a;
+  --dash-card-bg: #1e293b;
+  --dash-card-border: rgba(255, 255, 255, 0.07);
+  --dash-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --dash-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(59, 130, 246, 0.15);
+  --dash-card-radius: 14px;
+
+  --dash-text-primary: #e2e8f0;
+  --dash-text-secondary: #94a3b8;
+  --dash-text-muted: #64748b;
+
+  --dash-accent: #3b82f6;
+  --dash-accent-light: rgba(59, 130, 246, 0.12);
+  --dash-accent-hover: #60a5fa;
+
+  --dash-stat-students-bg: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+  --dash-stat-new-registered-bg: linear-gradient(135deg,#a2d 0%,#f59e0b 100%);
+  --dash-stat-teachers-bg: linear-gradient(135deg, #047857 0%, #10b981 100%);
+  --dash-stat-editors-bg: linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+  --dash-stat-admins-bg: linear-gradient(135deg, #5b21b6 0%, #a78bfa 100%);
+  --dash-stat-total-bg: linear-gradient(135deg, #0e7490 0%, #22d3ee 100%);
+
+  --dash-quick-action-bg: rgba(255, 255, 255, 0.04);
+  --dash-quick-action-border: rgba(255, 255, 255, 0.07);
+  --dash-quick-action-hover-bg: rgba(59, 130, 246, 0.1);
+  --dash-quick-action-hover-border: #3b82f6;
+
+  --dash-table-header-bg: rgba(255, 255, 255, 0.04);
+  --dash-table-row-hover: rgba(59, 130, 246, 0.06);
+  --dash-table-border: rgba(255, 255, 255, 0.06);
+  --dash-table-text: #e2e8f0;
+
+  --dash-divider: rgba(255, 255, 255, 0.06);
+  --dash-badge-active-bg: rgba(16, 185, 129, 0.12);
+  --dash-badge-active-color: #34d399;
+  --dash-badge-inactive-bg: rgba(239, 68, 68, 0.12);
+  --dash-badge-inactive-color: #f87171;
+
+  --dash-welcome-bg: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+  --dash-welcome-text: #e2e8f0;
+  --dash-welcome-sub: rgba(226, 232, 240, 0.6);
+
+  --dash-section-label: #60a5fa;
 }
 
 label {

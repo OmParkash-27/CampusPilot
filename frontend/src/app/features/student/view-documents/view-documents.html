@@ -1,0 +1,385 @@
+<div class="vd-page">
+
+  <!-- ══════════════════════════════════════════════════════════
+       PAGE HEADER
+  ══════════════════════════════════════════════════════════ -->
+  <header class="vd-header">
+    <div class="vd-header__left">
+      <div class="vd-header__icon-wrap" aria-hidden="true">
+        <i class="pi pi-folder-open"></i>
+      </div>
+      <div>
+        <h1 class="vd-header__title">My Documents</h1>
+        <p class="vd-header__sub">
+          @if (studentName()) {
+            {{ studentName() }}
+            @if (rollNo()) { &nbsp;·&nbsp; Roll: <strong>{{ rollNo() }}</strong> }
+          } @else {
+            All your uploaded academic documents in one place
+          }
+        </p>
+      </div>
+    </div>
+
+    <div class="vd-header__actions">
+      <button
+        pButton
+        class="vd-btn vd-btn--outline"
+        icon="pi pi-upload"
+        label="Upload More"
+        (click)="navigateTo('student/upload-files')"
+        pTooltip="Go to Upload Files" tooltipPosition="bottom">
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       STATS STRIP  (hidden while loading)
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading()) {
+    <div class="vd-stats">
+
+      <button
+        class="vd-stat"
+        [class.vd-stat--active]="activeFilter() === 'all'"
+        (click)="setFilter('all')"
+        aria-label="Show all documents">
+        <div class="vd-stat__icon vd-stat__icon--teal">
+          <i class="pi pi-copy"></i>
+        </div>
+        <div>
+          <p class="vd-stat__value">{{ totalCount() }}</p>
+          <p class="vd-stat__label">Total</p>
+        </div>
+      </button>
+
+      <button
+        class="vd-stat"
+        [class.vd-stat--active]="activeFilter() === 'image'"
+        (click)="setFilter('image')"
+        aria-label="Show images only">
+        <div class="vd-stat__icon vd-stat__icon--green">
+          <i class="pi pi-image"></i>
+        </div>
+        <div>
+          <p class="vd-stat__value">{{ imageCount() }}</p>
+          <p class="vd-stat__label">Images</p>
+        </div>
+      </button>
+
+      <button
+        class="vd-stat"
+        [class.vd-stat--active]="activeFilter() === 'pdf'"
+        (click)="setFilter('pdf')"
+        aria-label="Show PDFs only">
+        <div class="vd-stat__icon vd-stat__icon--red">
+          <i class="pi pi-file-pdf"></i>
+        </div>
+        <div>
+          <p class="vd-stat__value">{{ pdfCount() }}</p>
+          <p class="vd-stat__label">PDFs</p>
+        </div>
+      </button>
+
+      <button
+        class="vd-stat"
+        [class.vd-stat--active]="activeFilter() === 'other'"
+        (click)="setFilter('other')"
+        aria-label="Show other files only">
+        <div class="vd-stat__icon vd-stat__icon--amber">
+          <i class="pi pi-file"></i>
+        </div>
+        <div>
+          <p class="vd-stat__value">{{ otherCount() }}</p>
+          <p class="vd-stat__label">Other</p>
+        </div>
+      </button>
+
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       SEARCH & FILTER TOOLBAR  (hidden while loading)
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading() && !error() && totalCount() > 0) {
+    <div class="vd-toolbar">
+      <!-- Search -->
+      <p-iconfield class="vd-toolbar__search">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search documents…"
+          [value]="searchTerm()"
+          (input)="onSearchInput($event)"
+          autocomplete="off"
+          aria-label="Search documents" />
+      </p-iconfield>
+
+      <!-- Type filter pills -->
+      <div class="vd-filter-pills" role="group" aria-label="Filter by type">
+        @for (opt of filterOptions; track opt.value) {
+          <button
+            class="vd-pill"
+            [class.vd-pill--active]="activeFilter() === opt.value"
+            (click)="setFilter(opt.value)"
+            type="button">
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+
+      <!-- Result count -->
+      <p class="vd-toolbar__count">
+        {{ filteredDocs().length }}
+        of {{ totalCount() }} document{{ totalCount() !== 1 ? 's' : '' }}
+      </p>
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       LOADING — skeleton grid
+  ══════════════════════════════════════════════════════════ -->
+  @if (loading()) {
+    <div class="vd-grid" aria-label="Loading documents" aria-busy="true">
+      @for (s of skeletons; track $index) {
+        <div class="vd-skeleton-card">
+          <p-skeleton width="100%" height="160px" borderRadius="10px"></p-skeleton>
+          <div class="vd-skeleton-card__body">
+            <p-skeleton width="60%" height="14px" borderRadius="6px"></p-skeleton>
+            <p-skeleton width="40%" height="12px" borderRadius="6px" styleClass="mt-1"></p-skeleton>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       ERROR STATE
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading() && error()) {
+    <div class="vd-empty vd-empty--error" role="alert">
+      <div class="vd-empty__icon vd-empty__icon--red">
+        <i class="pi pi-exclamation-triangle"></i>
+      </div>
+      <h2 class="vd-empty__title">Something went wrong</h2>
+      <p class="vd-empty__sub">{{ error() }}</p>
+      <button
+        pButton
+        class="vd-btn vd-btn--primary"
+        icon="pi pi-refresh"
+        label="Try Again"
+        (click)="ngOnInit()">
+      </button>
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       EMPTY STATE — no documents at all
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading() && !error() && totalCount() === 0) {
+    <div class="vd-empty">
+      <div class="vd-empty__icon">
+        <i class="pi pi-cloud-upload"></i>
+      </div>
+      <h2 class="vd-empty__title">No documents yet</h2>
+      <p class="vd-empty__sub">
+        You haven't uploaded any documents. Upload your academic certificates,
+        ID proof, or other required files to get started.
+      </p>
+      <button
+        pButton
+        class="vd-btn vd-btn--primary"
+        icon="pi pi-upload"
+        label="Upload Documents"
+        (click)="navigateTo('student/upload-files')">
+      </button>
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       EMPTY SEARCH RESULT
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading() && !error() && totalCount() > 0 && filteredDocs().length === 0) {
+    <div class="vd-empty vd-empty--search">
+      <div class="vd-empty__icon">
+        <i class="pi pi-search"></i>
+      </div>
+      <h2 class="vd-empty__title">No results found</h2>
+      <p class="vd-empty__sub">
+        No documents match "<strong>{{ searchTerm() }}</strong>".
+        Try a different search term or clear the filter.
+      </p>
+      <button
+        pButton
+        class="vd-btn vd-btn--outline"
+        icon="pi pi-times"
+        label="Clear Search"
+        (click)="searchTerm.set(''); activeFilter.set('all')">
+      </button>
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       DOCUMENT GRID
+  ══════════════════════════════════════════════════════════ -->
+  @if (!loading() && !error() && filteredDocs().length > 0) {
+    <div class="vd-grid" role="list" aria-label="Your documents">
+
+      @for (doc of filteredDocs(); track doc.index) {
+        <article class="vd-card" role="listitem" [attr.aria-label]="doc.name">
+
+          <!-- Thumbnail / preview area -->
+          <div
+            class="vd-card__thumb"
+            (click)="openPreview(doc)"
+            [attr.aria-label]="'Preview ' + doc.name"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="openPreview(doc)"
+            (keydown.space)="openPreview(doc)">
+
+            @if (doc.type === 'image') {
+              <img
+                [src]="doc.thumbnailUrl"
+                [alt]="doc.name"
+                class="vd-card__img"
+                loading="lazy" />
+            } @else if (doc.type === 'pdf') {
+              <div class="vd-card__file-icon vd-card__file-icon--pdf">
+                <i class="pi pi-file-pdf"></i>
+                <span>PDF</span>
+              </div>
+            } @else {
+              <div class="vd-card__file-icon vd-card__file-icon--other">
+                <i class="pi pi-file"></i>
+                <span>FILE</span>
+              </div>
+            }
+
+            <!-- Hover overlay -->
+            <div class="vd-card__overlay" aria-hidden="true">
+              <i class="pi pi-eye vd-card__overlay-icon"></i>
+              <span class="vd-card__overlay-label">Preview</span>
+            </div>
+
+            <!-- Doc number badge -->
+            <span class="vd-card__num" aria-hidden="true">#{{ doc.index }}</span>
+          </div>
+
+          <!-- Card body -->
+          <div class="vd-card__body">
+            <div class="vd-card__meta">
+              <p-tag
+                [value]="getTypeLabel(doc.type)"
+                [severity]="getTypeSeverity(doc.type)"
+                [icon]="getTypeIcon(doc.type)">
+              </p-tag>
+            </div>
+
+            <h3 class="vd-card__name">{{ doc.name }}</h3>
+
+            <!-- Actions -->
+            <div class="vd-card__actions">
+              <button
+                pButton
+                class="vd-card__btn vd-card__btn--view"
+                icon="pi pi-eye"
+                label="View"
+                (click)="openPreview(doc)"
+                [pTooltip]="'Preview ' + doc.name"
+                tooltipPosition="top">
+              </button>
+              <button
+                pButton
+                class="vd-card__btn vd-card__btn--download"
+                icon="pi pi-download"
+                label="Download"
+                (click)="downloadDoc(doc)"
+                [pTooltip]="'Download ' + doc.name"
+                tooltipPosition="top">
+              </button>
+            </div>
+          </div>
+
+        </article>
+      }
+
+    </div>
+  }
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       PREVIEW DIALOG
+  ══════════════════════════════════════════════════════════ -->
+  <p-dialog
+    [(visible)]="previewVisible"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [dismissableMask]="true"
+    [breakpoints]="{ '960px': '90vw', '575px': '95vw' }"
+    [style]="{ width: '680px', maxWidth: '95vw' }"
+    styleClass="vd-preview-dialog"
+    (onHide)="closePreview()"
+    [header]="previewDoc?.name ?? 'Preview'"
+    appendTo="body">
+
+    @if (previewDoc) {
+      <div class="vd-preview">
+
+        @if (previewDoc.type === 'image') {
+          <div class="vd-preview__img-wrap">
+            <img
+              [src]="previewDoc.url"
+              [alt]="previewDoc.name"
+              class="vd-preview__img" />
+          </div>
+        } @else {
+          <div class="vd-preview__no-preview">
+            <i [class]="getTypeIcon(previewDoc.type)"></i>
+            <p>Preview not available for this file type.</p>
+            <p class="vd-preview__hint">Use the download button to open the file.</p>
+          </div>
+        }
+
+        <!-- Dialog footer actions -->
+        <div class="vd-preview__actions">
+          <p-tag
+            [value]="getTypeLabel(previewDoc.type)"
+            [severity]="getTypeSeverity(previewDoc.type)"
+            [icon]="getTypeIcon(previewDoc.type)">
+          </p-tag>
+          <div class="vd-preview__btns">
+            <button
+              pButton
+              class="vd-btn vd-btn--outline"
+              icon="pi pi-times"
+              label="Close"
+              (click)="closePreview()">
+            </button>
+            <button
+              pButton
+              class="vd-btn vd-btn--primary"
+              icon="pi pi-download"
+              label="Download"
+              (click)="downloadDoc(previewDoc)">
+            </button>
+          </div>
+        </div>
+
+      </div>
+    }
+
+  </p-dialog>
+
+</div>

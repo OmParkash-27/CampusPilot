@@ -36,11 +36,11 @@ exports.getAllStudents = async (req, res) => {
 //Get new Registered students
 exports.getNewRegisteredStudents = async (req, res) => {
     try {
-       const ActivstudentIds = await Student.find().distinct("user");
+       const linkedStudentUserIds  = await Student.find().distinct("user");
       const students = await User.find({
         role: "student",
-        _id: { $nin: ActivstudentIds }
-      }).select("-password");;
+        _id: { $nin: linkedStudentUserIds }
+      }).select("-password");
       res.status(200).json(students);
     } catch (error) {
       res.status(500).json({ message: "Error fetching new registered students", error: error.message });

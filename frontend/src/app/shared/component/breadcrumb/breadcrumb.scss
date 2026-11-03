@@ -5,6 +5,9 @@
 
 // ── Outer bar ─────────────────────────────────────────────────────────────────
 .breadcrumb-bar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
   // Sits flush above the page content; does not scroll with the content area
   flex-shrink: 0;
   padding: 0.35rem 1rem;

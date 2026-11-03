@@ -111,6 +111,16 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: ['student'],
   },
+  {
+    id: 'viewDocuments',
+    label: 'View Documents',
+    icon: 'pi pi-folder-open',
+    routerLink: '/student/view-documents',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['student'],
+  },
   
   {
     id: 'about',
