@@ -64,9 +64,9 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
-app.use('/api/students', verifyToken, studentRoutes); // protected
-app.use('/api/users', verifyToken, userRoutes);
-app.use('/api/dashboard', verifyToken, dashboardRoutes);
+app.use('/api/students', studentRoutes); // protected
+app.use('/api/users', userRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 //public folder
 app.use('/api', express.static(path.join(__dirname, './public')));
