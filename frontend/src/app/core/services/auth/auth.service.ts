@@ -13,6 +13,12 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
+  hasSession(): boolean {
+    return document.cookie
+      .split('; ')
+      .some(cookie => cookie.startsWith('hasSession=true'));
+  }
+
   login(email: string, password: string): Observable<any> {
     return this.http.post(`${this.API_URL + '/' + Request_For.AUTH + '/' + API.LOGIN}`, { email, password }, { withCredentials: true });
   }

@@ -5,6 +5,13 @@ const User = require('../models/User');
 const crypto = require('crypto');
 // const { none } = require('./uploadMiddleware');
 
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
+}
+
 const verifyToken = async (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   const refreshToken = req.cookies.refreshToken;
@@ -12,6 +19,10 @@ const verifyToken = async (req, res, next) => {
   if (!refreshToken) {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', 'true', {
+      ...cookieOptions,
+      httpOnly: false,
+    });
     return res.status(401).json({code: "NO_REFRESH_TOKEN", message: "Session expired. Please login again." });
   }
 
@@ -24,12 +35,20 @@ const verifyToken = async (req, res, next) => {
     await cleanupTokenFromDB(refreshToken); // safe attempt
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', 'true', {
+      ...cookieOptions,
+      httpOnly: false,
+    });
     return res.status(403).json({code: "INVALID_REFRESH_TOKEN", message: "Session expired. Please login again." });
   }
   const user = await User.findById(decodedRefresh.id);
   if (!user) {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', 'true', {
+      ...cookieOptions,
+      httpOnly: false,
+    });
     return res.status(404).json({ message: "User not found" });
   }
 
@@ -38,12 +57,15 @@ const verifyToken = async (req, res, next) => {
   let matchedTokenIndex = user.refreshTokens.findIndex(
     t => t.jti === decodedRefresh.jti
   );
-
   // 3. Fallback (IMPORTANT FIX)
   if (matchedTokenIndex === -1) {
     // token not in DB → treat as invalid session
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', 'true', {
+      ...cookieOptions,
+      httpOnly: false,
+    });
     return res.status(401).json({code: "NO_REFRESH_TOKEN", message: "Session expired. Please login again." });
   }
 
@@ -62,17 +84,7 @@ const verifyToken = async (req, res, next) => {
   //     }
   //   }
   // }}
-
-  // check if db does not have token (this will help when logout session by other device(that delete token from db))
-  if (matchedTokenIndex === -1) {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
-    return res.status(401).json({
-      code: "NO_REFRESH_TOKEN",
-      message: "Session expired. Please login again."
-    });
-  }
-
+  
   // 4. Check access token FIRST
   if (accessToken) {
     try {
@@ -90,9 +102,7 @@ const verifyToken = async (req, res, next) => {
   const newAccessToken = generateAccessToken(user);
 
   res.cookie("accessToken", newAccessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    ...cookieOptions,
     maxAge: 15 * 60 * 1000,
   });
 
@@ -111,9 +121,7 @@ const verifyToken = async (req, res, next) => {
   await user.save();
 
   res.cookie("refreshToken", newRefreshToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none',
+    ...cookieOptions,
     maxAge: 30 * 60 * 1000,
   });
 

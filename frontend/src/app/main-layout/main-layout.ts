@@ -3,7 +3,7 @@ import { DrawerModule } from 'primeng/drawer';
 import { MenubarModule } from 'primeng/menubar';
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
-import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterModule, RouterOutlet } from '@angular/router';
+import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router, RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { RoleMenuItem } from './main.const';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MainLayoutService } from './main-layout.service';
@@ -27,7 +27,7 @@ import { Breadcrumb } from '../shared/component/breadcrumb/breadcrumb';
   selector: 'app-main-layout',
   standalone: true,
   imports: [CommonModule, FormsModule, PopoverModule, SpeedDialModule, RouterOutlet, MenubarModule, DrawerModule, ButtonModule,
-     RouterModule, ConfirmDialogModule, ChipModule, ToggleSwitchModule, TableModule, Breadcrumb],
+     RouterModule, ConfirmDialogModule, ChipModule, ToggleSwitchModule, TableModule, Breadcrumb, RouterLink],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.scss'],
   providers: [DialogService ]

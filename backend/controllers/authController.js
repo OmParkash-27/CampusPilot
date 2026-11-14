@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const { deleteFromCloudinary, uploadProfilePic } = require('../utils/cloudinaryHelper');
 const { generateAccessToken, generateRefreshToken } = require('../utils/tokenHelper');
 const crypto = require('crypto');
+const mongoose = require('mongoose');
 
 const TEMP_LOCK_MINUTES = 5;
 
@@ -12,6 +13,12 @@ function getLockUntil(attempts) {
     return new Date(Date.now() + TEMP_LOCK_MINUTES * 60 * 1000);
   }
   return null;
+}
+
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'none',
 }
 
 // Register a new user
@@ -91,21 +98,11 @@ exports.loginUser = async (req, res) => {
           ? `Too many failed attempts. Account locked for ${TEMP_LOCK_MINUTES} minutes.`
           : 'Invalid credentials'
       });
-      // Reset attempts after successful password
-      user.loginAttempts = 0;
-      user.lockUntil = null;
-
-      // Account status check
-      if (!user.status) {
-        await user.save();
-
-        return res.status(403).json({
-          message: 'Account is inactive. Contact to admin.'
-        });
-      }
-
-      // return res.status(401).json({ message: 'Invalid credentials' });
     }
+
+    // Reset attempts after successful password
+    user.loginAttempts = 0;
+    user.lockUntil = null;
 
     if (!user.status) {
       await user.save();
@@ -134,16 +131,18 @@ exports.loginUser = async (req, res) => {
 
     // Send token via cookie
     res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 15 * 60 * 1000
+      ...cookieOptions,
+      maxAge: 15 * 60 * 1000
     });
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+      ...cookieOptions,
       maxAge: 30 * 60 * 1000
+    });
+
+    // Only a session-presence indicator, NOT an authentication token
+    res.cookie('hasSession', 'true', {
+      ...cookieOptions,
+      httpOnly: false,
     });
 
     return res.status(200).json({ message: 'Login successful' });
@@ -161,6 +160,10 @@ exports.logoutUser = async (req, res) => {
     if (!refreshToken) {
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
+      res.clearCookie('hasSession', {
+        secure: true,
+        sameSite: 'none',
+      });
       return res.json({ message: "Logged out (no active session found)" });
     }
 
@@ -180,13 +183,14 @@ exports.logoutUser = async (req, res) => {
 
     // clear cookies ALWAYS
     res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      ...cookieOptions,
     });
 
     res.clearCookie('refreshToken', {
-      httpOnly: true,
+      ...cookieOptions,
+    });
+
+    res.clearCookie('hasSession', {
       secure: true,
       sameSite: 'none',
     });
@@ -196,6 +200,10 @@ exports.logoutUser = async (req, res) => {
   } catch (err) {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', {
+      secure: true,
+      sameSite: 'none'
+    });
 
     res.status(500).json({ message: "Logout failed" });
   }
@@ -221,13 +229,14 @@ exports.logoutAllDevices = async (req, res) => {
 
     // clear cookies ALWAYS
     res.clearCookie('accessToken', {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'none',
+      ...cookieOptions,
     });
 
     res.clearCookie('refreshToken', {
-      httpOnly: true,
+      ...cookieOptions,
+    });
+
+    res.clearCookie('hasSession', {
       secure: true,
       sameSite: 'none',
     });
@@ -237,6 +246,10 @@ exports.logoutAllDevices = async (req, res) => {
   } catch (err) {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', {
+      secure: true,
+      sameSite: 'none'
+    });
     res.status(500).json({ message: "Logout all failed" });
   }
 };
@@ -298,6 +311,10 @@ exports.changePassword = async (req, res) => {
     // 7. Invalidate old tokens → force re-login
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
+    res.clearCookie('hasSession', {
+      secure: true,
+      sameSite: 'none'
+    });
 
     res.status(200).json({ message: 'Password updated successfully. Please login again.' });
 
@@ -334,15 +351,82 @@ exports.getLoggedInDevices = async (req, res) => {
 };
 
 exports.logoutSpecificDevice = async (req, res) => {
-  const { deviceId } = req.body;
+  try {
+    const { deviceId } = req.body;
+    const userId = req.user.id;
 
-  const user = await User.findById(req.user.id);
+    // Validate device ID
+    if (!mongoose.isValidObjectId(deviceId)) {
+      return res.status(400).json({
+        message: 'Invalid device ID'
+      });
+    }
 
-  user.refreshTokens = user.refreshTokens.filter(
-    t => t._id.toString() !== deviceId
-  );
+    // Find user and selected device session
+    const user = await User.findOne({
+      _id: userId,
+      'refreshTokens._id': deviceId
+    }).select('refreshTokens');
 
-  await user.save();
+    if (!user) {
+      return res.status(404).json({
+        message: 'Device session not found'
+      });
+    }
 
-  res.json({ message: "Device logged out" });
+    // Find selected session
+    const targetSession = user.refreshTokens.id(deviceId);
+
+    // Identify whether selected device is current device
+    const currentRefreshToken = req.cookies.refreshToken;
+    const decodedCurrent = currentRefreshToken
+      ? jwt.decode(currentRefreshToken)
+      : null;
+
+    const isCurrentDevice =
+      decodedCurrent?.jti === targetSession.jti;
+
+    // Revoke selected device's refresh token from database
+    const result = await User.updateOne(
+      {
+        _id: userId,
+        'refreshTokens._id': deviceId
+      },
+      {
+        $pull: {
+          refreshTokens: { _id: deviceId }
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({
+        message: 'Device session already removed'
+      });
+    }
+
+    // Clear cookies ONLY if current device was selected
+    if (isCurrentDevice) {
+      res.clearCookie('accessToken', cookieOptions);
+      res.clearCookie('refreshToken', cookieOptions);
+      res.clearCookie('hasSession', {
+        secure: true,
+        sameSite: 'none'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: isCurrentDevice
+        ? 'Logged out from current device'
+        : 'Selected device logged out successfully'
+    });
+
+  } catch (err) {
+    console.error('Logout specific device error:', err);
+
+    return res.status(500).json({
+      message: 'Failed to logout device'
+    });
+  }
 };

@@ -37,7 +37,12 @@ export const appConfig: ApplicationConfig = {
           }),
     {
       provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => () => authService.loadCurrentUser(),
+      useFactory: (authService: AuthService) => () => {
+        if (authService.hasSession()) {
+          return authService.loadCurrentUser();
+        }
+        return Promise.resolve();
+      },
       deps: [AuthService],
       multi: true,
     }
