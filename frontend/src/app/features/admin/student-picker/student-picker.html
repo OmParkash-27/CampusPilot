@@ -1,0 +1,131 @@
+<p-dialog
+  [(visible)]="visible"
+  (visibleChange)="visibleChange.emit($event)"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [dismissableMask]="true"
+  [breakpoints]="{ '960px': '90vw', '575px': '95vw' }"
+  [style]="{ width: '680px' }"
+  styleClass="sp-dialog"
+  header="Select a Student"
+  appendTo="body">
+
+  <!-- ── Search bar ──────────────────────────────────────────── -->
+  @if (!loading() && !error()) {
+    <div class="sp-search">
+      <p-iconfield class="sp-search__field">
+        <p-inputicon>
+          <i class="pi pi-search"></i>
+        </p-inputicon>
+        <input
+          pInputText
+          type="text"
+          placeholder="Search by name, email, roll no…"
+          [value]="searchTerm()"
+          (input)="onSearchInput($event)"
+          autocomplete="off"
+          aria-label="Search students" />
+      </p-iconfield>
+      <p class="sp-search__count">
+        {{ filteredStudents().length }} of {{ allStudents().length }} student{{ allStudents().length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+  }
+
+  <!-- ── Loading ──────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="sp-list">
+      @for (s of skeletons; track $index) {
+        <div class="sp-skeleton">
+          <p-skeleton shape="circle" size="2.5rem"></p-skeleton>
+          <div class="sp-skeleton__text">
+            <p-skeleton width="55%" height="14px" borderRadius="6px"></p-skeleton>
+            <p-skeleton width="38%" height="12px" borderRadius="6px"></p-skeleton>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ── Error ────────────────────────────────────────────────── -->
+  @if (!loading() && error()) {
+    <div class="sp-empty" role="alert">
+      <i class="pi pi-exclamation-triangle sp-empty__icon sp-empty__icon--red"></i>
+      <p class="sp-empty__msg">{{ error() }}</p>
+      <button pButton class="sp-btn sp-btn--outline" label="Retry" icon="pi pi-refresh" (click)="reload()"></button>
+    </div>
+  }
+
+  <!-- ── Empty search result ──────────────────────────────────── -->
+  @if (!loading() && !error() && allStudents().length > 0 && filteredStudents().length === 0) {
+    <div class="sp-empty">
+      <i class="pi pi-search sp-empty__icon"></i>
+      <p class="sp-empty__msg">No students match "<strong>{{ searchTerm() }}</strong>".</p>
+      <button pButton class="sp-btn sp-btn--outline" label="Clear" icon="pi pi-times"
+        (click)="searchTerm.set('')"></button>
+    </div>
+  }
+
+  <!-- ── No students at all ───────────────────────────────────── -->
+  @if (!loading() && !error() && allStudents().length === 0) {
+    <div class="sp-empty">
+      <i class="pi pi-users sp-empty__icon"></i>
+      <p class="sp-empty__msg">No students found in the system.</p>
+    </div>
+  }
+
+  <!-- ── Student list ──────────────────────────────────────────── -->
+  @if (!loading() && !error() && filteredStudents().length > 0) {
+    <div class="sp-list" role="listbox" aria-label="Students">
+      @for (student of filteredStudents(); track student._id) {
+        <button
+          class="sp-row"
+          role="option"
+          (click)="select(student)"
+          [attr.aria-label]="'Select ' + student.user.name">
+
+          <!-- Avatar -->
+          <div class="sp-row__avatar">
+            @if (student.user.profilePic) {
+              <p-avatar [image]="student.user.profilePic!" shape="circle" size="normal"
+                (onImageError)="student.user.profilePic = null"></p-avatar>
+            } @else {
+              <p-avatar icon="pi pi-user" shape="circle" size="normal"></p-avatar>
+            }
+          </div>
+
+          <!-- Info -->
+          <div class="sp-row__info">
+            <span class="sp-row__name">{{ student.user.name }}</span>
+            <span class="sp-row__sub">
+              {{ student.user.email }}
+              @if (student.rollNo) { &nbsp;·&nbsp; Roll: {{ student.rollNo }} }
+              @if (student.enrollmentNo) { &nbsp;·&nbsp; Enr: {{ student.enrollmentNo }} }
+            </span>
+            @if (student.courses.length) {
+              <div class="sp-row__courses">
+                @for (c of student.courses; track c.course) {
+                  <span class="sp-course-tag">{{ c.course }} {{ c.batchYear }}</span>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- Status + action -->
+          <div class="sp-row__right">
+            <p-tag
+              [value]="student.user.status ? 'Active' : 'Inactive'"
+              [severity]="getStatusSeverity(student.user.status)">
+            </p-tag>
+            <span class="sp-row__select-hint">
+              <i class="pi pi-angle-right"></i>
+            </span>
+          </div>
+
+        </button>
+      }
+    </div>
+  }
+
+</p-dialog>

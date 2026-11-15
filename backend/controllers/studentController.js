@@ -26,7 +26,7 @@ exports.getStudent = async (req, res) => {
 // Get all students with populated user data
 exports.getAllStudents = async (req, res) => {
   try {
-    const students = await Student.find().populate("user", "name email role profilePic");
+    const students = await Student.find().populate("user", "name email role profilePic status");
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: "Error fetching students", error: error.message });

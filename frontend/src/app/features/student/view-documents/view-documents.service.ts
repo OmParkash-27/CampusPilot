@@ -1,20 +1,27 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpService } from '../../../core/services/common/http.service';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { AdminStudentContextService } from '../../../core/services/admin-student-context/admin-student-context.service';
 
-/**
- * Thin service for the View Documents page.
- * Reuses the same dashboard/student endpoint that already returns
- * the full Student record (including photos[]) for the logged-in student.
- * Authentication is handled by the cookie-based JWT — students can only
- * ever retrieve their own record.
- */
 @Injectable({ providedIn: 'root' })
 export class ViewDocumentsService {
-  constructor(private http: HttpService) {}
+  private http         = inject(HttpService);
+  private authService  = inject(AuthService);
+  private adminContext = inject(AdminStudentContextService);
 
-  /** Returns the full Student record, including the photos[] Cloudinary URL array. */
+  /**
+   * Returns the student record (including photos[]).
+   * - Student role: their own record via GET /dashboard/student.
+   * - Admin with selected student: that student's record via GET /dashboard/student/:id.
+   */
   getStudentRecord(): Observable<any> {
+    const user       = this.authService.current_user();
+    const selectedId = this.adminContext.selectedStudentId;
+
+    if (user?.role === 'admin' && selectedId) {
+      return this.http.get(`dashboard/student/${selectedId}`);
+    }
     return this.http.get('dashboard/student');
   }
 }

@@ -9,7 +9,7 @@ exports.getUser = async (req, res) => {
   
   const id = req.params.id;
   try {
-    const user = await User.findById(id).select('-password'); // Exclude passwords
+    const user = await User.findById(id).select('-password -refreshTokens -permanentlyBlocked -loginAttempts -lockUntil'); // Exclude passwords
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -19,7 +19,7 @@ exports.getUser = async (req, res) => {
 //get all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // Exclude passwords
+    const users = await User.find().select('-password -refreshTokens -permanentlyBlocked -loginAttempts -lockUntil'); // Exclude passwords
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -40,7 +40,8 @@ exports.updateUserRole = async (req, res) => {
     const student = await Student.findOne({ user: id });
     if (student) return res.status(400).json({ message: "You can't change role of existing student" });
 
-    const user = await User.findByIdAndUpdate(id, { role }, { new: true }); // If you don’t use new: true, will give without updated user
+    const user = await User.findByIdAndUpdate(id, { role }, { new: true })
+      .select('-password -refreshTokens -permanentlyBlocked -loginAttempts -lockUntil'); // If you don’t use new: true, will give without updated user
     if (!user) return res.status(404).json({ message: 'User not found' });
 
     res.status(200).json({ message: 'Role updated successfully', user });
@@ -70,7 +71,7 @@ exports.updateUserStatus = async (req, res) => {
         permanentlyBlocked
        },
       { new: true }
-    ).select('-password');
+    ).select('-password -refreshTokens -permanentlyBlocked -loginAttempts -lockUntil');
 
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
@@ -115,7 +116,15 @@ exports.addUser = async (req, res) => {
       permanentlyBlocked
     });
 
-    res.status(201).json({ message: 'User registered successfully', user: newUser });
+    // user sending in response without some confidentials keys
+    const userResponse = newUser.toObject();
+    delete userResponse.password;
+    delete userResponse.refreshTokens;
+    delete userResponse.permanentlyBlocked;
+    delete userResponse.loginAttempts;
+    delete userResponse.lockUntil;
+
+    res.status(201).json({ message: 'User registered successfully', user: userResponse });
   } catch (err) {
     if (profilePicUrl) await deleteFromCloudinary([profilePicUrl]);
     res.status(500).json({ message: 'Add user failed', error: err.message });
@@ -161,7 +170,15 @@ exports.updateUser = async (req, res) => {
       await deleteFromCloudinary([oldProfilePic]);
     }
 
-    res.status(200).json({ message: 'User updated successfully', user });
+    // user sending in response without some confidentials keys
+    const userResponse = user.toObject();
+    delete userResponse.password;
+    delete userResponse.refreshTokens;
+    delete userResponse.permanentlyBlocked;
+    delete userResponse.loginAttempts;
+    delete userResponse.lockUntil;
+
+    res.status(200).json({ message: 'User updated successfully', userResponse });
   } catch (err) {
     if (newProfilePicUrl) await deleteFromCloudinary([newProfilePicUrl]);
     res.status(500).json({ message: 'Update failed', error: err.message });

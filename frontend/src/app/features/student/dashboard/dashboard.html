@@ -1,31 +1,111 @@
 <div class="sd-page">
 
   <!-- ════════════════════════════════════════════════════════════
-       HERO BANNER
+       ADMIN CONTEXT BANNER — only shown when admin is viewing
   ════════════════════════════════════════════════════════════ -->
+  @if (isAdmin() && selectedStudent()) {
+    <div class="sd-admin-banner" role="note" aria-label="Viewing as admin">
+      <div class="sd-admin-banner__left">
+        <i class="pi pi-shield sd-admin-banner__icon" aria-hidden="true"></i>
+        <span class="sd-admin-banner__label">Admin View</span>
+        <span class="sd-admin-banner__sep">·</span>
+        <span class="sd-admin-banner__student">
+          Viewing: <strong>{{ selectedStudent()?.user?.name }}</strong>
+          @if (selectedStudent()?.rollNo) {
+            &nbsp;(Roll: {{ selectedStudent()?.rollNo }})
+          }
+        </span>
+      </div>
+      <button
+        pButton
+        class="sd-btn sd-btn--switch"
+        icon="pi pi-refresh"
+        label="Switch Student"
+        (click)="openPicker()"
+        pTooltip="Select a different student" tooltipPosition="bottom">
+      </button>
+    </div>
+  }
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       STUDENT PICKER DIALOG (admin only)
+  ════════════════════════════════════════════════════════════ -->
+  <app-student-picker
+    [visible]="pickerVisible()"
+    (visibleChange)="pickerVisible.set($event)"
+    (studentSelected)="onStudentPicked($event)">
+  </app-student-picker>
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       LOADING STATE
+  ════════════════════════════════════════════════════════════ -->
+  @if (loading()) {
+    <div class="sd-loading" aria-label="Loading student data">
+      <i class="pi pi-spin pi-spinner sd-loading__icon"></i>
+      <span>Loading student dashboard…</span>
+    </div>
+  }
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       ADMIN — no student selected yet (picker will open automatically)
+  ════════════════════════════════════════════════════════════ -->
+  @if (isAdmin() && !selectedStudent() && !loading()) {
+    <div class="sd-pick-prompt">
+      <div class="sd-pick-prompt__icon">
+        <i class="pi pi-users"></i>
+      </div>
+      <h2 class="sd-pick-prompt__title">Select a Student</h2>
+      <p class="sd-pick-prompt__sub">
+        Choose a student from the directory to view their dashboard and manage their data.
+      </p>
+      <button
+        pButton
+        class="sd-btn sd-btn--primary"
+        icon="pi pi-search"
+        label="Browse Students"
+        (click)="openPicker()">
+      </button>
+    </div>
+  }
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       ERROR STATE
+  ════════════════════════════════════════════════════════════ -->
+  @if (!loading() && loadError()) {
+    <div class="sd-error" role="alert">
+      <i class="pi pi-exclamation-triangle sd-error__icon"></i>
+      <p>{{ loadError() }}</p>
+      <button pButton class="sd-btn sd-btn--primary" icon="pi pi-refresh"
+        label="Retry" (click)="loadDashboard()"></button>
+    </div>
+  }
+
+
+  <!-- ════════════════════════════════════════════════════════════
+       DASHBOARD CONTENT — shown when student data is loaded
+  ════════════════════════════════════════════════════════════ -->
+  @if (!loading() && !loadError() && student()) {
+
+  <!-- ── HERO BANNER ──────────────────────────────────────────── -->
   <header class="sd-hero">
-    <!-- Decorative shapes -->
     <div class="sd-hero__shape sd-hero__shape--1" aria-hidden="true"></div>
     <div class="sd-hero__shape sd-hero__shape--2" aria-hidden="true"></div>
 
     <div class="sd-hero__left">
-      <!-- Avatar -->
       <div class="sd-hero__avatar">
         @if (student()?.user?.profilePic) {
-          <p-avatar
-            [image]="student()!.user.profilePic!"
-            shape="circle"
-            size="xlarge"
-            (onImageError)="student()!.user.profilePic = null">
-          </p-avatar>
+          <p-avatar [image]="student()!.user.profilePic!" shape="circle" size="xlarge"
+            (onImageError)="student()!.user.profilePic = null"></p-avatar>
         } @else {
           <p-avatar icon="pi pi-user" shape="circle" size="xlarge"></p-avatar>
         }
-        <!-- Online indicator -->
         <span class="sd-hero__online" title="Active session"></span>
       </div>
 
-      <!-- Greeting text -->
       <div class="sd-hero__text">
         <p class="sd-hero__eyebrow">
           <i class="pi pi-star-fill" aria-hidden="true"></i>
@@ -49,25 +129,22 @@
       </div>
     </div>
 
-    <!-- Hero right: quick-action buttons -->
     <div class="sd-hero__actions">
       <button pButton class="sd-btn sd-btn--primary"
         icon="pi pi-upload" label="Upload Documents"
         (click)="navigateTo('student/upload-files')"
-        pTooltip="Upload your academic documents" tooltipPosition="bottom">
+        pTooltip="Upload academic documents" tooltipPosition="bottom">
       </button>
       <button pButton class="sd-btn sd-btn--outline"
         icon="pi pi-images" label="My Documents"
-        (click)="navigateTo('/student/view-documents')"
-        pTooltip="View your documents" tooltipPosition="bottom">
+        (click)="navigateTo('student/view-documents')"
+        pTooltip="View documents" tooltipPosition="bottom">
       </button>
     </div>
   </header>
 
 
-  <!-- ════════════════════════════════════════════════════════════
-       INFO STRIP — 4 key metrics
-  ════════════════════════════════════════════════════════════ -->
+  <!-- ── INFO STRIP ───────────────────────────────────────────── -->
   <div class="sd-strip">
 
     <div class="sd-strip__item">
@@ -100,7 +177,8 @@
       </div>
     </div>
 
-    <div class="sd-strip__item sd-strip__item--progress" [pTooltip]="profileCompletion() + '% of profile fields completed'" tooltipPosition="top">
+    <div class="sd-strip__item sd-strip__item--progress"
+      [pTooltip]="profileCompletion() + '% of profile fields completed'" tooltipPosition="top">
       <div class="sd-strip__progress-ring">
         <svg viewBox="0 0 36 36" class="sd-ring-svg" aria-hidden="true">
           <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--sd-ring-track)" stroke-width="2.8"></circle>
@@ -123,12 +201,10 @@
   </div>
 
 
-  <!-- ════════════════════════════════════════════════════════════
-       MAIN TWO-COLUMN GRID
-  ════════════════════════════════════════════════════════════ -->
+  <!-- ── MAIN GRID ────────────────────────────────────────────── -->
   <div class="sd-grid">
 
-    <!-- ── LEFT COLUMN ──────────────────────────────────────── -->
+    <!-- LEFT COLUMN -->
     <div class="sd-left">
 
       <!-- My Courses -->
@@ -161,10 +237,7 @@
               <div class="sd-course-card__body">
                 <div class="sd-course-card__top">
                   <span class="sd-course-card__name">{{ c.course }}</span>
-                  <p-tag
-                    [value]="c.status | titlecase"
-                    [severity]="getStatusSeverity(c.status)"
-                  ></p-tag>
+                  <p-tag [value]="c.status | titlecase" [severity]="getStatusSeverity(c.status)"></p-tag>
                 </div>
                 <div class="sd-course-card__bottom">
                   <span class="sd-course-card__meta">
@@ -184,8 +257,7 @@
         </div>
       </div>
 
-
-      <!-- Personal & Address Details -->
+      <!-- Personal Details -->
       <div class="sd-card">
         <div class="sd-card__head">
           <div class="sd-card__title-wrap">
@@ -194,18 +266,14 @@
             </div>
             <div>
               <h2 class="sd-card__title">Personal Details</h2>
-              <p class="sd-card__sub">Your profile information</p>
+              <p class="sd-card__sub">Profile information</p>
             </div>
           </div>
         </div>
 
         <div class="sd-details-grid">
-
           <div class="sd-detail-group">
-            <h3 class="sd-detail-group__heading">
-              <i class="pi pi-user-edit" aria-hidden="true"></i>
-              Identity
-            </h3>
+            <h3 class="sd-detail-group__heading"><i class="pi pi-user-edit"></i> Identity</h3>
             <div class="sd-detail-row">
               <span class="sd-detail-row__key">Date of Birth</span>
               <span class="sd-detail-row__val">{{ student()?.dob ? (student()!.dob | date:'mediumDate') : '—' }}</span>
@@ -225,10 +293,7 @@
           </div>
 
           <div class="sd-detail-group">
-            <h3 class="sd-detail-group__heading">
-              <i class="pi pi-heart" aria-hidden="true"></i>
-              Guardian
-            </h3>
+            <h3 class="sd-detail-group__heading"><i class="pi pi-heart"></i> Guardian</h3>
             <div class="sd-detail-row">
               <span class="sd-detail-row__key">Name</span>
               <span class="sd-detail-row__val">{{ student()?.guardianName ?? '—' }}</span>
@@ -240,10 +305,7 @@
           </div>
 
           <div class="sd-detail-group">
-            <h3 class="sd-detail-group__heading">
-              <i class="pi pi-map-marker" aria-hidden="true"></i>
-              Address
-            </h3>
+            <h3 class="sd-detail-group__heading"><i class="pi pi-map-marker"></i> Address</h3>
             <div class="sd-detail-row">
               <span class="sd-detail-row__key">Street</span>
               <span class="sd-detail-row__val">{{ student()?.address?.street ?? '—' }}</span>
@@ -261,10 +323,8 @@
               <span class="sd-detail-row__val">{{ student()?.address?.zip ?? '—' }}</span>
             </div>
           </div>
-
         </div>
       </div>
-
 
       <!-- Quick Actions -->
       <div class="sd-card">
@@ -278,38 +338,29 @@
         </div>
 
         <div class="sd-qa-grid">
-
-          <button class="sd-qa-btn" (click)="navigateTo('student/upload-files')" aria-label="Upload documents">
-            <div class="sd-qa-btn__icon sd-qa-btn__icon--teal">
-              <i class="pi pi-upload"></i>
-            </div>
+          <button class="sd-qa-btn" (click)="navigateTo('student/upload-files')">
+            <div class="sd-qa-btn__icon sd-qa-btn__icon--teal"><i class="pi pi-upload"></i></div>
             <span class="sd-qa-btn__label">Upload Files</span>
           </button>
-
-          <button class="sd-qa-btn" (click)="navigateTo('student/view-documents')" aria-label="View documents">
-            <div class="sd-qa-btn__icon sd-qa-btn__icon--blue">
-              <i class="pi pi-images"></i>
-            </div>
+          <button class="sd-qa-btn" (click)="navigateTo('student/view-documents')">
+            <div class="sd-qa-btn__icon sd-qa-btn__icon--blue"><i class="pi pi-images"></i></div>
             <span class="sd-qa-btn__label">My Documents</span>
           </button>
-
-          <button class="sd-qa-btn" (click)="navigateTo('student/dashboard')" aria-label="View profile">
-            <div class="sd-qa-btn__icon sd-qa-btn__icon--purple">
-              <i class="pi pi-user"></i>
-            </div>
-            <span class="sd-qa-btn__label">My Profile</span>
-          </button>
-
+          @if (isAdmin()) {
+            <button class="sd-qa-btn" (click)="openPicker()">
+              <div class="sd-qa-btn__icon sd-qa-btn__icon--purple"><i class="pi pi-refresh"></i></div>
+              <span class="sd-qa-btn__label">Switch Student</span>
+            </button>
+          }
         </div>
       </div>
 
     </div>
 
-
-    <!-- ── RIGHT COLUMN ─────────────────────────────────────── -->
+    <!-- RIGHT COLUMN -->
     <div class="sd-right">
 
-      <!-- My Documents -->
+      <!-- Documents -->
       <div class="sd-card sd-card--docs">
         <div class="sd-card__head">
           <div class="sd-card__title-wrap">
@@ -318,28 +369,20 @@
             </div>
             <div>
               <h2 class="sd-card__title">My Documents</h2>
-              <p class="sd-card__sub">
-                {{ photos().length }} file{{ photos().length !== 1 ? 's' : '' }} uploaded
-              </p>
+              <p class="sd-card__sub">{{ photos().length }} file{{ photos().length !== 1 ? 's' : '' }} uploaded</p>
             </div>
           </div>
-          <button pButton class="sd-btn sd-btn--ghost"
-            icon="pi pi-plus" label="Upload More"
-            (click)="navigateTo('student/upload-files')">
-          </button>
+          <button pButton class="sd-btn sd-btn--ghost" icon="pi pi-plus" label="Upload More"
+            (click)="navigateTo('student/upload-files')"></button>
         </div>
 
         @if (photos().length === 0) {
           <div class="sd-docs-empty">
-            <div class="sd-docs-empty__icon">
-              <i class="pi pi-cloud-upload"></i>
-            </div>
+            <div class="sd-docs-empty__icon"><i class="pi pi-cloud-upload"></i></div>
             <p class="sd-docs-empty__title">No documents yet</p>
-            <p class="sd-docs-empty__sub">Upload your academic documents and certificates here.</p>
-            <button pButton class="sd-btn sd-btn--primary"
-              label="Upload Documents" icon="pi pi-upload"
-              (click)="navigateTo('student/upload-files')">
-            </button>
+            <p class="sd-docs-empty__sub">Upload academic documents and certificates here.</p>
+            <button pButton class="sd-btn sd-btn--primary" label="Upload Documents"
+              icon="pi pi-upload" (click)="navigateTo('student/upload-files')"></button>
           </div>
         }
 
@@ -350,9 +393,7 @@
                 [attr.aria-label]="'View document ' + (i + 1)"
                 pTooltip="Click to view full size" tooltipPosition="top">
                 <img [src]="photo" [alt]="'Document ' + (i + 1)" class="sd-doc-thumb__img" />
-                <div class="sd-doc-thumb__overlay">
-                  <i class="pi pi-eye"></i>
-                </div>
+                <div class="sd-doc-thumb__overlay"><i class="pi pi-eye"></i></div>
                 <span class="sd-doc-thumb__num">{{ i + 1 }}</span>
               </button>
             }
@@ -360,7 +401,7 @@
         }
       </div>
 
-      <!-- Academic Info tile -->
+      <!-- Academic Identity -->
       <div class="sd-card">
         <div class="sd-card__head">
           <div class="sd-card__title-wrap">
@@ -369,54 +410,37 @@
             </div>
             <div>
               <h2 class="sd-card__title">Academic Identity</h2>
-              <p class="sd-card__sub">Your registration details</p>
+              <p class="sd-card__sub">Registration details</p>
             </div>
           </div>
         </div>
 
         <div class="sd-academic-rows">
           <div class="sd-acad-row">
-            <span class="sd-acad-row__key">
-              <i class="pi pi-hashtag" aria-hidden="true"></i>
-              Roll Number
-            </span>
+            <span class="sd-acad-row__key"><i class="pi pi-hashtag"></i> Roll Number</span>
             <span class="sd-acad-row__val sd-acad-row__val--mono">{{ student()?.rollNo ?? '—' }}</span>
           </div>
           <div class="sd-acad-row">
-            <span class="sd-acad-row__key">
-              <i class="pi pi-list-check" aria-hidden="true"></i>
-              Enrolment No.
-            </span>
+            <span class="sd-acad-row__key"><i class="pi pi-list-check"></i> Enrolment No.</span>
             <span class="sd-acad-row__val sd-acad-row__val--mono">{{ student()?.enrollmentNo ?? '—' }}</span>
           </div>
           <div class="sd-acad-row">
-            <span class="sd-acad-row__key">
-              <i class="pi pi-envelope" aria-hidden="true"></i>
-              Email
-            </span>
+            <span class="sd-acad-row__key"><i class="pi pi-envelope"></i> Email</span>
             <span class="sd-acad-row__val sd-acad-row__val--break">{{ student()?.user?.email ?? '—' }}</span>
           </div>
           <div class="sd-acad-row">
-            <span class="sd-acad-row__key">
-              <i class="pi pi-verified" aria-hidden="true"></i>
-              Account Status
-            </span>
-            <p-tag
-              [value]="student()?.user?.status ? 'Active' : 'Inactive'"
-              [severity]="student()?.user?.status ? 'success' : 'warn'">
-            </p-tag>
+            <span class="sd-acad-row__key"><i class="pi pi-verified"></i> Account Status</span>
+            <p-tag [value]="student()?.user?.status ? 'Active' : 'Inactive'"
+              [severity]="student()?.user?.status ? 'success' : 'warn'"></p-tag>
           </div>
         </div>
       </div>
 
     </div>
-
   </div>
 
 
-  <!-- ════════════════════════════════════════════════════════════
-       FULL-SCREEN GALLERIA LIGHTBOX
-  ════════════════════════════════════════════════════════════ -->
+  <!-- ── GALLERIA LIGHTBOX ─────────────────────────────────────── -->
   <p-galleria
     [value]="photos()"
     [(visible)]="galleriaVisible"
@@ -426,14 +450,15 @@
     [circular]="true"
     [fullScreen]="true"
     [showItemNavigators]="true"
-    [showThumbnails]="true"
-  >
+    [showThumbnails]="true">
     <ng-template #item let-item>
-      <img [src]="item" style="width:100%; max-height:80vh; object-fit:contain; display:block;" [alt]="'Document'" />
+      <img [src]="item" style="width:100%;max-height:80vh;object-fit:contain;display:block;" alt="Document" />
     </ng-template>
     <ng-template #thumbnail let-item>
-      <img [src]="item" style="height:60px; object-fit:cover; width:auto; max-width:80px; display:block;" [alt]="'Thumb'" />
+      <img [src]="item" style="height:60px;object-fit:cover;width:auto;max-width:80px;display:block;" alt="Thumb" />
     </ng-template>
   </p-galleria>
+
+  } <!-- end @if student() -->
 
 </div>

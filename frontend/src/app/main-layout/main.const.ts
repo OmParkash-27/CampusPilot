@@ -109,7 +109,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     visible: false,
     public: false,
     showWhenLoggedIn: true,
-    roles: ['student'],
+    roles: ['student', 'admin'],
   },
   {
     id: 'viewDocuments',
@@ -119,7 +119,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     visible: false,
     public: false,
     showWhenLoggedIn: true,
-    roles: ['student'],
+    roles: ['student', 'admin'],
   },
   
   {

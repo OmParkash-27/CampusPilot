@@ -1,9 +1,10 @@
-import { Injectable, effect, signal, WritableSignal, computed } from '@angular/core';
+import { Injectable, effect, signal, WritableSignal, computed, inject } from '@angular/core';
 import { ConfirmationService, MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
 import { AuthService } from '../core/services/auth/auth.service';
 import { dashboardLabels, RoleMenuItem, sidebarMenuItems, speedDialItems } from './main.const';
 import { User } from '../core/models/User';
+import { AdminStudentContextService } from '../core/services/admin-student-context/admin-student-context.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,7 @@ export class MainLayoutService {
   private windowWidth = signal(window.innerWidth);
   isMobile = computed(() => this.windowWidth() < 768);
   showChangePassDialogSignal = signal(false);
+  private adminStudentContext = inject(AdminStudentContextService);
   
   constructor(
     private authService: AuthService,
@@ -178,6 +180,7 @@ export class MainLayoutService {
   logout() {
     this.authService.logout().subscribe({
       next: () => {
+        this.adminStudentContext.clearStudent(); // clear selected student on logout
         this.authService.current_user.set(null);
         this.router.navigate(['/']);
       },
