@@ -8,33 +8,53 @@ import { TooltipModule } from 'primeng/tooltip';
 import { RouterModule, Router } from '@angular/router';
 import { DashboardService } from './dashboard.service';
 import { Student } from '../../../core/models/Student';
+import { AuthService } from '../../../core/services/auth/auth.service';
+import { AdminStudentContextService } from '../../../core/services/admin-student-context/admin-student-context.service';
+import { StudentPicker } from '../../admin/student-picker/student-picker';
 
 @Component({
   selector: 'app-Sdashboard',
   standalone: true,
-  imports: [CommonModule, AvatarModule, ButtonModule, GalleriaModule, TagModule, TooltipModule, RouterModule],
+  imports: [
+    CommonModule, AvatarModule, ButtonModule, GalleriaModule,
+    TagModule, TooltipModule, RouterModule,
+    StudentPicker,       // admin student-selection dialog
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
 export class SDashboard implements OnInit {
   private dashboardService = inject(DashboardService);
+  private authService      = inject(AuthService);
+  private adminContext     = inject(AdminStudentContextService);
   router = inject(Router);
 
+  // ── Auth state (read-only — authenticated user never changes) ──────────────
+  currentUser = this.authService.current_user;
+  isAdmin = computed(() => this.currentUser()?.role === 'admin');
+
+  // ── Selected student context (admin-only) ──────────────────────────────────
+  selectedStudent = this.adminContext.selectedStudent;
+
+  // ── Student picker dialog visibility ──────────────────────────────────────
+  pickerVisible: WritableSignal<boolean> = signal(false);
+
+  // ── Dashboard data ─────────────────────────────────────────────────────────
   student: WritableSignal<Student | null> = signal<Student | null>(null);
   photos: WritableSignal<string[]> = signal<string[]>([]);
+  loading: WritableSignal<boolean> = signal(false);
+  loadError: WritableSignal<string | null> = signal(null);
 
-  // Lightbox state
+  // Lightbox
   galleriaVisible = false;
   activePhotoIndex = 0;
-
-  // Responsive options for full-screen galleria lightbox
   responsiveOptions: any[] = [
     { breakpoint: '1300px', numVisible: 3 },
     { breakpoint: '1080px', numVisible: 2 },
     { breakpoint: '575px',  numVisible: 1 },
   ];
 
-  // Computed greeting
+  // Greeting
   greeting = computed(() => {
     const h = new Date().getHours();
     if (h < 12) return 'Good morning';
@@ -44,27 +64,18 @@ export class SDashboard implements OnInit {
 
   today = new Date();
 
-  // Profile completeness — count non-empty meaningful fields
+  // Profile completion
   profileCompletion = computed(() => {
     const s = this.student();
     if (!s) return 0;
     const checks = [
-      !!s.user?.profilePic,
-      !!s.rollNo,
-      !!s.enrollmentNo,
-      s.courses?.length > 0,
-      !!s.dob,
-      !!s.gender,
-      !!s.phone,
-      !!s.address?.city,
-      !!s.guardianName,
-      !!s.guardianContact,
+      !!s.user?.profilePic, !!s.rollNo, !!s.enrollmentNo,
+      s.courses?.length > 0, !!s.dob, !!s.gender,
+      !!s.phone, !!s.address?.city, !!s.guardianName, !!s.guardianContact,
     ];
-    const filled = checks.filter(Boolean).length;
-    return Math.round((filled / checks.length) * 100);
+    return Math.round((checks.filter(Boolean).length / checks.length) * 100);
   });
 
-  // Course status severity for PrimeNG Tag
   getStatusSeverity(status: string): 'success' | 'warn' | 'secondary' {
     if (status === 'active')    return 'success';
     if (status === 'graduated') return 'warn';
@@ -72,12 +83,39 @@ export class SDashboard implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.isAdmin() && !this.adminContext.selectedStudentId) {
+      // Admin arrived without a selected student → open picker immediately
+      this.pickerVisible.set(true);
+      return;
+    }
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
+    this.loading.set(true);
+    this.loadError.set(null);
     this.dashboardService.getDashboardData().subscribe({
       next: (res: Student) => {
         this.student.set(res);
         this.photos.set(res.photos ?? []);
-      }
+        this.loading.set(false);
+      },
+      error: () => {
+        this.loadError.set('Failed to load student data.');
+        this.loading.set(false);
+      },
     });
+  }
+
+  /** Called when admin picks a student from the picker dialog */
+  onStudentPicked(student: Student): void {
+    this.adminContext.setStudent(student);
+    this.loadDashboard();
+  }
+
+  /** Admin wants to switch to a different student */
+  openPicker(): void {
+    this.pickerVisible.set(true);
   }
 
   openPhoto(index: number): void {

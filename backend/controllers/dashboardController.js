@@ -22,7 +22,7 @@ const getAdminDashboardStats = async (req, res) => {
 
     const latestUsers = await User.find({ role: { $ne: "student" } }).sort({ createdAt: -1 }).limit(5);
     const latestStudents = await Student.find().sort({ createdAt: -1 }).limit(5).populate('user', "name email role status profilePic");
-    const uCreatedStudent = await Student.find({createdBy: userEmail}).populate('user', 'name email role profilePic');
+    const uCreatedStudent = await Student.find({createdBy: userEmail}).populate('user', 'name email role profilePic status');
     const currentYearBcaStudents = await Student.countDocuments({ "courses.course": "BCA", "courses.batchYear": currentYear });
     const currentYearMcaStudents = await Student.countDocuments({ "courses.course": "MCA", "courses.batchYear": currentYear });
     const currentYearBbaStudents = await Student.countDocuments({ "courses.course": "BBA", "courses.batchYear": currentYear });
@@ -89,6 +89,7 @@ const getCommonDashboardStats = async(req, res) => {
 }
 
 const getStudentDashboardStats = async (req, res) => {
+  // Real student login: use their own user ID
   const { id } = req.user;
   
   try {
@@ -100,4 +101,20 @@ const getStudentDashboardStats = async (req, res) => {
   }
 }
 
-module.exports = { getAdminDashboardStats, getCommonDashboardStats, getStudentDashboardStats };
+/**
+ * Admin views a specific student's dashboard data by the student's _id.
+ * The student's _id (Student collection) is passed as a URL param.
+ * Only admins can call this; students use getStudentDashboardStats instead.
+ */
+const getStudentDashboardStatsById = async (req, res) => {
+  try {
+    const student = await Student.findById(req.params.studentId)
+      .populate('user', 'name email profilePic status');
+    if (!student) return res.status(404).json({ message: "Student not found" });
+    res.status(200).json(student);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+module.exports = { getAdminDashboardStats, getCommonDashboardStats, getStudentDashboardStats, getStudentDashboardStatsById };
