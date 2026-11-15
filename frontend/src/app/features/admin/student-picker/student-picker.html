@@ -83,11 +83,11 @@
           class="sp-row"
           role="option"
           (click)="select(student)"
-          [attr.aria-label]="'Select ' + student.user?.name">
+          [attr.aria-label]="'Select ' + student.user.name">
 
           <!-- Avatar -->
           <div class="sp-row__avatar">
-            @if (student.user?.profilePic) {
+            @if (student.user.profilePic) {
               <p-avatar [image]="student.user.profilePic!" shape="circle" size="normal"
                 (onImageError)="student.user.profilePic = null"></p-avatar>
             } @else {
@@ -97,13 +97,13 @@
 
           <!-- Info -->
           <div class="sp-row__info">
-            <span class="sp-row__name">{{ student.user?.name }}</span>
+            <span class="sp-row__name">{{ student.user.name }}</span>
             <span class="sp-row__sub">
-              {{ student.user?.email }}
+              {{ student.user.email }}
               @if (student.rollNo) { &nbsp;·&nbsp; Roll: {{ student.rollNo }} }
               @if (student.enrollmentNo) { &nbsp;·&nbsp; Enr: {{ student.enrollmentNo }} }
             </span>
-            @if (student.courses?.length) {
+            @if (student.courses.length) {
               <div class="sp-row__courses">
                 @for (c of student.courses; track c.course) {
                   <span class="sp-course-tag">{{ c.course }} {{ c.batchYear }}</span>
@@ -115,8 +115,8 @@
           <!-- Status + action -->
           <div class="sp-row__right">
             <p-tag
-              [value]="student.user?.status ? 'Active' : 'Inactive'"
-              [severity]="getStatusSeverity(student.user?.status ?? false)">
+              [value]="student.user.status ? 'Active' : 'Inactive'"
+              [severity]="getStatusSeverity(student.user.status)">
             </p-tag>
             <span class="sp-row__select-hint">
               <i class="pi pi-angle-right"></i>
