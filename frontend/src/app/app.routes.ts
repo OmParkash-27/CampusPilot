@@ -61,6 +61,17 @@ export const routes: Routes = [
                 data: { roles: ['student', 'admin'], breadcrumb: 'Student' },
                 loadChildren: () => import('./features/student/student.routes').then(m => m.STUDENT_ROUTES)
             },
+            {
+            path: 'typing-lab',
+            canActivate: [AuthGuard],
+            loadChildren: () =>
+                import('./features/typing-lab/typing-lab.routes')
+                .then(m => m.TYPING_LAB_ROUTES),
+            data: {
+                breadcrumb: 'Typing Lab'
+            }
+            },
+
             { path: '**', redirectTo: 'home' }
         ]
 

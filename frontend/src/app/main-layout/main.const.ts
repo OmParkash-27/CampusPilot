@@ -26,7 +26,7 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     showWhenLoggedIn: true,
     roles: []
   },
-  
+
 
   // Admin menu
   {
@@ -120,6 +120,19 @@ export const sidebarMenuItems: RoleMenuItem[] = [
     public: false,
     showWhenLoggedIn: true,
     roles: ['student', 'admin'],
+  },
+
+    //Typing
+
+  {
+    id: 'typingLab',
+    label: 'Typing Lab',
+    icon: 'pi pi-key',
+    routerLink: '/typing-lab',
+    visible: false,
+    public: false,
+    showWhenLoggedIn: true,
+    roles: ['admin', 'editor', 'teacher', 'student']
   },
   
   {
