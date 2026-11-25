@@ -33,6 +33,7 @@ export const MessageInterceptor: HttpInterceptorFn = (req, next) => {
         authService.current_user.set(null);
         return throwError(() => err);
       }
+      
       messageService.add({
         severity: 'error',
         summary: 'Error',

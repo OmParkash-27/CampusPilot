@@ -62,69 +62,170 @@
   <!-- ── Features Section ─────────────────────────────────────────────────── -->
   <section class="features-section" aria-labelledby="features-heading">
     <div class="features-header">
-      <span class="section-label">What we offer</span>
-      <h2 class="section-heading" id="features-heading">Everything you need</h2>
+      <span class="section-label">Platform capabilities</span>
+      <h2 class="section-heading" id="features-heading">Built for every role on campus</h2>
       <p class="section-sub">
-        A complete platform built for administrators, teachers, editors and students.
+        A complete campus management system — from secure authentication and analytics
+        to student records and document storage.
       </p>
     </div>
 
     <div class="features-grid">
 
-      <article class="feature-card" tabindex="0" aria-label="Easy Registration">
+      <!-- 1 — Secure Authentication -->
+      <article class="feature-card" tabindex="0" aria-label="Secure Authentication">
         <div class="feature-icon-wrap" aria-hidden="true">
-          <i class="pi pi-user-plus feature-icon"></i>
+          <i class="pi pi-lock feature-icon"></i>
         </div>
-        <h3 class="feature-title">Easy Registration</h3>
-        <p class="feature-desc">Register quickly and upload documents anytime from any device.</p>
+        <span class="feature-tag">Security</span>
+        <h3 class="feature-title">Secure Authentication</h3>
+        <p class="feature-desc">
+          Cookie-based JWT with automatic token rotation, progressive login lockout
+          after failed attempts, and permanent block protection.
+        </p>
       </article>
 
-      <article class="feature-card" tabindex="0" aria-label="User Roles">
+      <!-- 2 — Admin Approval Workflow -->
+      <article class="feature-card" tabindex="0" aria-label="Admin Approval Workflow">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-verified feature-icon"></i>
+        </div>
+        <span class="feature-tag">Workflow</span>
+        <h3 class="feature-title">Admin Approval Workflow</h3>
+        <p class="feature-desc">
+          New registrations start as inactive. Admins review, activate accounts,
+          and complete student profiles from a dedicated pending-registrations list.
+        </p>
+      </article>
+
+      <!-- 3 — Role-Based Access Control -->
+      <article class="feature-card" tabindex="0" aria-label="Role-Based Access Control">
         <div class="feature-icon-wrap" aria-hidden="true">
           <i class="pi pi-shield feature-icon"></i>
         </div>
-        <h3 class="feature-title">User Roles</h3>
-        <p class="feature-desc">Four role types: Admins, Teachers, Editors, and Students — each with tailored access.</p>
+        <span class="feature-tag">Access Control</span>
+        <h3 class="feature-title">Role-Based Access</h3>
+        <p class="feature-desc">
+          Four roles — Admin, Editor, Teacher, and Student — each with strictly
+          enforced permissions at both the API middleware and UI route-guard levels.
+        </p>
       </article>
 
+      <!-- 4 — Student Management -->
       <article class="feature-card" tabindex="0" aria-label="Student Management">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-graduation-cap feature-icon"></i>
+        </div>
+        <span class="feature-tag">Core Module</span>
+        <h3 class="feature-title">Student Management</h3>
+        <p class="feature-desc">
+          Full student lifecycle — create profiles, assign multiple courses with
+          batch years, track status, edit details, and manage guardian information.
+        </p>
+      </article>
+
+      <!-- 5 — User Management -->
+      <article class="feature-card" tabindex="0" aria-label="User Management">
         <div class="feature-icon-wrap" aria-hidden="true">
           <i class="pi pi-users feature-icon"></i>
         </div>
-        <h3 class="feature-title">Student Management</h3>
-        <p class="feature-desc">Students are managed collaboratively by Admins, Editors and Teachers.</p>
+        <span class="feature-tag">Administration</span>
+        <h3 class="feature-title">User Management</h3>
+        <p class="feature-desc">
+          Admins create, update, and delete users across all roles. Inline role
+          changes, account activation, and cascade-delete for student accounts.
+        </p>
       </article>
 
-      <article class="feature-card" tabindex="0" aria-label="Staff Management">
+      <!-- 6 — Document & Photo Uploads -->
+      <article class="feature-card" tabindex="0" aria-label="Document and Photo Uploads">
         <div class="feature-icon-wrap" aria-hidden="true">
-          <i class="pi pi-key feature-icon"></i>
+          <i class="pi pi-cloud-upload feature-icon"></i>
         </div>
-        <h3 class="feature-title">Staff Management</h3>
-        <p class="feature-desc">Teachers and Editors are created and managed by Admins.</p>
+        <span class="feature-tag">Documents</span>
+        <h3 class="feature-title">Document Uploads</h3>
+        <p class="feature-desc">
+          Students upload documents and photos securely to Cloudinary. Staff can
+          add, view, and remove files per student record with safe rollback on failure.
+        </p>
       </article>
 
-      <article class="feature-card" tabindex="0" aria-label="Role-based Menu">
+      <!-- 7 — Analytics Dashboards -->
+      <article class="feature-card" tabindex="0" aria-label="Analytics Dashboards">
         <div class="feature-icon-wrap" aria-hidden="true">
-          <i class="pi pi-list feature-icon"></i>
+          <i class="pi pi-chart-bar feature-icon"></i>
         </div>
-        <h3 class="feature-title">Menu Bar</h3>
-        <p class="feature-desc">Navigation items adapt automatically based on the logged-in user's role.</p>
+        <span class="feature-tag">Analytics</span>
+        <h3 class="feature-title">Analytics Dashboards</h3>
+        <p class="feature-desc">
+          Role-specific dashboards with doughnut, bar, line, and polar charts showing
+          enrollment stats, course-wise breakdowns, and recent activity per user.
+        </p>
       </article>
 
-      <article class="feature-card" tabindex="0" aria-label="Document Management">
+      <!-- 8 — Multi-Device Session Management -->
+      <article class="feature-card" tabindex="0" aria-label="Multi-Device Session Management">
         <div class="feature-icon-wrap" aria-hidden="true">
-          <i class="pi pi-file feature-icon"></i>
+          <i class="pi pi-desktop feature-icon"></i>
         </div>
-        <h3 class="feature-title">Documents</h3>
-        <p class="feature-desc">Upload, submit, and view documents easily from the student portal.</p>
+        <span class="feature-tag">Security</span>
+        <h3 class="feature-title">Session Management</h3>
+        <p class="feature-desc">
+          Users see all active login sessions by device and IP. Revoke a single
+          device, or sign out of every session simultaneously from one screen.
+        </p>
       </article>
 
+      <!-- 9 — Profile Management -->
+      <article class="feature-card" tabindex="0" aria-label="Profile Management">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-id-card feature-icon"></i>
+        </div>
+        <span class="feature-tag">Account</span>
+        <h3 class="feature-title">Profile Management</h3>
+        <p class="feature-desc">
+          Every user can upload a profile picture, update personal information,
+          and change their password — with immediate session invalidation on change.
+        </p>
+      </article>
+
+      <!-- 10 — Adaptive Navigation -->
+      <article class="feature-card" tabindex="0" aria-label="Adaptive Navigation">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-bars feature-icon"></i>
+        </div>
+        <span class="feature-tag">UX</span>
+        <h3 class="feature-title">Adaptive Navigation</h3>
+        <p class="feature-desc">
+          The sidebar and breadcrumbs update dynamically based on the logged-in
+          user's role, hiding irrelevant sections and surfacing what matters.
+        </p>
+      </article>
+
+      <!-- 11 — Cloud Image Storage -->
+      <article class="feature-card" tabindex="0" aria-label="Cloud Image Storage">
+        <div class="feature-icon-wrap" aria-hidden="true">
+          <i class="pi pi-server feature-icon"></i>
+        </div>
+        <span class="feature-tag">Infrastructure</span>
+        <h3 class="feature-title">Cloud Storage</h3>
+        <p class="feature-desc">
+          Profile pictures and student documents are stored on Cloudinary with
+          automatic cleanup on updates and transactional rollback on errors.
+        </p>
+      </article>
+
+      <!-- 12 — Responsive Design -->
       <article class="feature-card" tabindex="0" aria-label="Responsive Design">
         <div class="feature-icon-wrap" aria-hidden="true">
           <i class="pi pi-mobile feature-icon"></i>
         </div>
-        <h3 class="feature-title">Responsiveness</h3>
-        <p class="feature-desc">Campus Pilot works seamlessly on mobiles, tablets and laptops.</p>
+        <span class="feature-tag">Design</span>
+        <h3 class="feature-title">Responsive Design</h3>
+        <p class="feature-desc">
+          Every screen adapts seamlessly across mobile, tablet, and desktop
+          using PrimeNG responsive components and CSS Grid breakpoints.
+        </p>
       </article>
 
     </div>
