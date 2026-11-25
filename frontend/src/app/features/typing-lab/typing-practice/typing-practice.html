@@ -1,0 +1,429 @@
+<!-- ════════════════════════════════════════════════════════════
+     DESKTOP RESTRICTION — shown on mobile / tablet (<900 px)
+     The @HostListener in the component keeps isDesktop in sync
+     when the browser window is resized.
+════════════════════════════════════════════════════════════ -->
+@if (!isDesktop()) {
+  <div class="tl-restrict">
+    <div class="tl-restrict__card">
+      <div class="tl-restrict__icon-wrap" aria-hidden="true">
+        <i class="pi pi-desktop"></i>
+      </div>
+      <h2 class="tl-restrict__heading">Typing Lab is designed for desktop</h2>
+      <p class="tl-restrict__body">
+        For the best typing experience, please open CampusPilot on a laptop or
+        desktop computer.
+      </p>
+      <button
+        pButton
+        class="tl-btn tl-btn--primary"
+        icon="pi pi-arrow-left"
+        label="Back to Dashboard"
+        (click)="goBack()">
+      </button>
+    </div>
+  </div>
+}
+
+
+<!-- ════════════════════════════════════════════════════════════
+     FULL TYPING LAB — desktop only
+════════════════════════════════════════════════════════════ -->
+@if (isDesktop()) {
+<div class="tl-page">
+
+  <!-- ── PAGE HEADER ───────────────────────────────────────────── -->
+  <header class="tl-header">
+    <div class="tl-header__left">
+      <span class="tl-header__badge">
+        <i class="pi pi-key" aria-hidden="true"></i>
+        CAMPUSPILOT · TYPING LAB
+      </span>
+      <h1 class="tl-header__title">Master Your Typing Skills</h1>
+      <p class="tl-header__sub">
+        Build speed, accuracy, and confidence with focused typing practice.
+      </p>
+    </div>
+
+    <div class="tl-header__right">
+      <!-- Keyboard illustration -->
+      <div class="tl-header__kbd-wrap" aria-hidden="true">
+        <div class="tl-kbd">
+          <div class="tl-kbd__row tl-kbd__row--top">
+            <span class="tl-key">Q</span><span class="tl-key">W</span><span class="tl-key">E</span>
+            <span class="tl-key">R</span><span class="tl-key">T</span><span class="tl-key">Y</span>
+          </div>
+          <div class="tl-kbd__row tl-kbd__row--mid">
+            <span class="tl-key">A</span><span class="tl-key">S</span><span class="tl-key">D</span>
+            <span class="tl-key tl-key--accent">F</span><span class="tl-key">G</span>
+          </div>
+          <div class="tl-kbd__row tl-kbd__row--bot">
+            <span class="tl-key tl-key--wide">SHIFT</span>
+            <span class="tl-key">Z</span><span class="tl-key">X</span>
+          </div>
+        </div>
+        <div class="tl-header__status">
+          <span class="tl-live-dot"></span>
+          Practice at your own pace
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ── MAIN GRID ─────────────────────────────────────────────── -->
+  <div class="tl-grid">
+
+    <!-- LEFT: Practice panel -->
+    <main class="tl-col-main">
+
+      <!-- Practice card — only shown while a session is active -->
+      @if (isRunning) {
+      <div class="tl-card tl-card--practice">
+
+        <!-- Card head -->
+        <div class="tl-card__head">
+          <div class="tl-card__head-left">
+            <div class="tl-card__icon-wrap">
+              <i class="pi pi-bolt"></i>
+            </div>
+            <div>
+              <h2 class="tl-card__title">Typing Session</h2>
+              <p class="tl-card__sub">Match the character shown below</p>
+            </div>
+          </div>
+          <span class="tl-mode-badge">{{ modeBadge }}</span>
+        </div>
+
+        <!-- Target character -->
+        <div class="tl-target">
+          <p class="tl-target__label">Your next character</p>
+          <div
+            class="tl-target__char"
+            [class.tl-target__char--correct]="messageType === 'success' && currentCharacter !== null"
+            [class.tl-target__char--wrong]="messageType === 'error' && currentCharacter !== null"
+            aria-live="polite"
+            aria-label="Target character">
+            {{ currentCharacter ?? (isRunning ? 'Done!' : '—') }}
+          </div>
+          <p class="tl-target__hint">
+            <i class="pi pi-info-circle" aria-hidden="true"></i>
+            Type the character before time runs out
+          </p>
+        </div>
+
+        <!-- Input row -->
+        <div class="tl-input-wrap">
+          <div class="tl-input-wrap__label-row">
+            <label class="tl-input-wrap__label" for="typing-input">Your keystroke</label>
+            <span class="tl-input-wrap__hint">Keyboard input enabled during practice</span>
+          </div>
+          
+          <input
+            #typingInput
+            id="typing-input"
+            type="text"
+            maxlength="1"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            class="tl-input"
+            [class.tl-input--correct]="messageType === 'success'"
+            [class.tl-input--wrong]="messageType === 'error'"
+            [disabled]="inputDisabled"
+            [value]="inputValue"
+            aria-label="Type the displayed character"
+            (input)="onTypingInput(typingInput.value); typingInput.value = ''"
+          />
+
+          <p
+            class="tl-message"
+            aria-live="polite"
+            [class.tl-message--success]="messageType === 'success'"
+            [class.tl-message--error]="messageType === 'error'">
+            @if (messageType === 'success') {
+              <i class="pi pi-check-circle" aria-hidden="true"></i>
+            }
+            @if (messageType === 'error') {
+              <i class="pi pi-times-circle" aria-hidden="true"></i>
+            }
+            {{ message }}
+          </p>
+        </div>
+
+        <!-- Progress -->
+        <div class="tl-progress">
+          <div class="tl-progress__labels">
+            <span>Session progress</span>
+            <strong>{{ progress | number:'1.0-0' }}%</strong>
+          </div>
+          <div
+            class="tl-progress__track"
+            role="progressbar"
+            [attr.aria-valuenow]="progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-label="Session progress">
+            <div class="tl-progress__fill" [style.width.%]="progress"></div>
+          </div>
+        </div>
+
+      </div><!-- /tl-card--practice -->
+      } <!-- /@if isRunning -->
+
+
+      <!-- Results card -->
+      @if (resultsVisible) {
+        <div class="tl-card tl-card--results">
+          <div class="tl-card__head">
+            <div class="tl-card__head-left">
+              <div class="tl-card__icon-wrap tl-card__icon-wrap--green">
+                <i class="pi pi-trophy"></i>
+              </div>
+              <div>
+                <h2 class="tl-card__title">Session Complete</h2>
+                <p class="tl-card__sub">{{ resultSummary }}</p>
+              </div>
+            </div>
+            <button
+              pButton
+              class="tl-btn tl-btn--ghost"
+              icon="pi pi-times"
+              label="Dismiss"
+              (click)="dismissResults()">
+            </button>
+          </div>
+
+          <div class="tl-results-grid">
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--blue">
+                <i class="pi pi-list-check"></i>
+              </div>
+              <span class="tl-result-card__label">Total Attempts</span>
+              <strong class="tl-result-card__value">{{ resultAttempts }}</strong>
+            </div>
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--green">
+                <i class="pi pi-check"></i>
+              </div>
+              <span class="tl-result-card__label">Correct</span>
+              <strong class="tl-result-card__value tl-result-card__value--good">{{ resultCorrect }}</strong>
+            </div>
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--red">
+                <i class="pi pi-times"></i>
+              </div>
+              <span class="tl-result-card__label">Wrong / Timed Out</span>
+              <strong class="tl-result-card__value tl-result-card__value--bad">{{ resultWrong }}</strong>
+            </div>
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--purple">
+                <i class="pi pi-chart-pie"></i>
+              </div>
+              <span class="tl-result-card__label">Accuracy</span>
+              <strong class="tl-result-card__value">{{ resultAccuracy }}</strong>
+            </div>
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--amber">
+                <i class="pi pi-stopwatch"></i>
+              </div>
+              <span class="tl-result-card__label">Avg Response</span>
+              <strong class="tl-result-card__value">{{ resultAverage }}</strong>
+            </div>
+
+            <div class="tl-result-card">
+              <div class="tl-result-card__icon tl-result-card__icon--red">
+                <i class="pi pi-exclamation-triangle"></i>
+              </div>
+              <span class="tl-result-card__label">Most Missed</span>
+              <strong class="tl-result-card__value tl-result-card__value--mono">{{ resultMostWrong }}</strong>
+            </div>
+
+          </div>
+
+          @if (mostWrongDetail) {
+            <p class="tl-result-note">
+              <i class="pi pi-info-circle" aria-hidden="true"></i>
+              {{ mostWrongDetail }}
+            </p>
+          }
+
+          <div class="tl-results-action">
+            <button
+              pButton
+              class="tl-btn tl-btn--primary"
+              icon="pi pi-refresh"
+              label="Start Another Session"
+              (click)="startOrStopPractice()">
+            </button>
+          </div>
+        </div>
+      }
+
+    </main><!-- /tl-col-main -->
+
+
+    <!-- RIGHT: Stats + Settings -->
+    <aside class="tl-col-side">
+
+      <!-- Live stats card -->
+      <div class="tl-card tl-card--stats">
+        <div class="tl-card__head">
+          <div class="tl-card__head-left">
+            <div class="tl-card__icon-wrap tl-card__icon-wrap--blue">
+              <i class="pi pi-chart-bar"></i>
+            </div>
+            <div>
+              <h2 class="tl-card__title">Live Performance</h2>
+              <p class="tl-card__sub">Updates as you practice</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-stats-grid">
+
+          <div class="tl-stat">
+            <div class="tl-stat__icon tl-stat__icon--blue">
+              <i class="pi pi-clock"></i>
+            </div>
+            <div class="tl-stat__body">
+              <span class="tl-stat__label">Time Left</span>
+              <span class="tl-stat__value">{{ formattedRemainingTime }}</span>
+            </div>
+          </div>
+
+          <div class="tl-stat">
+            <div class="tl-stat__icon tl-stat__icon--green">
+              <i class="pi pi-check"></i>
+            </div>
+            <div class="tl-stat__body">
+              <span class="tl-stat__label">Correct</span>
+              <span class="tl-stat__value tl-stat__value--good">{{ correct }}</span>
+            </div>
+          </div>
+
+          <div class="tl-stat">
+            <div class="tl-stat__icon tl-stat__icon--red">
+              <i class="pi pi-times"></i>
+            </div>
+            <div class="tl-stat__body">
+              <span class="tl-stat__label">Incorrect</span>
+              <span class="tl-stat__value tl-stat__value--bad">{{ wrong }}</span>
+            </div>
+          </div>
+
+          <div class="tl-stat">
+            <div class="tl-stat__icon tl-stat__icon--purple">
+              <i class="pi pi-percentage"></i>
+            </div>
+            <div class="tl-stat__body">
+              <span class="tl-stat__label">Accuracy</span>
+              <span class="tl-stat__value">{{ accuracy }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /tl-card--stats -->
+
+
+      <!-- Settings card -->
+      <div class="tl-card tl-card--settings">
+        <div class="tl-card__head">
+          <div class="tl-card__head-left">
+            <div class="tl-card__icon-wrap tl-card__icon-wrap--amber">
+              <i class="pi pi-sliders-h"></i>
+            </div>
+            <div>
+              <h2 class="tl-card__title">Session Settings</h2>
+              <p class="tl-card__sub">Customise before starting</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-settings-fields">
+
+          <div class="tl-field">
+            <label class="tl-field__label" for="practice-mode">Practice mode</label>
+            <p-select
+              inputId="practice-mode"
+              [options]="modeOptions"
+              [(ngModel)]="practiceMode"
+              optionLabel="label"
+              optionValue="value"
+              [disabled]="isRunning"
+              styleClass="tl-select"
+              aria-label="Practice mode">
+            </p-select>
+          </div>
+
+          <div class="tl-field">
+            <label class="tl-field__label" for="interval">Time per character</label>
+            <p-select
+              inputId="interval"
+              [options]="intervalOptions"
+              [(ngModel)]="characterSeconds"
+              optionLabel="label"
+              optionValue="value"
+              [disabled]="isRunning"
+              styleClass="tl-select"
+              aria-label="Time per character">
+            </p-select>
+          </div>
+
+          <div class="tl-field">
+            <label class="tl-field__label" for="total-minutes">Session duration</label>
+            <p-select
+              inputId="total-minutes"
+              [options]="durationOptions"
+              [(ngModel)]="sessionMinutes"
+              optionLabel="label"
+              optionValue="value"
+              [disabled]="isRunning"
+              styleClass="tl-select"
+              aria-label="Session duration">
+            </p-select>
+            <p class="tl-field__note">
+              <i class="pi pi-info-circle" aria-hidden="true"></i>
+              Your session ends automatically.
+            </p>
+          </div>
+
+        </div>
+
+        <div class="tl-btn-row">
+          <button
+            type="button"
+            class="tl-btn tl-btn--primary"
+            (click)="startOrStopPractice()">
+            <i [class]="isRunning ? 'pi pi-stop-circle' : 'pi pi-play'" aria-hidden="true"></i>
+            {{ isRunning ? 'Stop Session' : 'Start Practice' }}
+          </button>
+          <button
+            type="button"
+            class="tl-btn tl-btn--secondary"
+            (click)="resetPractice()">
+            <i class="pi pi-refresh" aria-hidden="true"></i>
+            Reset
+          </button>
+        </div>
+
+      </div><!-- /tl-card--settings -->
+
+    </aside><!-- /tl-col-side -->
+
+  </div><!-- /tl-grid -->
+
+
+  <!-- Footer hint -->
+  <p class="tl-footer">
+    <i class="pi pi-info-circle" aria-hidden="true"></i>
+    Small steps, steady practice. Your stats reset when a new session starts.
+  </p>
+
+</div><!-- /tl-page -->
+}

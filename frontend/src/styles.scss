@@ -242,3 +242,21 @@ label {
 .p-invalid {
   border-color: var(--p-red-500) !important;
 }
+
+/* ── Typing Lab: hide sidebar menu item on mobile/tablet (<900 px) ─────────────
+   The component itself also enforces this via the isDesktop signal, so users
+   who reach the URL directly on small screens see the restriction screen.
+   This CSS rule is a secondary progressive-enhancement layer that removes the
+   menu entry from the sidebar so it is not even offered on small screens.    */
+@media (max-width: 899px) {
+  /* Target the PrimeNG menubar item whose anchor href starts with /typing-lab */
+  .p-menubar-item a[href='/typing-lab'],
+  .p-menubar-item a[routerLink='/typing-lab'] {
+    display: none !important;
+  }
+  /* Also hide the parent li so it doesn't leave a blank space */
+  .p-menubar-item:has(a[href='/typing-lab']),
+  .p-menubar-item:has(a[routerLink='/typing-lab']) {
+    display: none !important;
+  }
+}
